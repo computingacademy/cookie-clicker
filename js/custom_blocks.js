@@ -1,4 +1,4 @@
-Blockly.Blocks['picture_set'] = {
+Blockly.Blocks['image_set'] = {
   init: function() {
     this.setColour(20);
     this.setPreviousStatement(true);
@@ -11,29 +11,29 @@ Blockly.Blocks['picture_set'] = {
       [{'src': 'images/fortune.png', 'width': 25, 'height': 25, 'alt': 'Fortune Cookie'}, 'images/fortune.png'],
     ]
     this.appendDummyInput()
-        .appendField('Set picture to')
+        .appendField('Set image to')
         .appendField(new Blockly.FieldDropdown(options), 'PICTURE');
   },
 };
 
-Blockly.JavaScript['picture_set'] = function(block) {
+Blockly.JavaScript['image_set'] = function(block) {
   var picture = block.getFieldValue('PICTURE');
   var code = 'document.querySelector("#cookie-clicker img").src = "' + picture + '";\n';
   return code;
 }
 
-Blockly.Blocks['text_set'] = {
+Blockly.Blocks['heading_set'] = {
   init: function() {
     this.setColour(200);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.appendValueInput('VALUE')
         .setCheck('String')
-        .appendField('Set text to');
+        .appendField('Set heading to');
   },
 };
 
-Blockly.JavaScript['text_set'] = function(block) {
+Blockly.JavaScript['heading_set'] = function(block) {
   var text = Blockly.JavaScript.valueToCode(block, 'VALUE',
       Blockly.JavaScript.ORDER_FUNCTION_CALL) || '\'\'';;
   var code = 'document.querySelector("#cookie-clicker h1").textContent = ' + text + ';\n';
@@ -57,7 +57,7 @@ Blockly.Blocks['on_click'] = {
 
 Blockly.JavaScript['on_click'] = function(block) {
   var doCode = Blockly.JavaScript.statementToCode(block, 'DO');
-  var code = 'document.querySelector("#cookie-clicker img").addEventListener("click", function() {\n' + doCode + '});\n';
+  var code = 'document.querySelector("#cookie-clicker img").onclick = function() {\n' + doCode + '};\n';
   return code;
 };
 

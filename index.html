@@ -41,12 +41,6 @@
   </style>
 </head>
 <body>
-  <h1>Code a Cookie Clicker</h1>
-  <button onclick="step(1)">Step 1</button>
-  <button onclick="step(2)">Step 2</button>
-  <button onclick="step(3)">Step 3</button>
-  <button onclick="step(4)">Step 4</button>
-
   <content>
     <div id="blockly-div"></div>
     <div id="cookie-clicker">
@@ -54,17 +48,17 @@
       <h1></h1>
     </div>
   </content>
-  <button onclick="runCode()">Run Code</button>
-  <pre><code></code></pre>
+  <aside id="instructions">
+  </aside>
 
   <xml id="toolbox1" style="display: none">
-    <block type="picture_set">
+    <block type="image_set">
     </block>
  </xml>
   <xml id="toolbox2" style="display: none">
-    <block type="picture_set">
+    <block type="image_set">
     </block>
-    <block type="text_set"></block>
+    <block type="heading_set"></block>
     <block type="variables_get">
       <field name="VAR">cookies</field>
     </block>
@@ -74,9 +68,9 @@
 	</block>
  </xml>
   <xml id="toolbox3" style="display: none">
-    <block type="picture_set">
+    <block type="image_set">
     </block>
-    <block type="text_set"></block>
+    <block type="heading_set"></block>
     <block type="variables_get">
       <field name="VAR">cookies</field>
     </block>
@@ -91,9 +85,9 @@
     </block>
   </xml>
   <xml id="toolbox4" style="display: none">
-    <block type="picture_set">
+    <block type="image_set">
     </block>
-    <block type="text_set"></block>
+    <block type="heading_set"></block>
     <block type="variables_get">
       <field name="VAR">cookies</field>
     </block>
