@@ -98,11 +98,22 @@ function runCode() {
   var cookieClicker = document.querySelector('#cookie-clicker');
   var stage = stages.filter(stage => stage.pass(cookieClicker, window.cookies) == false)[0];
   document.querySelector('#instructions').innerHTML = stage.description;
+
+  var xml = Blockly.Xml.workspaceToDom(workspace);
+  var xml_text = Blockly.Xml.domToText(xml);
+  Cookies.set('blocks', xml_text);
+  Cookies.set('cookies', window.cookies);
 }
 
 function step(n) {
   workspace.updateToolbox(document.getElementById('toolbox'+n));
 }
 
-document.querySelector('#instructions').innerHTML = stages[0].description;
+var xml_text = Cookies.get('blocks');
+var xml = Blockly.Xml.textToDom(xml_text);
+Blockly.Xml.domToWorkspace(xml, workspace);
+window.cookies = Cookies.get('cookies');
+
+runCode();
+
 workspace.addChangeListener(runCode);
