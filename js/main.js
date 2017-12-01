@@ -82,6 +82,12 @@ var workspace = Blockly.inject('blockly-div',
     toolbox: document.getElementById('toolbox4')
   });
 
+function update(event) {
+  runCode();
+  updateStage();
+  save();
+}
+
 function runCode() {
   Blockly.JavaScript.addReservedWords('code');
   var code = 'window.cookies = window.cookies ? window.cookies : 0\n'
@@ -95,25 +101,29 @@ function runCode() {
     eval(code);
   } catch (e) {
   }
+}
+
+function updateStage() {
   var cookieClicker = document.querySelector('#cookie-clicker');
   var stage = stages.filter(stage => stage.pass(cookieClicker, window.cookies) == false)[0];
   document.querySelector('#instructions').innerHTML = stage.description;
+}
 
+function save() {
   var xml = Blockly.Xml.workspaceToDom(workspace);
   var xml_text = Blockly.Xml.domToText(xml);
   Cookies.set('blocks', xml_text);
   Cookies.set('cookies', window.cookies);
 }
 
-function step(n) {
-  workspace.updateToolbox(document.getElementById('toolbox'+n));
+function load() {
+  var xml_text = Cookies.get('blocks');
+  var xml = Blockly.Xml.textToDom(xml_text);
+  Blockly.Xml.domToWorkspace(xml, workspace);
+  window.cookies = parseInt(Cookies.get('cookies'));
 }
 
-var xml_text = Cookies.get('blocks');
-var xml = Blockly.Xml.textToDom(xml_text);
-Blockly.Xml.domToWorkspace(xml, workspace);
-window.cookies = Cookies.get('cookies');
+load();
+updateStage();
 
-runCode();
-
-workspace.addChangeListener(runCode);
+workspace.addChangeListener(update);
