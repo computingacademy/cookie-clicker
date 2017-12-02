@@ -161,6 +161,14 @@ Object.defineProperty(window, 'cookies', {
   }
 });
 
+let achievementsVue = new Vue({
+  el: '#achievements',
+  data: {
+    doCheck: doCheck,
+    achievements: achievements,
+  }
+});
+
 load();
 updateAchievement();
 

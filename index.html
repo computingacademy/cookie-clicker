@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>Code a Cookie Clicker</title>
+  <script src="https://unpkg.com/vue"></script>
   <script src="blockly/blockly_compressed.js"></script>
   <script src="blockly/blocks_compressed.js"></script>
   <script src="blockly/javascript_compressed.js"></script>
@@ -40,6 +41,31 @@
       display: none;
     }
 
+    aside {
+      display: flex;
+    }
+    #achievements {
+      width: 200px;
+    }
+
+      #achievements ul {
+        -webkit-margin-before: 0px;
+        -webkit-padding-start: 0px;
+        list-style: none;
+      }
+      #achievements li {
+        padding: 4px;
+        background-color: lightgrey;
+        border-bottom: 1px solid grey;
+      }
+      #achievements li.completed {
+        background-color: #cceecc;
+      }
+
+    #achievement {
+      padding: 4px;
+    }
+
     #cookie-counter {
       display: inline-block;
       float: right;
@@ -59,9 +85,6 @@
       top: 22px;
       margin-right: 6px;
       font-size: 20px;
-    aside {
-      display: flex;
-    }
   </style>
 </head>
 <body>
@@ -72,12 +95,17 @@
       <h1></h1>
     </div>
   </content>
-  <aside>
     <div id="cookie-counter">
       <img src="images/choc-chip.png">
       <span id="cookie-count">0</span>
     </div>
+  <aside>
     <div id="achievements">
+      <ul>
+        <li v-for="achievement in achievements" v-bind:class="{completed: achievement.checks.every(check => doCheck(check))}">
+          {{ achievement.title }}
+        </li>
+      </ul>
     </div>
     <div id="achievement">
       <h2></h2>
