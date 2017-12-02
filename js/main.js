@@ -150,7 +150,7 @@ function save() {
   var xml = Blockly.Xml.workspaceToDom(workspace);
   var xml_text = Blockly.Xml.domToText(xml);
   Cookies.set('blocks', xml_text);
-  Cookies.set('cookies', window.cookies);
+  Cookies.set('cookies', mainVue.cookies);
 }
 
 function load() {
@@ -164,26 +164,19 @@ function load() {
   });
 }
 
-// Make updates to cookies variable update the cookie counter
-Object.defineProperty(window, 'cookies', {
-  get: function() {
-    // Update counter
-    document.querySelector('#cookie-count').textContent = this._cookies;
-    return this._cookies;
-  },
-  set: function(val) {
-    // Update cookies value
-    this._cookies = val;
-    // Save cookies to cookies
-    Cookies.set('cookies', this._cookies);
-  }
-});
-
-
 load();
 updateAchievements();
 
 workspace.addChangeListener(update);
+
+let cookieCounter = Vue.component('cookie-counter', {
+  template: `
+<div id="cookie-counter">
+  <img src="images/choc-chip.png">
+  <span id="cookie-count">{{cookies}}</span>
+</div>`,
+  props: ['cookies'],
+});
 
 let achievementsComponent = Vue.component('achievement-list', {
   template: `
@@ -237,14 +230,33 @@ let achievementComponent = Vue.component('achievement-display', {
 });
 
 let mainVue = new Vue({
-  el: 'aside',
+  el: '#main',
   data: {
     achievements: achievements,
     selectedAchievement: achievements.find(achievement => !achievement.completed) | {checks: []},
+    cookies: window.cookies,
   },
   methods: {
     selectAchievement: function(achievement) {
       this.selectedAchievement = achievement;
     },
   },
+  watch: {
+    cookies: function() {
+      // Save cookies to web page's cookie
+      Cookies.set('cookies', this.cookies);
+    }
+  },
+});
+
+// Connect the cookies variable in the cookie clicker game to the overall cookie counter
+Object.defineProperty(window, 'cookies', {
+  get: function() {
+    // Get the number of cookies
+    return mainVue.cookies;
+  },
+  set: function(val) {
+    // Update cookies value
+    mainVue.cookies = val;
+  }
 });

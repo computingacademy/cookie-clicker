@@ -12,10 +12,6 @@
   <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-  <div id="cookie-counter">
-    <img src="images/choc-chip.png">
-    <span id="cookie-count">0</span>
-  </div>
   <content>
     <div id="blockly-div"></div>
     <div id="cookie-clicker">
@@ -23,10 +19,13 @@
       <h1></h1>
     </div>
   </content>
-  <aside>
-    <achievement-list v-bind:achievements="achievements" v-bind:selected="selectedAchievement" v-on:select="selectAchievement"></achievement-list>
-    <achievement-display v-bind:achievement="selectedAchievement"></achievement-display>
-  </aside>
+  <div id="main">
+    <cookie-counter v-bind:cookies="cookies"></cookie-counter>
+    <aside>
+      <achievement-list v-bind:achievements="achievements" v-bind:selected="selectedAchievement" v-on:select="selectAchievement"></achievement-list>
+      <achievement-display v-bind:achievement="selectedAchievement"></achievement-display>
+    </aside>
+  </div>
 
   <xml id="toolbox1" style="display: none">
     <block type="image_set">
