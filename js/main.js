@@ -1,6 +1,8 @@
 var achievements = [{
+  id: 'Set image',
   title: 'Set the image',
   reward: 10,
+  completed: false,
   description: '<p>To make a Cookie Clicker first we need a cookie!<p>'
     + '<p>Drag the <span class=".block .image_set">set image block</span> into the workspace.</p>',
   checks: [{
@@ -11,8 +13,10 @@ var achievements = [{
     },
   }],
 }, {
+  id: 'Choose image',
   title: 'Choose a cookie',
   reward: 10,
+  completed: false,
   description: '<p>Hmmm... looks like the image isn\'t a cookie yet.<p>'
     + '<p>Click the dropdown arrow on the set image block in your workspace. Then choose your cookie!</p>',
   checks: [{
@@ -23,8 +27,10 @@ var achievements = [{
     },
   }],
 }, {
+  id: 'Set heading',
   title: 'Count your cookies',
   reward: 20,
+  completed: false,
   description: '<p>Now we need to show how many cookies we have.</p>'
     + '<p>Drag the <span class=".block .heading_set">set heading block</span> into the workspace.</p>'
     + '<p>Then connect the <span class=".block .heading_set">cookies block</span> (which represents the cookies <em>variable</em>) to the <span class=".block .heading_set">set heading block</span>.</p>',
@@ -36,8 +42,10 @@ var achievements = [{
     },
   }],
 }, {
+  id: 'On click',
   title: 'Click that cookie!',
   reward: 50,
+  completed: false,
   description: '<p>Now that we have the cookie we need to add the most fun part of the Cookie Clicker. Adding cookies when we click!</p>'
     + '<p>Drag the <span class=".block .on_click">on click block</span> into the workspace.</p>'
     + '<p>Drag the <span class=".block .variable_change">change cookies block</span> into the <span class=".block .on_click">on click block</span> to change the cookie variable.</p>',
@@ -64,8 +72,10 @@ var achievements = [{
     },
   }],
 }, {
+  id: 'Set heading on click',
   title: 'Keep counting cookies',
   reward: 40,
+  completed: false,
   description: '<p>Why doesn\'t our cookie heading update? We only set the heading once! We need to set the heading when we click too!</p>'
     + '<p>Use another <span class=".block .heading">set heading block</span> in the <span class=".block .on_click">on click block</span>.</p>'
     + '<p>You can right click on the <span class=".block .heading">set heading block</span> in your workspace and click <em>duplicate</em> to save time creating blocks.</p>',
@@ -104,7 +114,7 @@ var workspace = Blockly.inject('blockly-div',
 
 function update(event) {
   runCode();
-  updateAchievement();
+  updateAchievements();
   save();
 }
 
@@ -123,13 +133,12 @@ function runCode() {
   }
 }
 
-function updateAchievement() {
-  var achievement = achievements.find(achievement => !achievement.checks.every(check => doCheck(check)));
-  if (achievement) {
-    mainVue.selectedAchievement = achievement;
-  } else {
-    mainVue.selectedAchievement = {checks: []};
-  }
+function updateAchievements() {
+  achievements.map(function(achievement) {
+    achievement.completed |= achievement.checks.every(check => doCheck(check));
+    Vue.set(achievement, 'complete', achievement.checks.every(check => doCheck(check)));
+    Cookies.set(`achievements[{achievement.id}]`, achievement.completed);
+  });
 }
 
 function doCheck(check) {
@@ -149,6 +158,10 @@ function load() {
   var xml = Blockly.Xml.textToDom(xml_text);
   Blockly.Xml.domToWorkspace(xml, workspace);
   window.cookies = parseInt(Cookies.get('cookies'));
+  // Load achievement completion
+  achievements.map(function(achievement) {
+    achievement.completed = Cookies.get(`achievements[{achievement.id}]`);
+  });
 }
 
 // Make updates to cookies variable update the cookie counter
@@ -166,38 +179,44 @@ Object.defineProperty(window, 'cookies', {
   }
 });
 
+
+load();
+updateAchievements();
+
+workspace.addChangeListener(update);
+
 let achievementsComponent = Vue.component('achievement-list', {
   template: `
 <div id="achievements">
   <ul>
     <li v-for="achievement in achievements"
-        v-bind:class="{completed: achievement.checks.every(check => doCheck(check))}"
+        v-bind:class="completion(achievement)"
         v-on:click="select(achievement)">
       {{ achievement.title }}
     </li>
   </ul>
 </div>`,
-  props: ['selected'],
-  data: function() {
-    return {
-      doCheck: doCheck,
-      achievements: achievements,
-    };
-  },
+  props: ['achievements', 'selected'],
   methods: {
     select: function(achievement) {
       this.$emit('select', achievement);
-    }
+    },
+    completion: function(achievement) {
+      return {
+        completed: achievement.completed,
+        complete: achievement.complete,
+      };
+    },
   },
 });
 
 let achievementComponent = Vue.component('achievement-display', {
   template: `
-<div id="achievement" >
+<div id="achievement">
   <h2>{{ achievement.title }}</h2>
   <ol id="marks">
     <li v-for="check in achievement.checks">
-      <i class="fa" v-bind:class="{'fa-check': doCheck(check), 'fa-times': !doCheck(check)}"></i>
+      <i class="fa" v-bind:class="completion(check, achievement.complete)"></i>
       {{ check.description }}
     </li>
   </ol>
@@ -205,10 +224,14 @@ let achievementComponent = Vue.component('achievement-display', {
   </div>
 </div>`,
   props: ['achievement'],
-  data: function() {
-    return {
-      doCheck: doCheck,
-    };
+  methods: {
+    completion: function(check, complete) {
+      // The 'complete' status is passed in to force updates on completion status changes
+      return {
+        'fa-check': doCheck(check),
+        'fa-times': !doCheck(check),
+      };
+    }
   },
 });
 
@@ -216,7 +239,7 @@ let mainVue = new Vue({
   el: 'aside',
   data: {
     achievements: achievements,
-    selectedAchievement: {checks: []},
+    selectedAchievement: achievements.find(achievement => !achievement.completed) | {checks: []},
   },
   methods: {
     selectAchievement: function(achievement) {
@@ -224,8 +247,3 @@ let mainVue = new Vue({
     },
   },
 });
-
-load();
-updateAchievement();
-
-workspace.addChangeListener(update);

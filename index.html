@@ -54,11 +54,24 @@
         list-style: none;
       }
       #achievements li {
+        cursor: pointer;
         padding: 4px;
         background-color: lightgrey;
         border-bottom: 1px solid grey;
       }
+      #achievements li:hover {
+        background-color: #eee;
+      }
       #achievements li.completed {
+        background-color: #aaaadd;
+      }
+      #achievements li:hover.completed {
+        background-color: #ccccee;
+      }
+      #achievements li.complete {
+        background-color: #aaddaa;
+      }
+      #achievements li:hover.complete {
         background-color: #cceecc;
       }
 
@@ -107,7 +120,7 @@
       <span id="cookie-count">0</span>
     </div>
   <aside>
-    <achievement-list v-bind:selected="selectedAchievement" v-on:select="selectAchievement"></achievement-list>
+    <achievement-list v-bind:achievements="achievements" v-bind:selected="selectedAchievement" v-on:select="selectAchievement"></achievement-list>
     <achievement-display v-bind:achievement="selectedAchievement"></achievement-display>
   </aside>
 
