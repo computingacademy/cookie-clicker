@@ -32,6 +32,7 @@ content {
 aside {
   display: flex;
 }
+
 #achievements {
   width: 200px;
 }
@@ -67,20 +68,25 @@ aside {
   }
 
 #achievement {
+  width: 100%;
   padding: 4px;
 }
 
-  #achievement #marks {
-    float: right;
+  #achievement #marks:not(:empty) {
     -webkit-margin-before: 0px;
     -webkit-padding-start: 0px;
     list-style: none;
+    padding: 4px;
+    background-color: #eee;
   }
 
 #cookie-counter {
   display: inline-block;
-  float: right;
+  position: absolute;
+  top: 4px;
+  right: 4px;
   width: 150px;
+  height: 40px;
   line-height: 0px;
   background: lightgrey;
   border-radius: 40px;
