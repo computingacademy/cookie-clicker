@@ -66,6 +66,13 @@
       padding: 4px;
     }
 
+      #achievement #marks {
+        float: right;
+        -webkit-margin-before: 0px;
+        -webkit-padding-start: 0px;
+        list-style: none;
+      }
+
     #cookie-counter {
       display: inline-block;
       float: right;
@@ -108,10 +115,13 @@
       </ul>
     </div>
     <div id="achievement">
-      <h2></h2>
-      <div id="description">
-      </div>
-      <div id="marks">
+      <h2>{{ achievement.title }}</h2>
+      <ol id="marks">
+        <li v-for="check in achievement.checks">
+          <i class="fa" v-bind:class="{'fa-check': doCheck(check), 'fa-times': !doCheck(check)}"></i> {{ check.description }}
+        </li>
+      </ol>
+      <div id="description" v-html="achievement.description">
       </div>
     </div>
   </aside>

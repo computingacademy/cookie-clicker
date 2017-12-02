@@ -3,43 +3,47 @@ var achievements = [{
   reward: 10,
   description: '<p>To make a Cookie Clicker first we need a cookie!<p>'
     + '<p>Drag the <span class=".block .image_set">set image block</span> into the workspace.</p>',
-  checks: [
-    function(cookieClicker, cookies) {
+  checks: [{
+    description: 'Add the set image block',
+    test: function(cookieClicker, cookies) {
       // Is there an image with a src?
       return !!cookieClicker.querySelector('img:not([src=""])');
     },
-  ],
+  }],
 }, {
   title: 'Choose a cookie',
   reward: 10,
   description: '<p>Hmmm... looks like the image isn\'t a cookie yet.<p>'
     + '<p>Click the dropdown arrow on the set image block in your workspace. Then choose your cookie!</p>',
-  checks: [
-    function(cookieClicker, cookies) {
+  checks: [{
+    description: 'Set the image to a cookie',
+    test: function(cookieClicker, cookies) {
       // Is the image's src not nothing?
       return !!cookieClicker.querySelector('img:not([src=NONE])');
     },
-  ],
+  }],
 }, {
   title: 'Count your cookies',
   reward: 20,
   description: '<p>Now we need to show how many cookies we have.</p>'
     + '<p>Drag the <span class=".block .heading_set">set heading block</span> into the workspace.</p>'
     + '<p>Then connect the <span class=".block .heading_set">cookies block</span> (which represents the cookies <em>variable</em>) to the <span class=".block .heading_set">set heading block</span>.</p>',
-  checks: [
-    function(cookieClicker, cookies) {
+  checks: [{
+    description: 'Set the heading to cookies variable',
+    test: function(cookieClicker, cookies) {
       // Was the heading set to the number of cookies (as a string)?
       return cookieClicker.querySelector('h1').textContent == cookies+'';
     },
-  ],
+  }],
 }, {
   title: 'Click that cookie!',
   reward: 50,
   description: '<p>Now that we have the cookie we need to add the most fun part of the Cookie Clicker. Adding cookies when we click!</p>'
     + '<p>Drag the <span class=".block .on_click">on click block</span> into the workspace.</p>'
     + '<p>Drag the <span class=".block .variable_change">change cookies block</span> into the <span class=".block .on_click">on click block</span> to change the cookie variable.</p>',
-  checks: [
-    function(cookieClicker, cookies) {
+  checks: [{
+    description: 'Add one to the cookies variable when the cookie is clicked',
+    test: function(cookieClicker, cookies) {
       // If we can click the cookie
       if (cookieClicker.querySelector('img').onclick) {
         // Get original heading text
@@ -58,15 +62,16 @@ var achievements = [{
         return false;
       }
     },
-  ],
+  }],
 }, {
   title: 'Keep counting cookies',
   reward: 40,
   description: '<p>Why doesn\'t our cookie heading update? We only set the heading once! We need to set the heading when we click too!</p>'
     + '<p>Use another <span class=".block .heading">set heading block</span> in the <span class=".block .on_click">on click block</span>.</p>'
     + '<p>You can right click on the <span class=".block .heading">set heading block</span> in your workspace and click <em>duplicate</em> to save time creating blocks.</p>',
-  checks: [
-    function(cookieClicker, cookies) {
+  checks: [{
+    description: 'Display the cookies variable as it changes on click',
+    test: function(cookieClicker, cookies) {
       // Was the heading set to the number of cookies?
       var headingSet = cookieClicker.querySelector('h1').textContent == cookies+'';
       // If we can click the cookie
@@ -89,7 +94,7 @@ var achievements = [{
         return false;
       }
     },
-  ],
+  }],
 }];
 
 var workspace = Blockly.inject('blockly-div',
@@ -121,15 +126,15 @@ function runCode() {
 function updateAchievement() {
   var achievement = achievements.find(achievement => !achievement.checks.every(check => doCheck(check)));
   if (achievement) {
-    document.querySelector('#description').innerHTML = achievement.description;
+    achievementVue.achievement = achievement;
   } else {
-    document.querySelector('#description').innerHTML = '';
+    achievementVue.achievement = {checks: []};
   }
 }
 
 function doCheck(check) {
   var cookieClicker = document.querySelector('#cookie-clicker');
-  return check(cookieClicker, window.cookies);
+  return check.test(cookieClicker, window.cookies);
 }
 
 function save() {
@@ -166,6 +171,14 @@ let achievementsVue = new Vue({
   data: {
     doCheck: doCheck,
     achievements: achievements,
+  }
+});
+
+let achievementVue = new Vue({
+  el: '#achievement',
+  data: {
+    doCheck: doCheck,
+    achievement: {checks: []},
   }
 });
 
