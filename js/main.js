@@ -123,6 +123,19 @@ function load() {
   window.cookies = parseInt(Cookies.get('cookies'));
 }
 
+// Make updates to cookies variable update the cookie counter
+Object.defineProperty(window, 'cookies', {
+  get: function() {
+    // Update counter
+    document.querySelector('#cookie-count').textContent = this._cookies;
+
+    return this._cookies;
+  },
+  set: function(val) {
+    this._cookies = val;
+  }
+});
+
 load();
 updateStage();
 

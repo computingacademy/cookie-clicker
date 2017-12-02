@@ -39,6 +39,27 @@
     #cookie-clicker img[src=''] {
       display: none;
     }
+
+    #cookie-counter {
+      display: inline-block;
+      float: right;
+      width: 150px;
+      line-height: 0px;
+      background: lightgrey;
+      border-radius: 40px;
+    }
+    #cookie-counter img {
+      height: 32px;
+      margin: 4px;
+    }
+    #cookie-count {
+      vertical-align: top;
+      position: relative;
+      float: right;
+      top: 22px;
+      margin-right: 6px;
+      font-size: 20px;
+    }
   </style>
 </head>
 <body>
@@ -49,7 +70,13 @@
       <h1></h1>
     </div>
   </content>
-  <aside id="instructions">
+  <aside>
+    <div id="cookie-counter">
+      <img src="images/choc-chip.png">
+      <span id="cookie-count">0</span>
+    </div>
+    <div id="instructions">
+    </div>
   </aside>
 
   <xml id="toolbox1" style="display: none">
