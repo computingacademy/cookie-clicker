@@ -190,7 +190,7 @@ let achievementsComponent = Vue.component('achievement-list', {
 <div id="achievements">
   <ul>
     <li v-for="achievement in achievements"
-        v-bind:class="completion(achievement)"
+        v-bind:class="classes(achievement)"
         v-on:click="select(achievement)">
       {{ achievement.title }}
     </li>
@@ -201,8 +201,9 @@ let achievementsComponent = Vue.component('achievement-list', {
     select: function(achievement) {
       this.$emit('select', achievement);
     },
-    completion: function(achievement) {
+    classes: function(achievement) {
       return {
+        selected: achievement == this.selected,
         completed: achievement.completed,
         complete: achievement.complete,
       };
