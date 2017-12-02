@@ -107,23 +107,8 @@
       <span id="cookie-count">0</span>
     </div>
   <aside>
-    <div id="achievements">
-      <ul>
-        <li v-for="achievement in achievements" v-bind:class="{completed: achievement.checks.every(check => doCheck(check))}">
-          {{ achievement.title }}
-        </li>
-      </ul>
-    </div>
-    <div id="achievement">
-      <h2>{{ achievement.title }}</h2>
-      <ol id="marks">
-        <li v-for="check in achievement.checks">
-          <i class="fa" v-bind:class="{'fa-check': doCheck(check), 'fa-times': !doCheck(check)}"></i> {{ check.description }}
-        </li>
-      </ol>
-      <div id="description" v-html="achievement.description">
-      </div>
-    </div>
+    <achievement-list v-bind:selected="selectedAchievement" v-on:select="selectAchievement"></achievement-list>
+    <achievement-display v-bind:achievement="selectedAchievement"></achievement-display>
   </aside>
 
   <xml id="toolbox1" style="display: none">

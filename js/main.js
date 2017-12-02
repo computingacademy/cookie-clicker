@@ -126,9 +126,9 @@ function runCode() {
 function updateAchievement() {
   var achievement = achievements.find(achievement => !achievement.checks.every(check => doCheck(check)));
   if (achievement) {
-    achievementVue.achievement = achievement;
+    mainVue.selectedAchievement = achievement;
   } else {
-    achievementVue.achievement = {checks: []};
+    mainVue.selectedAchievement = {checks: []};
   }
 }
 
@@ -166,20 +166,63 @@ Object.defineProperty(window, 'cookies', {
   }
 });
 
-let achievementsVue = new Vue({
-  el: '#achievements',
-  data: {
-    doCheck: doCheck,
-    achievements: achievements,
-  }
+let achievementsComponent = Vue.component('achievement-list', {
+  template: `
+<div id="achievements">
+  <ul>
+    <li v-for="achievement in achievements"
+        v-bind:class="{completed: achievement.checks.every(check => doCheck(check))}"
+        v-on:click="select(achievement)">
+      {{ achievement.title }}
+    </li>
+  </ul>
+</div>`,
+  props: ['selected'],
+  data: function() {
+    return {
+      doCheck: doCheck,
+      achievements: achievements,
+    };
+  },
+  methods: {
+    select: function(achievement) {
+      this.$emit('select', achievement);
+    }
+  },
 });
 
-let achievementVue = new Vue({
-  el: '#achievement',
+let achievementComponent = Vue.component('achievement-display', {
+  template: `
+<div id="achievement" >
+  <h2>{{ achievement.title }}</h2>
+  <ol id="marks">
+    <li v-for="check in achievement.checks">
+      <i class="fa" v-bind:class="{'fa-check': doCheck(check), 'fa-times': !doCheck(check)}"></i>
+      {{ check.description }}
+    </li>
+  </ol>
+  <div id="description" v-html="achievement.description">
+  </div>
+</div>`,
+  props: ['achievement'],
+  data: function() {
+    return {
+      doCheck: doCheck,
+    };
+  },
+});
+
+let mainVue = new Vue({
+  el: 'aside',
   data: {
-    doCheck: doCheck,
-    achievement: {checks: []},
-  }
+    achievements: achievements,
+    selectedAchievement: {checks: []},
+  },
+  methods: {
+    selectAchievement: function(achievement) {
+      this.selectedAchievement = achievement;
+    },
+  },
 });
 
 load();
