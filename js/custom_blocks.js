@@ -1,6 +1,6 @@
 Blockly.Blocks['image_set'] = {
   init: function() {
-    this.setColour(20);
+    this.setColour('#900090');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
 
@@ -24,7 +24,7 @@ Blockly.JavaScript['image_set'] = function(block) {
 
 Blockly.Blocks['heading_set'] = {
   init: function() {
-    this.setColour(200);
+    this.setColour('#900090');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.appendValueInput('VALUE')
@@ -42,7 +42,7 @@ Blockly.JavaScript['heading_set'] = function(block) {
 
 Blockly.Blocks['on_click'] = {
   init: function() {
-    this.setColour(20);
+    this.setColour('#ff7700');
 	this.setPreviousStatement(true);
 	this.setNextStatement(true);
 
@@ -63,7 +63,7 @@ Blockly.JavaScript['on_click'] = function(block) {
 
 Blockly.Blocks['variables_change'] = {
   init: function() {
-    this.setColour(270);
+    this.setColour('#909090');
 	this.setPreviousStatement(true);
 	this.setNextStatement(true);
 
@@ -82,4 +82,20 @@ Blockly.JavaScript['variables_change'] = function(block) {
   return code;
 };
 
+// Set colours of existing blocks
+function setColour(block, color) {
+  let prev_init = Blockly.Blocks[block].init;
+  Blockly.Blocks[block] = {
+    init: function() {
+      prev_init.call(this, arguments);
+      this.setColour(color);
+    }
+  }
+}
 
+setColour('variables_get', '#909090');
+setColour('text_join', '#00aa00');
+setColour('text', '#00aa00');
+setColour('controls_if', '#ff7700');
+setColour('logic_compare', '#fed651');
+setColour('math_number', '#0080e4');
