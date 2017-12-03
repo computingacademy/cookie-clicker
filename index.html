@@ -28,54 +28,20 @@
     </aside>
   </div>
 
-  <xml id="toolbox1" style="display: none">
-    <block type="image_set">
-    </block>
- </xml>
-  <xml id="toolbox2" style="display: none">
-    <block type="image_set">
-    </block>
+  <xml id="toolbox" style="display: none">
+    <block type="image_set"></block>
     <block type="heading_set"></block>
     <block type="variables_get">
       <field name="VAR">cookies</field>
     </block>
-    <block type="text_join"></block>
-    <block type="text">
-      <field name="TEXT"> Cookies</field>
-	</block>
- </xml>
-  <xml id="toolbox3" style="display: none">
-    <block type="image_set">
-    </block>
-    <block type="heading_set"></block>
-    <block type="variables_get">
-      <field name="VAR">cookies</field>
-    </block>
-    <block type="text_join"></block>
-    <block type="text">
-      <field name="TEXT"> Cookies</field>
-	</block>
     <block type="on_click"></block>
     <block type="variables_change">
       <field name="VARIABLE">cookies</field>
       <field name="NUMBER">1</field>
     </block>
-  </xml>
-  <xml id="toolbox4" style="display: none">
-    <block type="image_set">
-    </block>
-    <block type="heading_set"></block>
-    <block type="variables_get">
-      <field name="VAR">cookies</field>
-    </block>
     <block type="text_join"></block>
     <block type="text">
       <field name="TEXT"> Cookies</field>
-	</block>
-    <block type="on_click"></block>
-    <block type="variables_change">
-      <field name="VARIABLE">cookies</field>
-      <field name="NUMBER">1</field>
     </block>
     <block type="controls_if"></block>
     <block type="logic_compare">

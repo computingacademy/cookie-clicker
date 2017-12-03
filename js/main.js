@@ -182,7 +182,7 @@ var achievements = [{
 
 var workspace = Blockly.inject('blockly-div',
   { media: 'blockly/media/',
-    toolbox: document.getElementById('toolbox4')
+    toolbox: document.getElementById('toolbox')
   });
 
 let prevCode;
