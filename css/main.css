@@ -82,6 +82,17 @@ aside {
   border-color: #165f96;
 }
 
+.result-text h3 {
+  margin-top: 0px;
+  font-size: 16px;
+}
+
+.result-indicator {
+  display: inline-block;
+  float: left;
+  margin-right: 4px;
+}
+
 .passed-indicator {
   color: #3dae3b;
 }
