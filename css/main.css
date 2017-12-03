@@ -13,11 +13,14 @@ content {
   width: 100%;
 }
 #blockly-div {
-  flex-grow: 3;
+  width: 350px;
   height: 600px;
+  flex-grow: 1;
 }
 #cookie-clicker {
-  flex-grow: 2;
+  width: 350px;
+  flex-shrink: 0;
+  flex-grow: 0;
   padding: 120px 0px;
   text-align: center;
 }
@@ -50,7 +53,7 @@ aside {
   display: inline-block;
   position: absolute;
   top: 4px;
-  right: 4px;
+  left: 4px;
   width: 150px;
   height: 40px;
   line-height: 0px;

@@ -252,8 +252,11 @@ function load() {
   });
 }
 
-load();
-updateAchievements();
+// A nasty hack to wait until Blockly is set up to load blocks
+setTimeout(function() {
+  load();
+  updateAchievements();
+}, 100);
 
 workspace.addChangeListener(update);
 
