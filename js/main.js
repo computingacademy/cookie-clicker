@@ -210,7 +210,7 @@ let achievementComponent = Vue.component('achievement-display', {
   <h2>{{ achievement.title }}</h2>
   <ol id="marks">
     <li v-for="check in achievement.checks">
-      <i class="fa" v-bind:class="completion(check, achievement.complete)"></i>
+      <span v-bind:class="completion(check)" title="title(check, complete)" role="img"></span>
       {{ check.description }}
     </li>
   </ol>
@@ -222,10 +222,19 @@ let achievementComponent = Vue.component('achievement-display', {
     completion: function(check, complete) {
       // The 'complete' status is passed in to force updates on completion status changes
       return {
-        'fa-check': doCheck(check),
-        'fa-times': !doCheck(check),
+        'icon-checkmark': doCheck(check),
+        'passed-indicator': doCheck(check),
+        'icon-cross': !doCheck(check),
+        'failed-indicator': !doCheck(check),
       };
-    }
+    },
+    title: function(check, complete) {
+      if (doCheck(check)) {
+        return 'Passed';
+      } else {
+        return 'Failed';
+      }
+    },
   },
 });
 

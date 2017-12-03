@@ -103,3 +103,10 @@ aside {
   margin-right: 6px;
   font-size: 20px;
 }
+
+.passed-indicator {
+  color: #3dae3b;
+}
+.failed-indicator {
+  color: #fa1528;
+}
