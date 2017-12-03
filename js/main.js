@@ -180,14 +180,23 @@ let cookieCounter = Vue.component('cookie-counter', {
 
 let achievementsComponent = Vue.component('achievement-list', {
   template: `
-<div id="achievements">
-  <ul>
-    <li v-for="achievement in achievements"
-        v-bind:class="classes(achievement)"
+<div id="course-nav-tray">
+<div id="course-nav-tray-container" class="modules-container js-modules-offset-parent">
+  <ol v-for="achievement in achievements" class="slide-group">
+    <li
+        class="slide"
         v-on:click="select(achievement)">
-      {{ achievement.title }}
+      <a href="#"
+          class="js-slide-link problem" v-bind:class="classes(achievement)">
+        <h3 class="slide-title">
+          {{ achievement.title }}
+        </h3>
+        <span class="tooltip-area hide-open"></span>
+        <span class="slide-jump-pip"></span>
+      </a>
     </li>
-  </ul>
+  </ol>
+</div>
 </div>`,
   props: ['achievements', 'selected'],
   methods: {
@@ -196,9 +205,9 @@ let achievementsComponent = Vue.component('achievement-list', {
     },
     classes: function(achievement) {
       return {
-        selected: achievement == this.selected,
-        completed: achievement.completed,
-        complete: achievement.complete,
+        current: achievement == this.selected,
+        solved: achievement.completed,
+        passed: achievement.complete,
       };
     },
   },
@@ -208,12 +217,12 @@ let achievementComponent = Vue.component('achievement-display', {
   template: `
 <div id="achievement">
   <h2>{{ achievement.title }}</h2>
-  <ol id="marks">
+  <ul id="marks">
     <li v-for="check in achievement.checks">
       <span v-bind:class="completion(check)" title="title(check, complete)" role="img"></span>
       {{ check.description }}
     </li>
-  </ol>
+  </ul>
   <div id="description" v-html="achievement.description">
   </div>
 </div>`,

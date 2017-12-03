@@ -33,40 +33,6 @@ aside {
   display: flex;
 }
 
-#achievements {
-  width: 200px;
-}
-
-  #achievements ul {
-    -webkit-margin-before: 0px;
-    -webkit-padding-start: 0px;
-    list-style: none;
-  }
-  #achievements li {
-    cursor: pointer;
-    padding: 4px;
-    background-color: lightgrey;
-    border-bottom: 1px solid grey;
-  }
-  #achievements li.selected,
-  #achievements li:hover {
-    background-color: #eee;
-  }
-  #achievements li.completed {
-    background-color: #aaaadd;
-  }
-  #achievements li.selected.completed,
-  #achievements li:hover.completed {
-    background-color: #ccccee;
-  }
-  #achievements li.complete {
-    background-color: #aaddaa;
-  }
-  #achievements li.selected.complete,
-  #achievements li:hover.complete {
-    background-color: #cceecc;
-  }
-
 #achievement {
   width: 100%;
   padding: 4px;
@@ -102,6 +68,18 @@ aside {
   top: 22px;
   margin-right: 6px;
   font-size: 20px;
+}
+
+#course-nav-tray {
+  background-color: #f0f0f0;
+}
+#course-nav-tray-container {
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+}
+#course-nav-tray .slide  .solved:not(.passed) .slide-jump-pip {
+  background-color: #1b79bf;
+  border-color: #165f96;
 }
 
 .passed-indicator {
