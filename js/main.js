@@ -3,6 +3,7 @@ var achievements = [{
   title: 'Set the image',
   reward: 10,
   completed: false,
+  seen: true,
   description: '<p>To make a Cookie Clicker first we need a picture to click!<p>',
   checks: [{
     description: 'Add the set image block',
@@ -18,6 +19,7 @@ var achievements = [{
   title: 'Choose a cookie',
   reward: 10,
   completed: false,
+  seen: false,
   description: '<p>Hmmm... looks like the image isn\'t a cookie yet.<p>',
   checks: [{
     description: 'Set the image to a cookie',
@@ -35,6 +37,7 @@ var achievements = [{
   title: 'Count your cookies',
   reward: 20,
   completed: false,
+  seen: false,
   description: '<p>Now we need to show how many cookies we have using the cookies <em>variable</em>.</p>',
   checks: [{
     description: 'Set the heading',
@@ -60,6 +63,7 @@ var achievements = [{
   title: 'Click that cookie!',
   reward: 50,
   completed: false,
+  seen: false,
   description: '<p>Now that we have the cookie we need to add the most fun part of the Cookie Clicker. Adding cookies when we click!</p>',
   checks: [{
     description: 'Add the on click block',
@@ -148,6 +152,7 @@ var achievements = [{
   title: 'Keep counting cookies',
   reward: 40,
   completed: false,
+  seen: false,
   description: '<p>Why doesn\'t our cookie heading update when we click? Because we only set the heading once! We need to set the heading when we click too!</p>',
   checks: [{
     description: 'Set the heading',
@@ -241,7 +246,7 @@ function updateAchievements() {
     // Has this achievement ever been completed?
     achievement.completed |= passing;
     // Update cookies with achievement status
-    Cookies.set(`achievements[{achievement.id}]`, achievement.completed);
+    Cookies.set(`achievements[${achievement.id}].completed`, achievement.completed);
   });
 
   // Unlock achievement which have completed prerequisites
@@ -272,9 +277,10 @@ function load() {
   var xml = Blockly.Xml.textToDom(xml_text);
   Blockly.Xml.domToWorkspace(xml, workspace);
   window.cookies = parseInt(Cookies.get('cookies')) || 0;
-  // Load achievement completion
+  // Load achievement completion and seen statuses
   achievements.map(function(achievement) {
-    achievement.completed = Cookies.get(`achievements[{achievement.id}]`);
+    achievement.completed = Cookies.get(`achievements[${achievement.id}].completed`) === 'true';
+    achievement.seen |= Cookies.get(`achievements[${achievement.id}].seen`) === 'true';
   });
 }
 
@@ -305,6 +311,7 @@ let achievementsComponent = Vue.component('achievement-list', {
         v-on:click="select(achievement)">
       <a href="#"
           class="js-slide-link problem" v-bind:class="classes(achievement)">
+        <span v-if="!achievement.seen" class="notification icon icon-notification2"></span>
         <h3 class="slide-title">
           {{ achievement.title }}
         </h3>
@@ -318,6 +325,14 @@ let achievementsComponent = Vue.component('achievement-list', {
   props: ['achievements', 'selected'],
   methods: {
     select: function(achievement) {
+      // Update whether the achievement has been seen or not
+      clearTimeout(this.seenTimeout);
+      this.seenTimeout = setTimeout(function() {
+        Vue.set(achievement, 'seen', true);
+        Cookies.set(`achievements[${achievement.id}].seen`, achievement.seen);
+      }, 2500);
+
+      // Update selection
       this.$emit('select', achievement);
     },
     classes: function(achievement) {
