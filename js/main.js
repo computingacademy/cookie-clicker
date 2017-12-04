@@ -346,7 +346,7 @@ let mainVue = new Vue({
   el: '#main',
   data: {
     achievements: achievements,
-    selectedAchievement: achievements.find(achievement => !achievement.completed) | {checks: []},
+    selectedAchievement: achievements.find(achievement => !achievement.completed) || achievements[0] || {checks: []},
     cookies: window.cookies,
   },
   methods: {
