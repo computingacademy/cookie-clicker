@@ -12,6 +12,7 @@ var achievements = [{
       return !!cookieClicker.querySelector('img:not([src=""])')
     },
   }],
+  prerequisites: [],
 }, {
   id: 'Choose image',
   title: 'Choose a cookie',
@@ -26,6 +27,9 @@ var achievements = [{
       return !!cookieClicker.querySelector('img:not([src=""]):not([src=NONE])');
     },
   }],
+  prerequisites: [
+    'Set image',
+  ],
 }, {
   id: 'Set heading',
   title: 'Count your cookies',
@@ -47,6 +51,10 @@ var achievements = [{
       return cookieClicker.querySelector('h1').textContent == cookies+'';
     },
   }],
+  prerequisites: [
+    'Set image',
+    'Choose image',
+  ],
 }, {
   id: 'On click',
   title: 'Click that cookie!',
@@ -131,6 +139,10 @@ var achievements = [{
       }
     },
   }],
+  prerequisites: [
+    'Set image',
+    'Choose image',
+  ],
 }, {
   id: 'Set heading on click',
   title: 'Keep counting cookies',
@@ -178,6 +190,10 @@ var achievements = [{
       }
     },
   }],
+  prerequisites: [
+    'Set heading',
+    'On click',
+  ],
 }];
 
 var workspace = Blockly.inject('blockly-div',
@@ -227,6 +243,16 @@ function updateAchievements() {
     // Update cookies with achievement status
     Cookies.set(`achievements[{achievement.id}]`, achievement.completed);
   });
+
+  // Unlock achievement which have completed prerequisites
+  achievements.forEach(function(achievement) {
+    // Get the achievement's prereqs
+    let prereqs = achievements.filter(prereq => achievement.prerequisites.includes(prereq.id));
+    // See if they've been completed
+    let unlocked = prereqs.every(prereq => prereq.completed)
+    // Update unlocked status
+    Vue.set(achievement, 'unlocked', unlocked);
+  });
 }
 
 function doCheck(check) {
@@ -273,7 +299,7 @@ let achievementsComponent = Vue.component('achievement-list', {
   template: `
 <div id="course-nav-tray">
 <div id="course-nav-tray-container" class="modules-container js-modules-offset-parent">
-  <ol v-for="achievement in achievements" class="slide-group">
+  <ol v-for="achievement in achievements" v-if="achievement.unlocked" class="slide-group">
     <li
         class="slide"
         v-on:click="select(achievement)">
