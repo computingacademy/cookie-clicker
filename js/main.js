@@ -9,7 +9,7 @@ var achievements = [{
     hint: '<p>Drag the <bk class="io">set image</bk> block into the workspace.</p>',
     test: function(cookieClicker, cookies) {
       // Is there an image with a src?
-      return !!cookieClicker.querySelector('img:not([src=""])');
+      return !!cookieClicker.querySelector('img:not([src=""])')
     },
   }],
 }, {
@@ -245,7 +245,7 @@ function load() {
   var xml_text = Cookies.get('blocks');
   var xml = Blockly.Xml.textToDom(xml_text);
   Blockly.Xml.domToWorkspace(xml, workspace);
-  window.cookies = parseInt(Cookies.get('cookies'));
+  window.cookies = parseInt(Cookies.get('cookies')) || 0;
   // Load achievement completion
   achievements.map(function(achievement) {
     achievement.completed = Cookies.get(`achievements[{achievement.id}]`);
