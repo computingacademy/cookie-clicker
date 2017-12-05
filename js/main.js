@@ -48,7 +48,7 @@ var achievements = [{
     },
   }, {
     description: 'Change the cookies variable',
-    hint: '<p>Use the <bk class="var">change <bk class="inner">cookies</bk></bk> block to change the cookie variable.</p>',
+    hint: '<p>Use the <bk class="var">add to <bk class="inner">cookies</bk></bk> block to change the cookie variable.</p>',
     test: function(cookieClicker, cookies) {
       // Get original heading text
       var originalText = cookieClicker.querySelector('h1').textContent;
@@ -58,15 +58,12 @@ var achievements = [{
       cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
       // Was the cookie value incremented?
       var incremented = window._cookies !== cookies;
-      // Reset cookie value
-      window._cookies = cookies;
-      cookieClicker.querySelector('h1').textContent = originalText;
 
       return incremented;
     },
   }, {
     description: 'Add to the cookies variable when the cookie is clicked',
-    hint: '<p>Make sure the <bk class="var">change <bk class="inner">cookies</bk></bk> block is inside of the <bk class="control">on click</bk> block.</p>',
+    hint: '<p>Make sure the <bk class="var">add to <bk class="inner">cookies</bk></bk> block is inside of the <bk class="control">on click</bk> block.</p>',
     test: function(cookieClicker, cookies) {
       // Get original heading text
       var originalText = cookieClicker.querySelector('h1').textContent;
@@ -74,15 +71,12 @@ var achievements = [{
       cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
       // Was the cookie value incremented?
       var incremented = window._cookies > cookies;
-      // Reset cookie value
-      window._cookies = cookies;
-      cookieClicker.querySelector('h1').textContent = originalText;
 
       return incremented;
     },
   }, {
     description: 'Add just one cookie',
-    hint: '<p>You should only use one <bk class="var">change <bk class="inner">cookies</bk></bk> block!</p>',
+    hint: '<p>You should only use one <bk class="var">add to <bk class="inner">cookies</bk></bk> block!</p>',
     test: function(cookieClicker, cookies) {
       // Get original heading text
       var originalText = cookieClicker.querySelector('h1').textContent;
@@ -105,7 +99,7 @@ var achievements = [{
   ],
 }, {
   id: 'Set heading on click',
-  title: 'Keep counting cookies',
+  title: 'How many cookies?',
   reward: 40,
   completed: false,
   seen: false,
@@ -118,9 +112,8 @@ var achievements = [{
     },
   }, {
     description: 'Display the cookies variable on click',
-    hint: '<p>Use another <bk class="io">set heading</bk> block in the <bk class="control">on click</bk> block.</p>'
-    + '<p>You can right click on the <bk class="io">set heading</bk> block in your workspace and click <em>duplicate</em> to save time creating blocks.</p>'
-    + '<p>Make sure you set the heading <em>after</em> after you change the cookies variable</p>',
+    hint: '<p>Add the <bk class="io">set heading</bk> block to the <bk class="control">on click</bk> block.</p>'
+    + '<p>Make sure you set the heading <em>after</em> after you add to the cookies variable!</p>',
     test: function(cookieClicker, cookies) {
       // Was the heading set to the number of cookies?
       var headingSet = cookieClicker.querySelector('h1').textContent == cookies+'';

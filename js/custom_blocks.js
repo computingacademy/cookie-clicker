@@ -61,21 +61,21 @@ Blockly.JavaScript['on_click'] = function(block) {
   return code;
 };
 
-Blockly.Blocks['variables_change'] = {
+Blockly.Blocks['variables_add'] = {
   init: function() {
     this.setColour('#909090');
 	this.setPreviousStatement(true);
 	this.setNextStatement(true);
 
     this.appendDummyInput()
-        .appendField('Change')
-        .appendField(new Blockly.FieldVariable('cookies'), 'VARIABLE')
-        .appendField("by")
-        .appendField(new Blockly.FieldNumber('1'), 'NUMBER');
+        .appendField('Add')
+        .appendField(new Blockly.FieldNumber('1'), 'NUMBER')
+        .appendField("to")
+        .appendField(new Blockly.FieldVariable('cookies'), 'VARIABLE');
   },
 };
 
-Blockly.JavaScript['variables_change'] = function(block) {
+Blockly.JavaScript['variables_add'] = function(block) {
   var variable = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('VARIABLE'), Blockly.Variables.NAME_TYPE);
   var number = block.getFieldValue('NUMBER');
   var code = variable + ' += ' + number + ';\n';
