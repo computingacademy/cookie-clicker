@@ -33,32 +33,6 @@ var achievements = [{
     'Set image',
   ],
 }, {
-  id: 'Set heading',
-  title: 'Count your cookies',
-  reward: 20,
-  completed: false,
-  seen: false,
-  description: '<p>Now we need to show how many cookies we have using the cookies <em>variable</em>.</p>',
-  checks: [{
-    description: 'Set the heading',
-    hint: '<p>Drag the <bk class="io">set heading</bk> block into the workspace.</p>',
-    test: function(cookieClicker, cookies) {
-      // Was the set heading block used?
-      return workspace.getAllBlocks().some(block => block.type === 'heading_set');
-    },
-  }, {
-    description: 'Set the heading to cookies variable',
-    hint: '<p>Then connect the <bk class="var">cookies</bk> block (which represents the cookies <em>variable</em>) to the <bk class="io">set heading</bk> block.</p>',
-    test: function(cookieClicker, cookies) {
-      // Was the heading set to the number of cookies (as a string)?
-      return cookieClicker.querySelector('h1').textContent == cookies+'';
-    },
-  }],
-  prerequisites: [
-    'Set image',
-    'Choose image',
-  ],
-}, {
   id: 'On click',
   title: 'Click that cookie!',
   reward: 50,
@@ -137,12 +111,6 @@ var achievements = [{
   seen: false,
   description: '<p>Why doesn\'t our cookie heading update when we click? Because we only set the heading once! We need to set the heading when we click too!</p>',
   checks: [{
-    description: 'Set the heading',
-    hint: '<p>Pass \'Count your cookies\' before attempting this.</p>',
-    test: function(cookieClicker, cookies) {
-      return achievements.find(achievement => achievement.id === 'Set heading').passing;
-    },
-  }, {
     description: 'Add a cookie on click',
     hint: '<p>Pass \'Click that cookie!\' before attempting this.</p>',
     test: function(cookieClicker, cookies) {
@@ -178,7 +146,6 @@ var achievements = [{
     },
   }],
   prerequisites: [
-    'Set heading',
     'On click',
   ],
 }];
