@@ -50,16 +50,12 @@ var achievements = [{
     description: 'Change the cookies variable',
     hint: '<p>Use the <bk class="var">add to <bk class="inner">cookies</bk></bk> block to change the cookie variable.</p>',
     test: function(cookieClicker, cookies) {
-      // Get original heading text
-      var originalText = cookieClicker.querySelector('h1').textContent;
-      // Run the code to see if the change cookies variable was added at the start of the program
-      runCode();
       // Click cookie
       cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
-      // Was the cookie value incremented?
-      var incremented = window._cookies !== cookies;
+      // Was the cookie value changed?
+      var changed = window._cookies !== 0;
 
-      return incremented;
+      return changed;
     },
   }, {
     description: 'Add to the cookies variable when the cookie is clicked',
@@ -103,39 +99,53 @@ var achievements = [{
   reward: 40,
   completed: false,
   seen: false,
-  description: '<p>Why doesn\'t our cookie heading update when we click? Because we only set the heading once! We need to set the heading when we click too!</p>',
+  description: '<p>How many cookies have we clicked this game? Set the heading to the number of cookies so we can see!</p>',
   checks: [{
+    description: 'Show \'No cookies\' at the start',
+    hint: '<p>Make sure you don\'t use the <bk class="io">set heading</bk> block outside of the <bk class="control">on click</bk> block!</p>',
+    test: function(cookieClicker, cookies) {
+      // Get original heading text
+      var originalText = cookieClicker.querySelector('h1').textContent;
+
+      return originalText == 'No cookies';
+    },
+  }, {
     description: 'Add a cookie on click',
-    hint: '<p>Pass \'Click that cookie!\' before attempting this.</p>',
+    hint: '<p>Make sure you are adding a cookie when you click the cookie image!</p>',
     test: function(cookieClicker, cookies) {
       return achievements.find(achievement => achievement.id === 'On click').passing;
     },
   }, {
-    description: 'Display the cookies variable on click',
+    description: 'Set the heading on click',
     hint: '<p>Add the <bk class="io">set heading</bk> block to the <bk class="control">on click</bk> block.</p>'
     + '<p>Make sure you set the heading <em>after</em> after you add to the cookies variable!</p>',
     test: function(cookieClicker, cookies) {
-      // Was the heading set to the number of cookies?
-      var headingSet = cookieClicker.querySelector('h1').textContent == cookies+'';
-      // If we can click the cookie
-      if (cookieClicker.querySelector('img').onclick) {
-        // Get original heading text
-        var originalText = cookieClicker.querySelector('h1').textContent;
-        // Click cookie
-        cookieClicker.querySelector('img').onclick();
-        // Was the cookie value incremented?
-        var incremented = window._cookies == cookies+1;
-        // Was the heading updated as the number of cookies changed?
-        var headingUpdated = cookieClicker.querySelector('h1').textContent == window._cookies+'';
-        // Reset cookie value
-        window._cookies = cookies;
-        cookieClicker.querySelector('h1').textContent = originalText;
+      // Get original heading text
+      var originalText = cookieClicker.querySelector('h1').textContent;
+      // Click cookie
+      cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
+      // Was the heading set?
+      var headingSet = cookieClicker.querySelector('h1').textContent !== originalText;
 
-        return headingSet && incremented && headingUpdated;
-      } else {
-        // We can't click the cookie
-        return false;
-      }
+      return headingSet;
+    },
+  }, {
+    description: 'Set the heading to the number of cookies on click',
+    hint: '<p>Connect the <bk class="var">cookies</bk> <em>variable</em> to the <bk class="io">set heading</bk> block.</p>'
+    + '<p>Make sure it\'s all inside of the <bk class="control">on click</bk> block.</p>',
+    test: function(cookieClicker, cookies) {
+      // Get original heading text
+      var originalText = cookieClicker.querySelector('h1').textContent;
+      // Click cookie
+      cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
+      // Was the heading set?
+      var headingSet = cookieClicker.querySelector('h1').textContent !== originalText;
+      // Was the cookie value incremented?
+      var incremented = window._cookies == cookies+1;
+      // Was the heading updated as the number of cookies changed?
+      var headingUpdated = cookieClicker.querySelector('h1').textContent == window._cookies+'';
+
+      return headingSet && incremented && headingUpdated;
     },
   }],
   prerequisites: [
@@ -189,7 +199,7 @@ function updateAchievements(silent) {
     if (!silent) {
       alert(`You completed ${newCompletions.length} new goals!`);
     }
-    mainVue.selectedAchievement = achievements.find(achievement => !achievement.completed);
+    mainVue.selectedAchievement = achievements.find(achievement => !achievement.completed) || achievements[achievements.length-1];
   }
 
   // Unlock achievement which have completed prerequisites
@@ -207,8 +217,12 @@ function doCheck(check) {
   var cookieClicker = document.querySelector('#cookie-clicker');
   var cookiesFreeze = window._cookiesFreeze;
   window._cookiesFreeze = true;
+  var originalCookies = window._cookies;
+  var originalHeading = cookieClicker.querySelector('h1').textContent;
   runCode();
   var result = check.test(cookieClicker, window.cookies);
+  window._cookies = originalCookies;
+  cookieClicker.querySelector('h1').textContent = originalHeading;
   window._cookiesFreeze = cookiesFreeze;
   return result;
 }
