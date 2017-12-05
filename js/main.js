@@ -83,9 +83,9 @@ var achievements = [{
       // Click cookie
       cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
       // Was the cookie value incremented?
-      var incremented = window.cookies !== cookies;
+      var incremented = window._cookies !== cookies;
       // Reset cookie value
-      window.cookies = cookies;
+      window._cookies = cookies;
       cookieClicker.querySelector('h1').textContent = originalText;
 
       return incremented;
@@ -99,9 +99,9 @@ var achievements = [{
       // Click cookie
       cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
       // Was the cookie value incremented?
-      var incremented = window.cookies > cookies;
+      var incremented = window._cookies > cookies;
       // Reset cookie value
-      window.cookies = cookies;
+      window._cookies = cookies;
       cookieClicker.querySelector('h1').textContent = originalText;
 
       return incremented;
@@ -117,9 +117,9 @@ var achievements = [{
       // Click cookie
       cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
       // Was the cookie value incremented?
-      var incremented = window.cookies == cookies+1;
+      var incremented = window._cookies == cookies+1;
       // Reset cookie value
-      window.cookies = cookies;
+      window._cookies = cookies;
       cookieClicker.querySelector('h1').textContent = originalText;
 
       return incremented;
@@ -163,11 +163,11 @@ var achievements = [{
         // Click cookie
         cookieClicker.querySelector('img').onclick();
         // Was the cookie value incremented?
-        var incremented = window.cookies == cookies+1;
+        var incremented = window._cookies == cookies+1;
         // Was the heading updated as the number of cookies changed?
-        var headingUpdated = cookieClicker.querySelector('h1').textContent == window.cookies+'';
+        var headingUpdated = cookieClicker.querySelector('h1').textContent == window._cookies+'';
         // Reset cookie value
-        window.cookies = cookies;
+        window._cookies = cookies;
         cookieClicker.querySelector('h1').textContent = originalText;
 
         return headingSet && incremented && headingUpdated;
@@ -183,20 +183,11 @@ var achievements = [{
   ],
 }];
 
-let prevCode;
-function update(event) {
-  if (prevCode !== Blockly.JavaScript.workspaceToCode(workspace)) {
-    runCode();
-    updateAchievements();
-
-    prevCode = Blockly.JavaScript.workspaceToCode(workspace);
-  }
-  save();
-}
+window._cookies = 0;
 
 function runCode() {
   Blockly.JavaScript.addReservedWords('code');
-  var code = 'window.cookies = window.cookies ? window.cookies : 0\n'
+  var code = 'window._cookies = 0;\n'
     + 'document.querySelector("#cookie-clicker h1").textContent = "No cookies";\n'
     + 'var image = document.querySelector("#cookie-clicker img");\n'
     + 'var clone = image.cloneNode(true);\n'
@@ -209,9 +200,9 @@ function runCode() {
   }
 }
 
-function updateAchievements() {
+function updateAchievements(silent) {
   // Keep track of if any new achievements have been completed
-  let newCompletion = false;
+  let newCompletions = [];
 
   achievements.map(function(achievement) {
     // Perform each check
@@ -224,7 +215,9 @@ function updateAchievements() {
     let passing = passes.every(pass => pass);
     Vue.set(achievement, 'passing', passing);
     // Is this a new achievement completion?
-    newCompletion |= !achievement.completed && passing;
+    if (!achievement.completed && passing) {
+      newCompletions.push(achievement)
+    }
     // Has this achievement ever been completed?
     achievement.completed |= passing;
     // Update cookies with achievement status
@@ -232,7 +225,10 @@ function updateAchievements() {
   });
 
   // Update the selected achievement if a previous achievement has been newly completed
-  if (newCompletion) {
+  if (newCompletions.length !== 0) {
+    if (!silent) {
+      alert(`You completed ${newCompletions.length} new goals!`);
+    }
     mainVue.selectedAchievement = achievements.find(achievement => !achievement.completed);
   }
 
@@ -249,7 +245,12 @@ function updateAchievements() {
 
 function doCheck(check) {
   var cookieClicker = document.querySelector('#cookie-clicker');
-  return check.test(cookieClicker, window.cookies);
+  var cookiesFreeze = window._cookiesFreeze;
+  window._cookiesFreeze = true;
+  runCode();
+  var result = check.test(cookieClicker, window.cookies);
+  window._cookiesFreeze = cookiesFreeze;
+  return result;
 }
 
 function save() {
@@ -263,7 +264,7 @@ function load() {
   var xml_text = Cookies.get('blocks');
   var xml = Blockly.Xml.textToDom(xml_text);
   Blockly.Xml.domToWorkspace(xml, workspace);
-  window.cookies = parseInt(Cookies.get('cookies')) || 0;
+  mainVue.cookies = parseInt(Cookies.get('cookies')) || 0;
   // Load achievement completion and seen statuses
   achievements.map(function(achievement) {
     achievement.completed = Cookies.get(`achievements[${achievement.id}].completed`) === 'true';
@@ -279,13 +280,13 @@ let blocklyComponent = Vue.component('blockly-editor', {
         toolbox: document.getElementById('toolbox')
       });
 
+    workspace.addChangeListener(save);
+
     // A nasty hack to wait until Blockly is set up to load blocks
     setTimeout(function() {
       load();
-      updateAchievements();
+      updateAchievements(true);
     }, 10);
-
-    workspace.addChangeListener(update);
 
     this.__instance = workspace;
   },
@@ -298,6 +299,23 @@ let cookieCounter = Vue.component('cookie-counter', {
   <span id="cookie-count">{{cookies}}</span>
 </div>`,
   props: ['cookies'],
+});
+
+let cookieClickerControls =  Vue.component('cookie-clicker-controls', {
+  template: `
+<div id="cookie-clicker-controls">
+  <button v-on:click="reset()" id="reset">
+    <span class="icon icon-spinner11"></span>
+    Reset
+  </button>
+</div>`,
+  methods: {
+    reset: function() {
+      runCode();
+      updateAchievements();
+      save();
+    },
+  },
 });
 
 let achievementsComponent = Vue.component('achievement-list', {
@@ -409,10 +427,13 @@ let mainVue = new Vue({
 Object.defineProperty(window, 'cookies', {
   get: function() {
     // Get the number of cookies
-    return mainVue.cookies;
+    return this._cookies;
   },
   set: function(val) {
     // Update cookies value
-    mainVue.cookies = val;
+    if (!window._cookiesFreeze) {
+      mainVue.cookies = (mainVue.cookies + val-this._cookies) || val;
+    }
+    this._cookies = val;
   }
 });

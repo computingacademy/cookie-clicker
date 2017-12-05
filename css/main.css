@@ -28,6 +28,7 @@ content {
 #cookie-clicker {
   width: 350px;
   height: 450px;
+  margin-bottom: 10px;
   flex-shrink: 0;
   flex-grow: 0;
   text-align: center;
@@ -52,7 +53,6 @@ content {
 #marks:not(:empty) {
   -webkit-margin-before: 0px;
   -webkit-padding-start: 0px;
-  margin-top: 10px;
   list-style: none;
   padding: 4px;
   background-color: #eee;
@@ -85,6 +85,32 @@ content {
   font-size: 20px;
 }
 
+#cookie-clicker-controls {
+  text-align: center;
+  margin: 10px;
+}
+
+#reset {
+  font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-align: center;
+  display: inline-block;
+  min-width: 40px;
+  padding: 7px 8px 5px 5px;
+  border: none;
+  border-radius: 10px;
+  outline: 0 !important;
+  color: white;
+  background-color: #1b79bf;
+  text-decoration: none !important
+}
+
+  #reset .icon {
+    margin: 0px 5px;
+  }
+
+  #reset:hover {
+    background-color: #2891e0;
+  }
 
 nav {
   text-align: center;
