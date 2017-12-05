@@ -57,7 +57,7 @@ Blockly.Blocks['on_click'] = {
 
 Blockly.JavaScript['on_click'] = function(block) {
   var doCode = Blockly.JavaScript.statementToCode(block, 'DO');
-  var code = 'document.querySelector("#cookie-clicker img").onclick = function() {\n' + doCode + '};\n';
+  var code = 'document.querySelector("#cookie-clicker img").addEventListener("click", function() {\n' + doCode + '});\n';
   return code;
 };
 

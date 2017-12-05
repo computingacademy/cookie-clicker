@@ -69,78 +69,60 @@ var achievements = [{
     description: 'Add the on click block',
     hint: '<p>Drag the <bk class="control">on click</bk> block into the workspace.</p>',
     test: function(cookieClicker, cookies) {
-      // Can we click the cookie?
-      return !!cookieClicker.querySelector('img').onclick;
+      // Was the set heading block used?
+      return workspace.getAllBlocks().some(block => block.type === 'on_click');
     },
   }, {
     description: 'Change the cookies variable',
     hint: '<p>Use the <bk class="var">change <bk class="inner">cookies</bk></bk> block to change the cookie variable.</p>',
     test: function(cookieClicker, cookies) {
-      // If we can click the cookie
-      if (cookieClicker.querySelector('img').onclick) {
-        // Get original heading text
-        var originalText = cookieClicker.querySelector('h1').textContent;
-        // Run the code to see if the change cookies variable was added at the start of the program
-        runCode();
-        // Click cookie
-        cookieClicker.querySelector('img').onclick();
-        // Was the cookie value incremented?
-        var incremented = window.cookies !== cookies;
-        // Reset cookie value
-        window.cookies = cookies;
-        cookieClicker.querySelector('h1').textContent = originalText;
+      // Get original heading text
+      var originalText = cookieClicker.querySelector('h1').textContent;
+      // Run the code to see if the change cookies variable was added at the start of the program
+      runCode();
+      // Click cookie
+      cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
+      // Was the cookie value incremented?
+      var incremented = window.cookies !== cookies;
+      // Reset cookie value
+      window.cookies = cookies;
+      cookieClicker.querySelector('h1').textContent = originalText;
 
-        return incremented;
-      } else {
-        // We can't click the cookie
-        return false;
-      }
+      return incremented;
     },
   }, {
     description: 'Add to the cookies variable when the cookie is clicked',
     hint: '<p>Make sure the <bk class="var">change <bk class="inner">cookies</bk></bk> block is inside of the <bk class="control">on click</bk> block.</p>',
     test: function(cookieClicker, cookies) {
-      // If we can click the cookie
-      if (cookieClicker.querySelector('img').onclick) {
-        // Get original heading text
-        var originalText = cookieClicker.querySelector('h1').textContent;
-        // Click cookie
-        cookieClicker.querySelector('img').onclick();
-        // Was the cookie value incremented?
-        var incremented = window.cookies > cookies;
-        // Reset cookie value
-        window.cookies = cookies;
-        cookieClicker.querySelector('h1').textContent = originalText;
+      // Get original heading text
+      var originalText = cookieClicker.querySelector('h1').textContent;
+      // Click cookie
+      cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
+      // Was the cookie value incremented?
+      var incremented = window.cookies > cookies;
+      // Reset cookie value
+      window.cookies = cookies;
+      cookieClicker.querySelector('h1').textContent = originalText;
 
-        return incremented;
-      } else {
-        // We can't click the cookie
-        return false;
-      }
+      return incremented;
     },
   }, {
     description: 'Add just one cookie',
     hint: '<p>You should only use one <bk class="var">change <bk class="inner">cookies</bk></bk> block!</p>',
     test: function(cookieClicker, cookies) {
-      // If we can click the cookie
-      if (cookieClicker.querySelector('img').onclick) {
-        // Get original heading text
-        var originalText = cookieClicker.querySelector('h1').textContent;
-        // Run the code to see if the change cookies variable was added at the start of the program
-        runCode();
-        // Click cookie
-        cookieClicker.querySelector('img').onclick();
-        // Was the cookie value incremented?
-        var incremented = window.cookies == cookies+1;
-        // Reset cookie value
-        window.cookies = cookies;
-        cookieClicker.querySelector('h1').textContent = originalText;
+      // Get original heading text
+      var originalText = cookieClicker.querySelector('h1').textContent;
+      // Run the code to see if the change cookies variable was added at the start of the program
+      runCode();
+      // Click cookie
+      cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
+      // Was the cookie value incremented?
+      var incremented = window.cookies == cookies+1;
+      // Reset cookie value
+      window.cookies = cookies;
+      cookieClicker.querySelector('h1').textContent = originalText;
 
-        return incremented;
-      } else {
-        // We can't click the cookie
-        return false;
-      }
+      return incremented;
     },
   }],
   prerequisites: [
