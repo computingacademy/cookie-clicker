@@ -193,7 +193,7 @@ function updateAchievements(silent) {
       newCompletions.push(achievement)
     }
     // Has this achievement ever been completed?
-    achievement.completed |= passing;
+    achievement.completed = achievement.completed || passing;
     // Update cookies with achievement status
     Cookies.set(`achievements[${achievement.id}].completed`, achievement.completed);
   });
@@ -263,8 +263,8 @@ function load() {
   mainVue.cookies = parseInt(Cookies.get('cookies')) || 0;
   // Load achievement completion and seen statuses
   achievements.map(function(achievement) {
-    achievement.completed = Cookies.get(`achievements[${achievement.id}].completed`) === 'true';
-    achievement.seen |= Cookies.get(`achievements[${achievement.id}].seen`) === 'true';
+    achievement.completed = achievement.completed || Cookies.get(`achievements[${achievement.id}].completed`) === 'true';
+    achievement.seen = achievement.seen || Cookies.get(`achievements[${achievement.id}].seen`) === 'true';
   });
 }
 
