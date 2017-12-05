@@ -90,7 +90,7 @@ content {
   margin: 10px;
 }
 
-#reset {
+#cookie-clicker-controls button {
   font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
   text-align: center;
   display: inline-block;
@@ -100,16 +100,24 @@ content {
   border-radius: 10px;
   outline: 0 !important;
   color: white;
-  background-color: #1b79bf;
   text-decoration: none !important
 }
 
-  #reset .icon {
+  #cookie-clicker-controls button .icon {
     margin: 0px 5px;
   }
 
+  #reset {
+    background-color: #1b79bf;
+  }
   #reset:hover {
     background-color: #2891e0;
+  }
+  #mark {
+    background-color: #fb4251;
+  }
+  #mark:hover {
+    background-color: #fc6f7a;
   }
 
 nav {

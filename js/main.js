@@ -254,7 +254,10 @@ let blocklyComponent = Vue.component('blockly-editor', {
         toolbox: document.getElementById('toolbox')
       });
 
-    workspace.addChangeListener(save);
+    workspace.addChangeListener(function() {
+      runCode();
+      save();
+    });
 
     // A nasty hack to wait until Blockly is set up to load blocks
     setTimeout(function() {
@@ -282,12 +285,18 @@ let cookieClickerControls =  Vue.component('cookie-clicker-controls', {
     <span class="icon icon-spinner11"></span>
     Reset
   </button>
+  <button v-on:click="mark()" id="mark">
+    <span class="icon icon-star-full"></span>
+    Mark
+  </button>
 </div>`,
   methods: {
     reset: function() {
       runCode();
-      updateAchievements();
       save();
+    },
+    mark: function() {
+      updateAchievements();
     },
   },
 });
