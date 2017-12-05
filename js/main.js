@@ -202,12 +202,12 @@ function updateAchievements(silent) {
     mainVue.selectedAchievement = achievements.find(achievement => !achievement.completed) || achievements[achievements.length-1];
   }
 
-  // Unlock achievement which have completed prerequisites
+  // Unlock achievement which have completed prerequisites or have been completed
   achievements.forEach(function(achievement) {
     // Get the achievement's prereqs
     let prereqs = achievements.filter(prereq => achievement.prerequisites.includes(prereq.id));
     // See if they've been completed
-    let unlocked = prereqs.every(prereq => prereq.completed)
+    let unlocked = achievement.completed || prereqs.every(prereq => prereq.completed);
     // Update unlocked status
     Vue.set(achievement, 'unlocked', unlocked);
   });
