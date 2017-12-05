@@ -2,27 +2,36 @@ body {
   background-color: #fff;
   font-family: sans-serif;
 }
-h1 {
-  font-weight: normal;
-  font-size: 140%;
-}
+
 content {
   display: flex;
   align-content: stretch;
-  height: 600px;
   width: 100%;
-}
-#blockly-div {
-  width: 350px;
   height: 600px;
+}
+  #program {
+    width: 100%;
+  }
+  aside {
+    width: 350px;
+    margin: 10px;
+  }
+
+#blockly-div {
+  display: block;
+  position: relative;
+  height: calc(100vh - 200px);
+  width: calc(100% - 10px);
   flex-grow: 1;
 }
+
 #cookie-clicker {
   width: 350px;
+  height: 450px;
   flex-shrink: 0;
   flex-grow: 0;
-  padding: 120px 0px;
   text-align: center;
+  border: 1px solid grey;
 }
 #cookie-clicker img {
   margin: 20px;
@@ -32,31 +41,33 @@ content {
   display: none;
 }
 
-aside {
-  display: flex;
-}
-
 #achievement {
   width: 100%;
   padding: 4px;
 }
 
-  #achievement #marks:not(:empty) {
-    -webkit-margin-before: 0px;
-    -webkit-padding-start: 0px;
-    list-style: none;
-    padding: 4px;
-    background-color: #eee;
+#marks:not(:empty) {
+  -webkit-margin-before: 0px;
+  -webkit-padding-start: 0px;
+  margin-top: 10px;
+  list-style: none;
+  padding: 4px;
+  background-color: #eee;
+}
+
+  #marks .result-text h3 {
+    font-size: 18px;
+    line-height: 1.6;
+    margin: 0px;
+  }
+
+  #marks .result-text div {
+    margin-top: 10px;
   }
 
 #cookie-counter {
-  display: inline-block;
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  width: 150px;
   height: 40px;
-  line-height: 0px;
+  margin: 10px;
   background: lightgrey;
   border-radius: 40px;
 }
@@ -65,13 +76,46 @@ aside {
   margin: 4px;
 }
 #cookie-count {
-  vertical-align: top;
-  position: relative;
   float: right;
-  top: 22px;
-  margin-right: 6px;
+  margin-top: 8px;
+  margin-right: 8px;
   font-size: 20px;
 }
+
+
+nav {
+  text-align: center;
+}
+  nav #course-nav-tray,
+  nav #course-nav-tray-container {
+    width: auto;
+    height: 35px;
+  }
+  nav #course-nav-tray .slide,
+  nav #course-nav-tray .slide-group,
+  nav #course-nav-tray .problem {
+    display: inline-block;
+    width: auto;
+  }
+  nav #course-nav-tray .slide-title {
+    display: none;
+  }
+  nav #course-nav-tray .slide .current,
+  nav #course-nav-tray .slide .problem:hover {
+    background: initial !important;
+  }
+  nav #course-nav-tray .slide .slide-jump-pip {
+    position: initial;
+  }
+  nav #course-nav-tray .slide .current .slide-jump-pip,
+  nav #course-nav-tray .slide .problem:hover .slide-jump-pip {
+    transform: scale(1.8) rotate(45deg);
+  }
+  nav #course-nav-tray .slide-group:after {
+    display: none;
+    width: none;
+    height: none;
+  }
 
 #course-nav-tray {
   background-color: #f0f0f0;
@@ -85,15 +129,11 @@ aside {
   border-color: #165f96;
 }
 
-.result-text h3 {
-  margin-top: 0px;
-  font-size: 16px;
-}
-
 .result-indicator {
   display: inline-block;
   float: left;
-  margin-right: 4px;
+  margin-top: 6px;
+  margin-right: 6px;
 }
 
 .passed-indicator {

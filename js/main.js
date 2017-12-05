@@ -201,20 +201,15 @@ var achievements = [{
   ],
 }];
 
-var workspace = Blockly.inject('blockly-div',
-  { media: 'blockly/media/',
-    toolbox: document.getElementById('toolbox')
-  });
-
 let prevCode;
 function update(event) {
   if (prevCode !== Blockly.JavaScript.workspaceToCode(workspace)) {
     runCode();
     updateAchievements();
-    save();
 
     prevCode = Blockly.JavaScript.workspaceToCode(workspace);
   }
+  save();
 }
 
 function runCode() {
@@ -284,13 +279,25 @@ function load() {
   });
 }
 
-// A nasty hack to wait until Blockly is set up to load blocks
-setTimeout(function() {
-  load();
-  updateAchievements();
-}, 100);
+let blocklyComponent = Vue.component('blockly-editor', {
+  template: '<div id="blockly-div"></div>',
+  mounted:function() {
+    window.workspace = Blockly.inject(this.$el,
+      { media: 'blockly/media/',
+        toolbox: document.getElementById('toolbox')
+      });
 
-workspace.addChangeListener(update);
+    // A nasty hack to wait until Blockly is set up to load blocks
+    setTimeout(function() {
+      load();
+      updateAchievements();
+    }, 10);
+
+    workspace.addChangeListener(update);
+
+    this.__instance = workspace;
+  },
+});
 
 let cookieCounter = Vue.component('cookie-counter', {
   template: `
@@ -304,14 +311,13 @@ let cookieCounter = Vue.component('cookie-counter', {
 let achievementsComponent = Vue.component('achievement-list', {
   template: `
 <div id="course-nav-tray">
-<div id="course-nav-tray-container" class="modules-container js-modules-offset-parent">
+<div id="course-nav-tray-container" class="">
   <ol v-for="achievement in achievements" v-if="achievement.unlocked" class="slide-group">
     <li
         class="slide"
         v-on:click="select(achievement)">
       <a href="#"
           class="js-slide-link problem" v-bind:class="classes(achievement)">
-        <span v-if="!achievement.seen" class="notification icon icon-notification2"></span>
         <h3 class="slide-title">
           {{ achievement.title }}
         </h3>
@@ -345,24 +351,28 @@ let achievementsComponent = Vue.component('achievement-list', {
   },
 });
 
-let achievementComponent = Vue.component('achievement-display', {
+let achievementDescription = Vue.component('achievement-description', {
   template: `
 <div id="achievement">
   <h2>{{ achievement.title }}</h2>
-  <div id="description" v-html="achievement.description">
-  </div>
-  <ul id="marks">
-    <li v-for="check in achievement.checks" class="result-wrapper">
-      <div class="result-indicator">
-        <span v-bind:class="completion(check.passing)" title="title(check.passing)" role="img"></span>
-      </div>
-      <div class="result-text">
-        <h3>{{ check.description }}</h3>
-        <div v-if="!check.passing" v-html="check.hint"></div>
-      </div>
-    </li>
-  </ul>
+  <div id="description" v-html="achievement.description"></div>
 </div>`,
+  props: ['achievement'],
+});
+
+let achievementMarks = Vue.component('achievement-marks', {
+  template: `
+<ul id="marks">
+  <li v-for="check in achievement.checks" class="result-wrapper">
+    <div class="result-indicator">
+      <span v-bind:class="completion(check.passing)" title="title(check.passing)" role="img"></span>
+    </div>
+    <div class="result-text">
+      <h3>{{ check.description }}</h3>
+      <div v-if="!check.passing" v-html="check.hint"></div>
+    </div>
+  </li>
+</ul>`,
   props: ['achievement'],
   methods: {
     completion: function(passing) {

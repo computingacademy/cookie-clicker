@@ -13,19 +13,24 @@
   <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-  <content>
-    <div id="cookie-clicker">
-      <img src>
-      <h1></h1>
-    </div>
-    <div id="blockly-div"></div>
-  </content>
   <div id="main">
-    <cookie-counter v-bind:cookies="cookies"></cookie-counter>
-    <aside>
+    <nav>
       <achievement-list v-bind:achievements="achievements" v-bind:selected="selectedAchievement" v-on:select="selectAchievement"></achievement-list>
-      <achievement-display v-bind:achievement="selectedAchievement"></achievement-display>
-    </aside>
+    </nav>
+    <content>
+      <aside>
+        <cookie-counter v-bind:cookies="cookies"></cookie-counter>
+        <div id="cookie-clicker">
+          <img src>
+          <h1></h1>
+        </div>
+        <achievement-marks v-bind:achievement="selectedAchievement"></achievement-marks>
+      </aside>
+      <div id="program">
+        <achievement-description v-bind:achievement="selectedAchievement"></achievement-description>
+        <blockly-editor></blockly-editor>
+      </div>
+    </content>
   </div>
 
   <xml id="toolbox" style="display: none">
