@@ -14,6 +14,7 @@ var achievements = [{
     },
   }],
   prerequisites: [],
+  blocks: ['image_set'],
 }, {
   id: 'Choose image',
   title: 'Choose a cookie',
@@ -32,6 +33,7 @@ var achievements = [{
   prerequisites: [
     'Set image',
   ],
+  blocks: ['image_set'],
 }, {
   id: 'On click',
   title: 'Click that cookie!',
@@ -93,6 +95,7 @@ var achievements = [{
     'Set image',
     'Choose image',
   ],
+  blocks: ['on_click', 'variables_add'],
 }, {
   id: 'Set heading on click',
   title: 'How many cookies?',
@@ -151,6 +154,7 @@ var achievements = [{
   prerequisites: [
     'On click',
   ],
+  blocks: ['heading_set', 'variables_get'],
 }];
 
 window._cookies = 0;
@@ -211,6 +215,24 @@ function updateAchievements(silent) {
     // Update unlocked status
     Vue.set(achievement, 'unlocked', unlocked);
   });
+
+  // Unlock blocks that are needed
+  let unlockedBlocks = achievements
+    // Only use unlocked achievements
+    .filter(achievement => achievement.unlocked)
+    // Get the blocks
+    .map(achievement => achievement.blocks)
+    // Stick them all in one list (may contain duplicates
+    .reduce((a, b) => a.concat(b));
+
+  // Disable blocks not yet unlocked
+  document.querySelectorAll('#toolbox > block').forEach(function(block) {
+    let type = block.getAttribute('type');
+    block.setAttribute('disabled', !unlockedBlocks.includes(type));
+  });
+
+  let toolbox = document.querySelector('#toolbox');
+  workspace.updateToolbox(toolbox);
 }
 
 function doCheck(check) {

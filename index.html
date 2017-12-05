@@ -37,14 +37,14 @@
 
   <xml id="toolbox" style="display: none">
     <block type="image_set"></block>
-    <block type="heading_set"></block>
-    <block type="variables_get">
-      <field name="VAR">cookies</field>
-    </block>
     <block type="on_click"></block>
     <block type="variables_add">
       <field name="VARIABLE">cookies</field>
       <field name="NUMBER">1</field>
+    </block>
+    <block type="heading_set"></block>
+    <block type="variables_get">
+      <field name="VAR">cookies</field>
     </block>
     <block type="text_join"></block>
     <block type="text">
