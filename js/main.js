@@ -377,9 +377,9 @@ let achievementMarks = Vue.component('achievement-marks', {
   methods: {
     completion: function(passing) {
       return {
-        'icon-checkmark': passing,
+        'icon-checkbox-checked': passing,
         'passed-indicator': passing,
-        'icon-cross': !passing,
+        'icon-checkbox-unchecked': !passing,
         'failed-indicator': !passing,
       };
     },
