@@ -33,6 +33,9 @@ content {
   text-align: center;
   border: 1px solid grey;
 }
+#cookie-clicker h1 {
+  height: 50px;
+}
 #cookie-clicker img {
   margin: 20px;
   height: 300px;

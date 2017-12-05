@@ -215,7 +215,7 @@ function update(event) {
 function runCode() {
   Blockly.JavaScript.addReservedWords('code');
   var code = 'window.cookies = window.cookies ? window.cookies : 0\n'
-    + 'document.querySelector("#cookie-clicker h1").textContent = "";\n'
+    + 'document.querySelector("#cookie-clicker h1").textContent = "No cookies";\n'
     + 'var image = document.querySelector("#cookie-clicker img");\n'
     + 'var clone = image.cloneNode(true);\n'
     + 'clone.src = "";\n'
