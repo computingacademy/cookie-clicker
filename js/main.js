@@ -228,6 +228,9 @@ function runCode() {
 }
 
 function updateAchievements() {
+  // Keep track of if any new achievements have been completed
+  let newCompletion = false;
+
   achievements.map(function(achievement) {
     // Perform each check
     let passes = achievement.checks.map(function(check) {
@@ -238,11 +241,18 @@ function updateAchievements() {
     // Is this achievement currently passing all checks?
     let passing = passes.every(pass => pass);
     Vue.set(achievement, 'passing', passing);
+    // Is this a new achievement completion?
+    newCompletion |= !achievement.completed && passing;
     // Has this achievement ever been completed?
     achievement.completed |= passing;
     // Update cookies with achievement status
     Cookies.set(`achievements[${achievement.id}].completed`, achievement.completed);
   });
+
+  // Update the selected achievement if a previous achievement has been newly completed
+  if (newCompletion) {
+    mainVue.selectedAchievement = achievements.find(achievement => !achievement.completed);
+  }
 
   // Unlock achievement which have completed prerequisites
   achievements.forEach(function(achievement) {
