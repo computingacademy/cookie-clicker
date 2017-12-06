@@ -341,8 +341,10 @@ let achievementsComponent = Vue.component('achievement-list', {
         <h3 class="slide-title">
           {{ achievement.title }}
         </h3>
-        <span class="tooltip-area hide-open"></span>
-        <span class="slide-jump-pip"></span>
+        <span class="tooltip-area hide-open" data-toggle="tooltip" data-placement="right" data-container="body" title="" v-bind:data-original-title="achievement.title"></span>
+        <span v-bind:class="{'next-goal': next(achievement)}">
+          <span class="slide-jump-pip"></span>
+        </span>
       </a>
     </li>
   </ol>
@@ -367,6 +369,10 @@ let achievementsComponent = Vue.component('achievement-list', {
         solved: achievement.completed,
         passed: achievement.passing,
       };
+    },
+    next: function(achievement) {
+      let firstNew = achievements.find(achievement => achievement.unlocked && !achievement.seen && !achievement.completed);
+      return achievement == firstNew && achievement != mainVue.selectedAchievement;
     },
   },
 });
