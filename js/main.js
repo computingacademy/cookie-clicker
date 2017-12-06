@@ -203,7 +203,6 @@ function updateAchievements(silent) {
     if (!silent) {
       alert(`You completed ${newCompletions.length} new goals!`);
     }
-    mainVue.selectedAchievement = achievements.find(achievement => !achievement.completed) || achievements[achievements.length-1];
   }
 
   // Unlock achievement which have completed prerequisites or have been completed
@@ -276,9 +275,18 @@ let blocklyComponent = Vue.component('blockly-editor', {
         toolbox: document.getElementById('toolbox')
       });
 
-    workspace.addChangeListener(function() {
-      runCode();
-      save();
+    workspace.addChangeListener(function(event) {
+      // This is a little bit hacky
+      // We are checking to see if the block is still in the process of being dragged in from the toolbox
+      let dragCreation = event.xml && event.xml.getAttribute('x') < 0;
+      // Check if the event is just selecting a block
+      let selection = event.type == Blockly.Events.UI && event.element == 'selected';
+
+      if (!dragCreation && !selection) {
+        updateAchievements();
+        runCode();
+        save();
+      }
     });
 
     // A nasty hack to wait until Blockly is set up to load blocks
@@ -306,10 +314,6 @@ let cookieClickerControls =  Vue.component('cookie-clicker-controls', {
   <button v-on:click="reset()" id="reset">
     <span class="icon icon-spinner11"></span>
     Reset
-  </button>
-  <button v-on:click="mark()" id="mark">
-    <span class="icon icon-star-full"></span>
-    Mark
   </button>
 </div>`,
   methods: {
