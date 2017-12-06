@@ -294,6 +294,8 @@ let blocklyComponent = Vue.component('blockly-editor', {
     setTimeout(function() {
       load();
       updateAchievements(true);
+      // Select first uncompleted achievement or the last one if they are all completed
+      mainVue.selectedAchievement = achievements.find(achievement => !achievement.completed) || achievements[achievements.length-1] || {checks: []};
     }, 10);
 
     this.__instance = workspace;
