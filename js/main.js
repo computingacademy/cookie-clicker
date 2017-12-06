@@ -201,7 +201,7 @@ function updateAchievements(silent) {
   // Update the selected achievement if a previous achievement has been newly completed
   if (newCompletions.length !== 0) {
     if (!silent) {
-      alert(`You completed ${newCompletions.length} new goals!`);
+      alert(`You completed ${newCompletions.map(achievement => '\''+achievement.title+'\'').join(',')}!`);
       screenCookieFirework(document.querySelector('#firework-overlay'));
     }
   }
