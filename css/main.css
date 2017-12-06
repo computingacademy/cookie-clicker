@@ -195,3 +195,13 @@ nav {
 .notification {
   color: #fa1528;
 }
+
+#firework-overlay {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  width: 100%;
+  margin: 0px;
+  pointer-events: none;
+}

@@ -202,6 +202,7 @@ function updateAchievements(silent) {
   if (newCompletions.length !== 0) {
     if (!silent) {
       alert(`You completed ${newCompletions.length} new goals!`);
+      screenCookieFirework(document.querySelector('#firework-overlay'));
     }
   }
 
