@@ -68,6 +68,15 @@ content {
     margin-top: 10px;
   }
 
+  #marks button {
+    float: right;
+    font-size: 10px;
+    background-color: #fb4251;
+  }
+  #marks button:hover {
+    background-color: #fc6f7a;
+  }
+
 #cookie-counter {
   height: 40px;
   margin: 10px;
@@ -90,7 +99,7 @@ content {
   margin: 10px;
 }
 
-#cookie-clicker-controls button {
+button {
   font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
   text-align: center;
   display: inline-block;
@@ -103,9 +112,12 @@ content {
   text-decoration: none !important
 }
 
-  #cookie-clicker-controls button .icon {
+  button .icon {
     margin: 0px 5px;
   }
+
+#cookie-clicker-controls {
+}
 
   #reset {
     background-color: #1b79bf;

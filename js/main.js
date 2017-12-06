@@ -383,8 +383,16 @@ let achievementMarks = Vue.component('achievement-marks', {
       <span v-bind:class="completion(check.passing)" title="title(check.passing)" role="img"></span>
     </div>
     <div class="result-text">
+      <button v-if="!check.showHint" v-on:click="show(check)">
+        <span class="icon icon-eye"></span>
+        Show hint
+      </button>
+      <button v-if="check.showHint" v-on:click="hide(check)">
+        <span class="icon icon-eye-blocked"></span>
+        Hide hint
+      </button>
       <h3>{{ check.description }}</h3>
-      <div v-if="!check.passing" v-html="check.hint"></div>
+      <div v-if="check.showHint" v-html="check.hint"></div>
     </div>
   </li>
 </ul>`,
@@ -410,6 +418,12 @@ let achievementMarks = Vue.component('achievement-marks', {
       } else {
         return 'Failed';
       }
+    },
+    show: function(check) {
+      Vue.set(check, 'showHint', true);
+    },
+    hide: function(check) {
+      Vue.set(check, 'showHint', false);
     },
   },
 });
