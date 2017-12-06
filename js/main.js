@@ -379,7 +379,7 @@ let achievementMarks = Vue.component('achievement-marks', {
   template: `
 <ul id="marks">
   <li v-for="check in achievement.checks" class="result-wrapper">
-    <div class="result-indicator">
+    <div class="result-indicator" v-bind:class="passed(check.passing)">
       <span v-bind:class="completion(check.passing)" title="title(check.passing)" role="img"></span>
     </div>
     <div class="result-text">
@@ -390,6 +390,12 @@ let achievementMarks = Vue.component('achievement-marks', {
 </ul>`,
   props: ['achievement'],
   methods: {
+    passed: function(passing) {
+      return {
+        'passed': passing,
+        'failed': !passing,
+      };
+    },
     completion: function(passing) {
       return {
         'icon-checkbox-checked': passing,

@@ -18,3 +18,29 @@
     top: 180px;
   }
 }
+
+.result-indicator.passed {
+  animation: pulse 1s;
+}
+.result-indicator.failed {
+  animation: pulse2 0.8s;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(2);
+  }
+}
+@keyframes pulse2 {
+  0%, 100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.5);
+  }
+}
