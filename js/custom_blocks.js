@@ -5,7 +5,7 @@ Blockly.Blocks['image_set'] = {
     this.setNextStatement(true);
 
     var options = [
-      ['none', 'NONE'],
+      ['none', 'images/crumbs.jpg'],
       [{'src': 'images/choc-chip.png', 'width': 25, 'height': 25, 'alt': 'Choc Chip Cookie'}, 'images/choc-chip.png'],
       [{'src': 'images/christmas.png', 'width': 25, 'height': 25, 'alt': 'Christmas Cookie'}, 'images/christmas.png'],
       [{'src': 'images/fortune.png', 'width': 25, 'height': 25, 'alt': 'Fortune Cookie'}, 'images/fortune.png'],

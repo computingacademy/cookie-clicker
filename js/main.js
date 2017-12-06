@@ -26,8 +26,8 @@ var achievements = [{
     description: 'Set the image to a cookie',
     hint: '<p>Click the dropdown arrow on the <bk class="io">set image</bk> block in your workspace. Then choose your cookie!</p>',
     test: function(cookieClicker, cookies) {
-      // Is the image's src nrt nothing?
-      return !!cookieClicker.querySelector('img:not([src=""]):not([src=NONE])');
+      // Is the image's src not crumbs?
+      return !!cookieClicker.querySelector('img:not([src=""]):not([src="images/crumbs.jpg"])');
     },
   }],
   prerequisites: [
