@@ -219,6 +219,84 @@ var achievements = [{
     'Set heading on click',
   ],
   blocks: ['text_join', 'text', 'variables_get'],
+}, {
+  id: 'If statement',
+  title: 'Cookie upgrade',
+  reward: 70,
+  completed: false,
+  seen: false,
+  description: '<p>We need some cool rewards for people playing our cookie clicker so they keep clicking that cookie! Let\'s change the cookie picture to a cooler cookie once 10 cookies have been clicked.</p>',
+  checks: [{
+    description: 'Count the number of cookies clicked',
+    hint: '<p>Add a cookie every time the cookie image is clicked. You can do this by finishing the \'Click that cookie!\' goal.</p>',
+    test: function(cookieClicker, cookies) {
+      // Check if 'Click that cookie!' was complete
+      return achievements.find(achievement => achievement.id === 'On click').passing;
+    },
+  }, {
+    description: 'Compare cookies with a number',
+    hint: '<p>Use the <bk class="var">cookies</bk> variable inside of the <bk class="logic">≥ <bk class="math">10</bk></bk> block to check if at least 10 cookies have been clicked.</p>'
+    + '<p>Connect <bk class="logic"><bk class="var">cookies</bk> ≥ <bk class="math">10</bk></bk> to the <bk class="control">if</bk> block.</p>',
+    test: function(cookieClicker, cookies) {
+      // Was the comparison block used with cookies, >=, and 10?
+      return workspace.getAllBlocks().some(function(block) {
+        var logicCompare = block.type == 'logic_compare';
+        if (logicCompare) {
+          // Check for cookies variable
+          var cookiesVar = block.inputList.some(input => input.connection.targetConnection && input.connection.targetConnection.sourceBlock_.type == 'variables_get');
+          // Check for a number
+          var cookiesNumber = block.inputList.some(input => input.connection.targetConnection && input.connection.targetConnection.sourceBlock_.type == 'math_number');
+
+          return cookiesVar && cookiesNumber;
+        }
+      });
+    },
+  }, {
+    description: 'Set a new picture on click to upgrade the cookie',
+    hint: '<p>Inside of the <bk class="control">on click</bk> and <bk class="control">if</bk> blocks use the <bk class="io">set image</bk> block to upgrade the picture of the cookie to a more awesome cookie.</p>'
+    + '<p>Make sure that you don\'t change the picture to crumbs!</p>',
+    test: function(cookieClicker, cookies) {
+      // Get original picture
+      var originalPicture = cookieClicker.querySelector('img').src;
+      // Click cookie
+      for (var i=0; i<1000; i++) {
+        cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
+      }
+      // Get new picture
+      var newPicture = cookieClicker.querySelector('img').src;
+
+      // Did the picture change?
+      return newPicture !== originalPicture && newPicture !== 'images/crumbs.jpg';
+    },
+  }, {
+    description: 'Upgrade the cookie only once it has been clicked 10 times',
+    hint: '<p>Connect <bk class="logic"><bk class="var">cookies</bk> ≥ <bk class="math">10</bk></bk> to the <bk class="control">if</bk> block.</p>'
+    + '<p>Use <bk class="io">set image</bk> inside of the <bk class="control">if</bk> block.</p>'
+    + '<p>Make sure the <bk class="control">if</bk> block is inside of the <bk class="control">on click</bk> block.</p>',
+    test: function(cookieClicker, cookies) {
+      // Keep track of whether the cookie changes before 10 clicks
+      var earlyChange = false;
+      // Get original picture
+      var originalPicture = cookieClicker.querySelector('img').src;
+      // Click cookie
+      for (let i=0; i<10; i++) {
+        // Has it changed?
+        var newPicture = cookieClicker.querySelector('img').src;
+        earlyChange = earlyChange || newPicture !== originalPicture;
+        // Click!
+        cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
+      }
+      // Get new picture
+      var newPicture = cookieClicker.querySelector('img').src;
+
+      // Did the picture change at 10 clicks and not any clicks before?
+      return !earlyChange && newPicture !== originalPicture;
+    },
+  }],
+  prerequisites: [
+    'On click',
+  ],
+  blocks: ['controls_if', 'logic_compare', 'image_set'],
 }];
 
 window._cookies = 0;
