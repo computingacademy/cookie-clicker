@@ -82,6 +82,8 @@ Blockly.JavaScript['variables_add'] = function(block) {
   return code;
 };
 
+Blockly.Msg.TEXT_JOIN_TITLE_CREATEWITH = 'Join text'
+
 // Set colours of existing blocks
 function setColour(block, color) {
   let prev_init = Blockly.Blocks[block].init;

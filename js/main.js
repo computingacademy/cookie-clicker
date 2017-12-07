@@ -45,7 +45,7 @@ var achievements = [{
     description: 'Add the on click block',
     hint: '<p>Drag the <bk class="control">on click</bk> block into the workspace.</p>',
     test: function(cookieClicker, cookies) {
-      // Was the set heading block used?
+      // Was the on click block used?
       return workspace.getAllBlocks().some(block => block.type === 'on_click');
     },
   }, {
@@ -146,7 +146,7 @@ var achievements = [{
       // Was the cookie value incremented?
       var incremented = window._cookies == cookies+1;
       // Was the heading updated as the number of cookies changed?
-      var headingUpdated = cookieClicker.querySelector('h1').textContent == window._cookies+'';
+      var headingUpdated = parseInt(cookieClicker.querySelector('h1').textContent.replace(/[^\d]*/g, '')) == window._cookies;
 
       return headingSet && incremented && headingUpdated;
     },
@@ -155,6 +155,70 @@ var achievements = [{
     'On click',
   ],
   blocks: ['heading_set', 'variables_get'],
+}, {
+  id: 'Join text',
+  title: 'Show me the cookies!',
+  reward: 60,
+  completed: false,
+  seen: false,
+  description: '<p>Once you\'re counting the number of cookies add the word "cookies" to the heading so a person playing knows what the number means!</p>',
+  checks: [{
+    description: 'Count the number of cookies clicked',
+    hint: '<p>Set the heading to the number of cookies on click. You can do this by finishing the \'How many cookies?\' goal.</p>',
+    test: function(cookieClicker, cookies) {
+      // Check if 'How many cookies' was complete
+      return achievements.find(achievement => achievement.id === 'Set heading on click').passing;
+    },
+  }, {
+    description: 'Join cookies and "cookies" together',
+    hint: '<p>Use <bk class="str">join text</bk> to join together the <bk class="var">cookies</bk> variable and the <bk class="str lit">Cookies</bk> string.</p>',
+    test: function(cookieClicker, cookies) {
+      // Was the join text block used with cookies and "a string"?
+      return workspace.getAllBlocks().some(function(block) {
+        var joinText = block.type == 'text_join';
+        if (joinText) {
+          // Check for cookies variable
+          var cookiesVar = block.inputList.some(input => input.connection.targetConnection && input.connection.targetConnection.sourceBlock_.type == 'variables_get');
+          // Check for cookies string
+          var cookiesString = block.inputList.some(input => input.connection.targetConnection && input.connection.targetConnection.sourceBlock_.type == 'text');
+
+          return cookiesVar && cookiesString;
+        }
+      });
+    },
+  }, {
+    description: 'Set the heading to the joined text',
+    hint: '<p>Once you have joined <bk class="var">cookies</bk> variable and the <bk class="str lit">Cookies</bk> string then connect them to the <bk class="io">set heading</bk> block.</p>',
+    test: function(cookieClicker, cookies) {
+      return workspace.getAllBlocks().some(function(block) {
+        var setHeading = block.type == 'heading_set';
+        if (setHeading) {
+          var joinedText = block.inputList.some(input => input.connection.targetConnection && input.connection.targetConnection.sourceBlock_.type == 'text_join');
+          return joinedText;
+        }
+      });
+    },
+  }, {
+    description: 'Set the heading to the joined text on click',
+    hint: '<p>Make sure you use the <bk class="io">set heading</bk> block inside of the <bk class="control">on click</bk> block!</p>',
+    test: function(cookieClicker, cookies) {
+      // Get original heading text
+      var originalText = cookieClicker.querySelector('h1').textContent;
+      var noCookies = originalText == 'No cookies';
+      // Click cookie
+      cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
+      // Does the heading have the correct number?
+      var headingNumber = parseInt(cookieClicker.querySelector('h1').textContent.replace(/[^\d]*/g, '')) == window._cookies;
+      // Does the heading have some text?
+      var headingText = cookieClicker.querySelector('h1').textContent !== window._cookies+'';
+
+      return noCookies && headingNumber && headingText;
+    },
+  }],
+  prerequisites: [
+    'Set heading on click',
+  ],
+  blocks: ['text_join', 'text', 'variables_get'],
 }];
 
 window._cookies = 0;
