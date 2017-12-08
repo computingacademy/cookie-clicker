@@ -266,7 +266,7 @@ var achievements = [{
       var newPicture = cookieClicker.querySelector('img').src;
 
       // Did the picture change?
-      return newPicture !== originalPicture && newPicture !== 'images/crumbs.jpg';
+      return newPicture !== originalPicture && !!cookieClicker.querySelector('img:not([src=""]):not([src="images/crumbs.jpg"])');
     },
   }, {
     description: 'Upgrade the cookie only once it has been clicked 10 times',
