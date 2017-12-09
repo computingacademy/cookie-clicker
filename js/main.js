@@ -316,6 +316,7 @@ function runCode() {
   }
 }
 
+let unlockedBlocks = ['image_set'];
 function updateAchievements(silent) {
   // Keep track of if any new achievements have been completed
   let newCompletions = [];
@@ -342,9 +343,12 @@ function updateAchievements(silent) {
 
   // Update the selected achievement if a previous achievement has been newly completed
   if (newCompletions.length !== 0) {
+    let rewards = newCompletions
+      .map(achievement => achievementRewards(achievement))
+      .reduce((a, b) => a.concat(b));
     if (!silent) {
-      alert(`You completed ${newCompletions.map(achievement => '\''+achievement.title+'\'').join(',')}!`);
-      screenCookieFirework(document.querySelector('#firework-overlay'));
+      mainVue.goalRewards = rewards
+        .filter(reward => !(reward.type === 'block' && unlockedBlocks.includes(reward.block)) && !(reward.type === 'goal' && achievements.find(achievement => achievement.id === reward.goal)));
     }
   }
 
@@ -359,7 +363,7 @@ function updateAchievements(silent) {
   });
 
   // Unlock blocks that are needed
-  let unlockedBlocks = achievements
+  unlockedBlocks = achievements
     // Only use unlocked achievements
     .filter(achievement => achievement.unlocked)
     // Get the blocks
@@ -389,6 +393,40 @@ function doCheck(check) {
   cookieClicker.querySelector('h1').textContent = originalHeading;
   window._cookiesFreeze = cookiesFreeze;
   return result;
+}
+
+function achievementRewards(achievement) {
+  let rewards = [];
+  
+  // Cookie rewards
+  rewards.push({
+    type: 'cookies',
+    amount: achievement.reward,
+  });
+
+  // Goal rewards
+  let newAchievements = achievements
+    .filter(newAchievement => newAchievement.prerequisites.includes(achievement.id))
+    .filter(newAchievement => newAchievement.prerequisites.every(prereq => achievements.find(achievement => achievement.id == prereq).completed));
+  newAchievements.forEach(function(newAchievement) {
+    rewards.push({
+      type: 'goal',
+      goal: newAchievement.title,
+    });
+  });
+
+  // Block rewards
+  newAchievements
+    .map(achievement => achievement.blocks)
+    .reduce((a,b) => a.concat(b), [])
+  .forEach(function(block) {
+    rewards.push({
+      type: 'block',
+      block: block,
+    });
+  });
+
+  return rewards;
 }
 
 function save() {
@@ -583,12 +621,75 @@ let achievementMarks = Vue.component('achievement-marks', {
   },
 });
 
+let cookieRewards = Vue.component('cookie-rewards', {
+  template: `
+<div v-if="rewards.length !== 0" id="cookie-rewards">
+  <h1>You unlocked...</h1>
+  <div v-if="state == 'cookie'" v-bind:style="position()" class="reward-cookie"></div>
+  <ul v-if="state == 'rewards'" v-bind:style="position()">
+    <li v-for="reward in rewards">
+      <span v-if="reward.type == 'cookies'" class="cookies">
+        {{ reward.amount }} cookies
+      </span>
+      <span v-if="reward.type == 'block'" class="block">
+        The
+        <bk v-if="reward.block == 'image_set'" class="io">set image</bk>
+        <bk v-if="reward.block == 'heading_set'" class="io">set heading</bk>
+        <bk v-if="reward.block == 'on_click'" class="control">on click</bk>
+        <bk v-if="reward.block == 'variables_add'" class="var">Add to cookies</bk>
+        <bk v-if="reward.block == 'variables_get'" class="var">cookies</bk>
+        <bk v-if="reward.block == 'text_join'" class="str">Join text</bk>
+        <bk v-if="reward.block == 'text'" class="str lit">Cookies</bk>
+        <bk v-if="reward.block == 'controls_if'" class="control">if</bk>
+        <bk v-if="reward.block == 'logic_compare'" class="logic"> ≥ <bk class="math">10</bk></bk>
+        block
+      </span>
+    </li>
+  </ul>
+<div id="fullscreen" v-on:click="unlock()"></div>
+</div>`,
+  props: ['rewards'],
+  data: function() {
+    return {
+      state: 'cookie',
+    };
+  },
+  watch: {
+    rewards: function(rewards) {
+      this.state = 'cookie';
+    }
+  },
+  methods: {
+    position: function() {
+      let width = 400;
+      let height = 600;
+      return {
+        left: (screen.availWidth - width)/2 + 'px',
+        top: (screen.availHeight - height)/2 + 'px',
+        width: width+'px',
+        height: height+'px',
+      };
+    },
+    unlock: function() {
+      if (this.state == 'cookie') {
+        this.state = 'rewards';
+        screenCookieFirework(document.querySelector('#firework-overlay'));
+      } else if (this.state == 'rewards') {
+        mainVue.goalRewards = [];
+      }
+    },
+  },
+});
+
+Vue.config.ignoredElements = ['bk'];
+
 let mainVue = new Vue({
   el: '#main',
   data: {
     achievements: achievements,
     selectedAchievement: achievements.find(achievement => !achievement.completed) || achievements[0] || {checks: []},
     cookies: window.cookies,
+    goalRewards: [],
   },
   methods: {
     selectAchievement: function(achievement) {
