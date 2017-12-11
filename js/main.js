@@ -13,6 +13,12 @@ var achievements = [{
       return !!cookieClicker.querySelector('img:not([src=""])')
     },
   }],
+  hints: [{
+    condition: function(blocks) {
+      return !blocks.find(block => block.type === 'image_set');
+    },
+    hint: '<p>Drag the <bk class="io">set image</bk> block into the workspace.</p>',
+  }],
   prerequisites: [],
   blocks: ['image_set'],
 }, {
@@ -29,6 +35,17 @@ var achievements = [{
       // Is the image's src not crumbs?
       return !!cookieClicker.querySelector('img:not([src=""]):not([src="images/crumbs.jpg"])');
     },
+  }],
+  hints: [{
+    condition: function(blocks) {
+      return !blocks.find(block => block.type === 'image_set');
+    },
+    hint: '<p>Drag the <bk class="io">set image</bk> block into the workspace.</p>',
+  }, {
+    condition: function(blocks) {
+      return !!blocks.find(block => block.type === 'image_set' && block.inputs['PICTURE'] === 'images/crumbs.jpg');
+    },
+    hint: '<p>Click the dropdown arrow on the <bk class="io">set image</bk> block in your workspace. Then choose your cookie!</p>',
   }],
   prerequisites: [
     'Set image',
@@ -91,6 +108,7 @@ var achievements = [{
       return incremented;
     },
   }],
+  hints: [],
   prerequisites: [
     'Set image',
     'Choose image',
@@ -151,6 +169,7 @@ var achievements = [{
       return headingSet && incremented && headingUpdated;
     },
   }],
+  hints: [],
   prerequisites: [
     'On click',
   ],
@@ -215,6 +234,7 @@ var achievements = [{
       return noCookies && headingNumber && headingText;
     },
   }],
+  hints: [],
   prerequisites: [
     'Set heading on click',
   ],
@@ -293,6 +313,7 @@ var achievements = [{
       return !earlyChange && newPicture !== originalPicture;
     },
   }],
+  hints: [],
   prerequisites: [
     'On click',
   ],
@@ -318,10 +339,17 @@ function runCode() {
 
 let unlockedBlocks = ['image_set'];
 function updateAchievements(silent) {
+  // Get blocks from workspace
+  let blocks = workspaceToBlocks(workspace);
   // Keep track of if any new achievements have been completed
   let newCompletions = [];
 
   achievements.map(function(achievement) {
+    // Check hint conditions
+    achievement.hints.forEach(function(hint) {
+      Vue.set(hint, 'useful', hint.condition(blocks));
+    });
+
     // Perform each check
     let passes = achievement.checks.map(function(check) {
       let passed = doCheck(check);
@@ -427,6 +455,57 @@ function achievementRewards(achievement) {
   });
 
   return rewards;
+}
+
+function workspaceToBlocks(workspace) {
+  let xml = Blockly.Xml.workspaceToDom(workspace);
+  let topBlocks = xml.querySelectorAll('xml > block');
+
+  let blocks = [...topBlocks]
+    .map(xmlToBlocks)
+    .reduce((a,b) => a.concat(b), []);
+
+  return blocks;
+}
+
+// Turn workspace XML into block JSON
+function xmlToBlocks(xml) {
+  let inputsSelector = ['value', 'field', 'statement'].map(tag => `[id="${xml.id}"] > ${tag}`).join(',');
+  let nextSelector = `[id="${xml.id}"] > next > block`;
+
+  let inputs = xml.querySelectorAll(inputsSelector);
+  let nexts = xml.querySelectorAll(nextSelector);
+
+  let inputsMap = {};
+  if (!!inputs) {
+    [...inputs]
+      .forEach(function(input) {
+        let key = input.getAttribute('name');
+
+        input.id = !!input.id? input.id : input.parentElement.id + input.getAttribute('name');
+        let blockSelector = `[id="${input.id}"] > block`;
+        let subBlocks = input.querySelectorAll(blockSelector);
+
+        let value = input.nodeName === 'FIELD'? input.textContent : !!subBlocks? [...subBlocks].map(xmlToBlocks) : undefined;
+
+        inputsMap[key] = value;
+      });
+  }
+
+  let block = {
+    type: xml.getAttribute('type'),
+    inputs: inputsMap,
+  };
+
+  if (!!nexts) {
+    let nextBlocks = [...nexts]
+      .map(xmlToBlocks)
+      .reduce((a,b) => a.concat(b), []);
+
+    return [block].concat(nextBlocks);
+  } else {
+    return [block];
+  }
 }
 
 function save() {
@@ -560,6 +639,15 @@ let achievementDescription = Vue.component('achievement-description', {
   <div id="description" v-html="achievement.description"></div>
 </div>`,
   props: ['achievement'],
+});
+
+let blocklyHints = Vue.component('blockly-hints', {
+  template: `
+<div id="blockly-hints">
+  <div v-for="hint in hints" v-if="hint.useful" v-html="hint.hint">
+  </div>
+</div>`,
+  props: ['hints'],
 });
 
 let achievementMarks = Vue.component('achievement-marks', {

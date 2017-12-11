@@ -32,6 +32,7 @@
       </aside>
       <div id="program">
         <achievement-description v-bind:achievement="selectedAchievement"></achievement-description>
+        <blockly-hints v-bind:hints="selectedAchievement.hints"></blockly-hints>
         <blockly-editor></blockly-editor>
       </div>
     </content>
