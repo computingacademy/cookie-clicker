@@ -669,6 +669,8 @@ let cookieRewards = Vue.component('cookie-rewards', {
         this.state = 'rewards';
         screenCookieFirework(document.querySelector('#firework-overlay'));
       } else if (this.state == 'rewards') {
+        let firstNew = achievements.find(achievement => achievement.unlocked && !achievement.seen && !achievement.completed);
+        mainVue.selectedAchievement = firstNew;
         mainVue.goalRewards = [];
       }
     },
