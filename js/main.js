@@ -372,14 +372,15 @@ function runCode() {
 let unlockedBlocks = ['image_set'];
 function updateAchievements(silent) {
   // Get blocks from workspace
-  let blocks = workspaceToBlocks(workspace);
+  let blockTree = workspaceToBlocks(workspace);
+  let blockList = workspaceToBlocks(workspace, true);
   // Keep track of if any new achievements have been completed
   let newCompletions = [];
 
   achievements.map(function(achievement) {
     // Check hint conditions
     achievement.hints.forEach(function(hint) {
-      Vue.set(hint, 'useful', hint.condition(blocks));
+      Vue.set(hint, 'useful', hint.condition(blockTree, blockList));
     });
 
     // Perform each check
@@ -489,20 +490,28 @@ function achievementRewards(achievement) {
   return rewards;
 }
 
-function workspaceToBlocks(workspace) {
+function workspaceToBlocks(workspace, list) {
   let xml = Blockly.Xml.workspaceToDom(workspace);
   let topBlocks = xml.querySelectorAll('xml > block');
 
   let blocks = [...topBlocks]
-    .map(xmlToBlocks)
+    .map(block => xmlToBlocks(block, list))
     .reduce((a,b) => a.concat(b), []);
 
   return blocks;
 }
 
 // Turn workspace XML into block JSON
-function xmlToBlocks(xml) {
+function xmlToBlocks(xml, list) {
   let blockSvg = workspace.getBlockById(xml.id);
+  let blocks = [];
+  let block = {
+    id: xml.id,
+    type: xml.getAttribute('type'),
+    bounds: blockSvg? blockSvg.getBoundingRectangle() : {topLeft: {x: 0, y: 0}, bottomRight: {x: 0, y: 0}},
+  };
+  blocks.push(block);
+
   let inputsSelector = ['value', 'field', 'statement'].map(tag => `[id="${xml.id}"] > ${tag}`).join(',');
   let nextSelector = `[id="${xml.id}"] > next > block`;
 
@@ -519,27 +528,35 @@ function xmlToBlocks(xml) {
         let blockSelector = `[id="${input.id}"] > block`;
         let subBlocks = input.querySelectorAll(blockSelector);
 
-        let value = input.nodeName === 'FIELD'? input.textContent : !!subBlocks? [...subBlocks].map(xmlToBlocks).reduce((a,b) => a.concat(b), []) : undefined;
+        let value;
+        if (input.nodeName === 'FIELD') {
+          value = input.textContent;
+        } else if (input.nodeName === 'STATEMENT') {
+          value = [...subBlocks]
+            .map(subBlock => xmlToBlocks(subBlock, list))
+            .reduce((a,b) => a.concat(b), []);
+        } else if (input.nodeName === 'VALUE') {
+          value = [...subBlocks]
+            .map(subBlock => xmlToBlocks(subBlock, list))
+            .reduce((a,b) => a.concat(b), [])[0];
+        }
+
+        if (list && input.nodeName !== 'FIELD')
+          blocks = blocks.concat(value);
 
         inputsMap[key] = value;
       });
   }
-
-  let block = {
-    id: xml.id,
-    type: xml.getAttribute('type'),
-    bounds: blockSvg? blockSvg.getBoundingRectangle() : {topLeft: {x: 0, y: 0}, bottomRight: {x: 0, y: 0}},
-    inputs: inputsMap,
-  };
+  block.inputs = inputsMap;
 
   if (!!nexts) {
     let nextBlocks = [...nexts]
-      .map(xmlToBlocks)
+      .map(nextBlock => xmlToBlocks(nextBlock, list))
       .reduce((a,b) => a.concat(b), []);
 
-    return [block].concat(nextBlocks);
+    return blocks.concat(nextBlocks);
   } else {
-    return [block];
+    return blocks;
   }
 }
 
@@ -733,8 +750,9 @@ let blocklyHints = Vue.component('blockly-hints', {
           top: offset.y+'px',
         };
       } else if (location) {
-        let blocks = workspaceToBlocks(workspace);
-        let block = blocks.find(location);
+        let blockTree = workspaceToBlocks(workspace);
+        let blockList = workspaceToBlocks(workspace, true);
+        let block = blockList.find(location);
 
         if (!!block)
           return {
