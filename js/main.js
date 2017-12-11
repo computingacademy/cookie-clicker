@@ -113,7 +113,34 @@ var achievements = [{
       return incremented;
     },
   }],
-  hints: [],
+  hints: [{
+    condition: function(blocks) {
+      return !blocks.find(block => block.type === 'on_click');
+    },
+    hint: '<p>Drag the <bk class="control">on click</bk> block into the workspace.</p>',
+    location: 'workspace',
+  }, {
+    condition: function(blocks) {
+      // Do no on_click blocks have a variables_add block?
+      let clickBlocks = blocks.filter(block => block.type === 'on_click');
+      return clickBlocks.length !== 0 &&
+        !clickBlocks
+        .filter(block => block.inputs['DO'] !== undefined)
+        .some(block => !!block.inputs['DO'].find(block => block.type === 'variables_add'));
+    },
+    hint: '<p>Drag the <bk class="var">add to <bk class="inner">cookies</bk></bk> block into the <bk class="control">on click</bk> block.</p>',
+    location: function(block) {
+      return block.type === 'on_click';
+    },
+  }, {
+    condition: function(blocks) {
+      return !!blocks.find(block => block.type === 'variables_add');
+    },
+    hint: '<p>If you don\'t  use the <bk class="var">add to <bk class="inner">cookies</bk></bk> block in the <bk class="control">on click</bk> block it will only add a cookie when you click the reset button!</p>',
+    location: function(block) {
+      return block.type === 'variables_add';
+    },
+  }],
   prerequisites: [
     'Set image',
     'Choose image',
