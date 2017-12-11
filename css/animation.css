@@ -67,3 +67,26 @@
     transform: translateY(-14px);
   }
 }
+
+.reward-cookie {
+  position: absolute;
+  animation: float-up 1.2s;
+}
+
+@keyframes float-up {
+  0% {
+    transform: translateY(1300px);
+  }
+
+  60% {
+    transform: translateY(-40px);
+  }
+
+  90% {
+    transform: translateY(-10px);
+  }
+
+  80%, 100% {
+    transform: translateY(0px);
+  }
+}
