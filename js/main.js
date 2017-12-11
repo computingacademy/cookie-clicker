@@ -18,6 +18,7 @@ var achievements = [{
       return !blocks.find(block => block.type === 'image_set');
     },
     hint: '<p>Drag the <bk class="io">set image</bk> block into the workspace.</p>',
+    location: 'workspace',
   }],
   prerequisites: [],
   blocks: ['image_set'],
@@ -41,11 +42,15 @@ var achievements = [{
       return !blocks.find(block => block.type === 'image_set');
     },
     hint: '<p>Drag the <bk class="io">set image</bk> block into the workspace.</p>',
+    location: 'workspace',
   }, {
     condition: function(blocks) {
       return !!blocks.find(block => block.type === 'image_set' && block.inputs['PICTURE'] === 'images/crumbs.jpg');
     },
-    hint: '<p>Click the dropdown arrow on the <bk class="io">set image</bk> block in your workspace. Then choose your cookie!</p>',
+    hint: '<p>Click the dropdown arrow on the <bk class="io">set image</bk> block. Then choose your cookie!</p>',
+    location: function(block) {
+      return block.type === 'image_set';
+    },
   }],
   prerequisites: [
     'Set image',
@@ -470,6 +475,7 @@ function workspaceToBlocks(workspace) {
 
 // Turn workspace XML into block JSON
 function xmlToBlocks(xml) {
+  let blockSvg = workspace.getBlockById(xml.id);
   let inputsSelector = ['value', 'field', 'statement'].map(tag => `[id="${xml.id}"] > ${tag}`).join(',');
   let nextSelector = `[id="${xml.id}"] > next > block`;
 
@@ -486,14 +492,16 @@ function xmlToBlocks(xml) {
         let blockSelector = `[id="${input.id}"] > block`;
         let subBlocks = input.querySelectorAll(blockSelector);
 
-        let value = input.nodeName === 'FIELD'? input.textContent : !!subBlocks? [...subBlocks].map(xmlToBlocks) : undefined;
+        let value = input.nodeName === 'FIELD'? input.textContent : !!subBlocks? [...subBlocks].map(xmlToBlocks).reduce((a,b) => a.concat(b), []) : undefined;
 
         inputsMap[key] = value;
       });
   }
 
   let block = {
+    id: xml.id,
     type: xml.getAttribute('type'),
+    bounds: blockSvg? blockSvg.getBoundingRectangle() : {topLeft: {x: 0, y: 0}, bottomRight: {x: 0, y: 0}},
     inputs: inputsMap,
   };
 
@@ -643,11 +651,76 @@ let achievementDescription = Vue.component('achievement-description', {
 
 let blocklyHints = Vue.component('blockly-hints', {
   template: `
-<div id="blockly-hints">
-  <div v-for="hint in hints" v-if="hint.useful" v-html="hint.hint">
+<div id="blockly-hints" v-bind:style="workspacePosition(top, left, width, height)">
+  <div v-for="hint in hints" v-if="hint.useful" v-html="hint.hint" class="blockly-hint" v-bind:style="position(hint.location, moved)">
   </div>
 </div>`,
   props: ['hints'],
+  data: function(hints) {
+    return {
+      top: 0,
+      left: 0,
+      width: 0,
+      height: 0,
+      moved: 0,
+    };
+  },
+  mounted: function() {
+    let vue = this;
+    let resize = function(event) {
+      let blocklyDiv = document.querySelector('#blockly-div');
+      let bbox = blocklyDiv.getBoundingClientRect();
+      vue.top = bbox.top;
+      vue.left = bbox.left;
+      vue.width = bbox.width;
+      vue.height = bbox.height;
+    };
+
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Hack!
+    setTimeout(function() {
+      window.workspace.addChangeListener(function(event) {
+        if (event.type === Blockly.Events.BLOCK_MOVE)
+          vue.moved++;
+      });
+    }, 100);
+  },
+  computed: {
+  },
+  methods: {
+    workspacePosition(top, left, width, height) {
+      return {
+        top: top+'px',
+        left: left+'px',
+        width: width+'px',
+        height: height+'px',
+      };
+    },
+    position: function(location, moved) {
+      let offset = workspace.getOriginOffsetInPixels();
+      if (location === 'workspace') {
+        return {
+          left: offset.x+'px',
+          top: offset.y+'px',
+        };
+      } else if (location) {
+        let blocks = workspaceToBlocks(workspace);
+        let block = blocks.find(location);
+
+        if (!!block)
+          return {
+            left: (block.bounds.bottomRight.x+offset.x)+'px',
+            top: (block.bounds.topLeft.y+offset.y)+'px',
+          };
+        else
+          return {};
+      } else {
+        return {};
+      }
+    },
+  },
 });
 
 let achievementMarks = Vue.component('achievement-marks', {

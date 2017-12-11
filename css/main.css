@@ -25,6 +25,20 @@ content {
   flex-grow: 1;
 }
 
+#blockly-hints {
+  position: absolute;
+  z-index: 40;
+  pointer-events: none;
+}
+  .blockly-hint {
+    position: absolute;
+    width: 300px;
+    margin-left: 5px;
+    padding-left: 10px;
+    background-color: white;
+    border: 1px solid grey;
+  }
+
 #cookie-clicker {
   width: 350px;
   height: 450px;
