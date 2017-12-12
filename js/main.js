@@ -1,4 +1,4 @@
-var achievements = [{
+var goals = [{
   id: 'Set image',
   title: 'Set the image',
   reward: 10,
@@ -166,7 +166,7 @@ var achievements = [{
     description: 'Add a cookie on click',
     hint: '<p>Make sure you are adding a cookie when you click the cookie image!</p>',
     test: function(cookieClicker, cookies) {
-      return achievements.find(achievement => achievement.id === 'On click').passing;
+      return goals.find(goal => goal.id === 'On click').passing;
     },
   }, {
     description: 'Set the heading on click',
@@ -251,7 +251,7 @@ var achievements = [{
     hint: '<p>Set the heading to the number of cookies on click. You can do this by finishing the \'How many cookies?\' goal.</p>',
     test: function(cookieClicker, cookies) {
       // Check if 'How many cookies' was complete
-      return achievements.find(achievement => achievement.id === 'Set heading on click').passing;
+      return goals.find(goal => goal.id === 'Set heading on click').passing;
     },
   }, {
     description: 'Join cookies and "cookies" together',
@@ -369,7 +369,7 @@ var achievements = [{
     hint: '<p>Add a cookie every time the cookie image is clicked. You can do this by finishing the \'Click that cookie!\' goal.</p>',
     test: function(cookieClicker, cookies) {
       // Check if 'Click that cookie!' was complete
-      return achievements.find(achievement => achievement.id === 'On click').passing;
+      return goals.find(goal => goal.id === 'On click').passing;
     },
   }, {
     description: 'Compare cookies with a number',
@@ -545,65 +545,65 @@ function runCode() {
 }
 
 let unlockedBlocks = ['image_set'];
-function updateAchievements(silent) {
+function updateGoals(silent) {
   // Get blocks from workspace
   let blockTree = workspaceToBlocks(workspace);
   let blockList = workspaceToBlocks(workspace, true);
-  // Keep track of if any new achievements have been completed
+  // Keep track of if any new goals have been completed
   let newCompletions = [];
 
-  achievements.map(function(achievement) {
+  goals.map(function(goal) {
     // Check hint conditions
-    achievement.hints.forEach(function(hint) {
+    goal.hints.forEach(function(hint) {
       Vue.set(hint, 'useful', hint.condition(blockTree, blockList));
     });
 
     // Perform each check
-    let passes = achievement.checks.map(function(check) {
+    let passes = goal.checks.map(function(check) {
       let passed = doCheck(check);
       Vue.set(check, 'passing', passed);
       return passed;
     });
-    // Is this achievement currently passing all checks?
+    // Is this goal currently passing all checks?
     let passing = passes.every(pass => pass);
-    Vue.set(achievement, 'passing', passing);
-    // Is this a new achievement completion?
-    if (!achievement.completed && passing) {
-      newCompletions.push(achievement)
+    Vue.set(goal, 'passing', passing);
+    // Is this a new goal completion?
+    if (!goal.completed && passing) {
+      newCompletions.push(goal)
     }
-    // Has this achievement ever been completed?
-    achievement.completed = achievement.completed || passing;
-    // Update cookies with achievement status
-    Cookies.set(`achievements[${achievement.id}].completed`, achievement.completed);
+    // Has this goal ever been completed?
+    goal.completed = goal.completed || passing;
+    // Update cookies with goal status
+    Cookies.set(`goals[${goal.id}].completed`, goal.completed);
   });
 
-  // Update the selected achievement if a previous achievement has been newly completed
+  // Update the selected goal if a previous goal has been newly completed
   if (newCompletions.length !== 0) {
     let rewards = newCompletions
-      .map(achievement => achievementRewards(achievement))
+      .map(goal => goalRewards(goal))
       .reduce((a, b) => a.concat(b));
     if (!silent) {
       mainVue.goalRewards = rewards
-        .filter(reward => !(reward.type === 'block' && unlockedBlocks.includes(reward.block)) && !(reward.type === 'goal' && achievements.find(achievement => achievement.id === reward.goal)));
+        .filter(reward => !(reward.type === 'block' && unlockedBlocks.includes(reward.block)) && !(reward.type === 'goal' && goals.find(goal => goal.id === reward.goal)));
     }
   }
 
-  // Unlock achievement which have completed prerequisites or have been completed
-  achievements.forEach(function(achievement) {
-    // Get the achievement's prereqs
-    let prereqs = achievements.filter(prereq => achievement.prerequisites.includes(prereq.id));
+  // Unlock goal which have completed prerequisites or have been completed
+  goals.forEach(function(goal) {
+    // Get the goal's prereqs
+    let prereqs = goals.filter(prereq => goal.prerequisites.includes(prereq.id));
     // See if they've been completed
-    let unlocked = achievement.completed || prereqs.every(prereq => prereq.completed);
+    let unlocked = goal.completed || prereqs.every(prereq => prereq.completed);
     // Update unlocked status
-    Vue.set(achievement, 'unlocked', unlocked);
+    Vue.set(goal, 'unlocked', unlocked);
   });
 
   // Unlock blocks that are needed
-  unlockedBlocks = achievements
-    // Only use unlocked achievements
-    .filter(achievement => achievement.unlocked)
+  unlockedBlocks = goals
+    // Only use unlocked goals
+    .filter(goal => goal.unlocked)
     // Get the blocks
-    .map(achievement => achievement.blocks)
+    .map(goal => goal.blocks)
     // Stick them all in one list (may contain duplicates
     .reduce((a, b) => a.concat(b));
 
@@ -631,29 +631,29 @@ function doCheck(check) {
   return result;
 }
 
-function achievementRewards(achievement) {
+function goalRewards(goal) {
   let rewards = [];
   
   // Cookie rewards
   rewards.push({
     type: 'cookies',
-    amount: achievement.reward,
+    amount: goal.reward,
   });
 
   // Goal rewards
-  let newAchievements = achievements
-    .filter(newAchievement => newAchievement.prerequisites.includes(achievement.id))
-    .filter(newAchievement => newAchievement.prerequisites.every(prereq => achievements.find(achievement => achievement.id == prereq).completed));
-  newAchievements.forEach(function(newAchievement) {
+  let newGoals = goals
+    .filter(newGoal => newGoal.prerequisites.includes(goal.id))
+    .filter(newGoal => newGoal.prerequisites.every(prereq => goals.find(goal => goal.id == prereq).completed));
+  newGoals.forEach(function(newGoal) {
     rewards.push({
       type: 'goal',
-      goal: newAchievement.title,
+      goal: newGoal.title,
     });
   });
 
   // Block rewards
-  newAchievements
-    .map(achievement => achievement.blocks)
+  newGoals
+    .map(goal => goal.blocks)
     .reduce((a,b) => a.concat(b), [])
   .forEach(function(block) {
     rewards.push({
@@ -747,10 +747,10 @@ function load() {
   var xml = Blockly.Xml.textToDom(xml_text);
   Blockly.Xml.domToWorkspace(xml, workspace);
   mainVue.cookies = parseInt(Cookies.get('cookies')) || 0;
-  // Load achievement completion and seen statuses
-  achievements.map(function(achievement) {
-    achievement.completed = achievement.completed || Cookies.get(`achievements[${achievement.id}].completed`) === 'true';
-    achievement.seen = achievement.seen || Cookies.get(`achievements[${achievement.id}].seen`) === 'true';
+  // Load goal completion and seen statuses
+  goals.map(function(goal) {
+    goal.completed = goal.completed || Cookies.get(`goals[${goal.id}].completed`) === 'true';
+    goal.seen = goal.seen || Cookies.get(`goals[${goal.id}].seen`) === 'true';
   });
 }
 
@@ -770,7 +770,7 @@ let blocklyComponent = Vue.component('blockly-editor', {
       let selection = event.type == Blockly.Events.UI && event.element == 'selected';
 
       if (!dragCreation && !selection) {
-        updateAchievements();
+        updateGoals();
         runCode();
         save();
       }
@@ -779,9 +779,9 @@ let blocklyComponent = Vue.component('blockly-editor', {
     // A nasty hack to wait until Blockly is set up to load blocks
     setTimeout(function() {
       load();
-      updateAchievements(true);
-      // Select first uncompleted achievement or the last one if they are all completed
-      mainVue.selectedAchievement = achievements.find(achievement => !achievement.completed) || achievements[achievements.length-1] || {checks: [], hints: []};
+      updateGoals(true);
+      // Select first uncompleted goal or the last one if they are all completed
+      mainVue.selectedGoal = goals.find(goal => !goal.completed) || goals[goals.length-1] || {checks: [], hints: []};
     }, 10);
 
     this.__instance = workspace;
@@ -825,61 +825,61 @@ let cookieClickerControls =  Vue.component('cookie-clicker-controls', {
       save();
     },
     mark: function() {
-      updateAchievements();
+      updateGoals();
     },
   },
 });
 
-let achievementsComponent = Vue.component('achievement-list', {
+let goalsComponent = Vue.component('goal-list', {
   template: `
 <div id="course-nav-tray">
 <div id="course-nav-tray-container" class="">
-  <ol v-for="achievement in achievements" v-if="achievement.unlocked" class="slide-group">
+  <ol v-for="goal in goals" v-if="goal.unlocked" class="slide-group">
     <li
         class="slide"
-        v-on:click="select(achievement)">
+        v-on:click="select(goal)">
       <a href="#"
-          class="js-slide-link problem" v-bind:class="classes(achievement)">
+          class="js-slide-link problem" v-bind:class="classes(goal)">
         <h3 class="slide-title">
-          {{ achievement.title }}
+          {{ goal.title }}
         </h3>
-        <span class="tooltip-area hide-open" data-toggle="tooltip" data-placement="right" data-container="body" title="" v-bind:data-original-title="achievement.title"></span>
+        <span class="tooltip-area hide-open" data-toggle="tooltip" data-placement="right" data-container="body" title="" v-bind:data-original-title="goal.title"></span>
         <span class="slide-jump-pip"></span>
       </a>
     </li>
   </ol>
 </div>
 </div>`,
-  props: ['achievements', 'selected'],
+  props: ['goals', 'selected'],
   methods: {
-    select: function(achievement) {
-      // Update whether the achievement has been seen or not
+    select: function(goal) {
+      // Update whether the goal has been seen or not
       clearTimeout(this.seenTimeout);
       this.seenTimeout = setTimeout(function() {
-        Vue.set(achievement, 'seen', true);
-        Cookies.set(`achievements[${achievement.id}].seen`, achievement.seen);
+        Vue.set(goal, 'seen', true);
+        Cookies.set(`goals[${goal.id}].seen`, goal.seen);
       }, 2500);
 
       // Update selection
-      this.$emit('select', achievement);
+      this.$emit('select', goal);
     },
-    classes: function(achievement) {
+    classes: function(goal) {
       return {
-        current: achievement == this.selected,
-        solved: achievement.completed,
-        passed: achievement.passing,
+        current: goal == this.selected,
+        solved: goal.completed,
+        passed: goal.passing,
       };
     },
   },
 });
 
-let achievementDescription = Vue.component('achievement-description', {
+let goalDescription = Vue.component('goal-description', {
   template: `
-<div id="achievement">
-  <h2>{{ achievement.title }}</h2>
-  <div id="description" v-html="achievement.description"></div>
+<div id="goal">
+  <h2>{{ goal.title }}</h2>
+  <div id="description" v-html="goal.description"></div>
 </div>`,
-  props: ['achievement'],
+  props: ['goal'],
 });
 
 let blocklyHints = Vue.component('blockly-hints', {
@@ -957,10 +957,10 @@ let blocklyHints = Vue.component('blockly-hints', {
   },
 });
 
-let achievementMarks = Vue.component('achievement-marks', {
+let goalMarks = Vue.component('goal-marks', {
   template: `
 <ul id="marks">
-  <li v-for="check in achievement.checks" class="result-wrapper">
+  <li v-for="check in goal.checks" class="result-wrapper">
     <div class="result-indicator" v-bind:class="passed(check.passing)">
       <span v-bind:class="completion(check.passing)" title="title(check.passing)" role="img"></span>
     </div>
@@ -978,7 +978,7 @@ let achievementMarks = Vue.component('achievement-marks', {
     </div>
   </li>
 </ul>`,
-  props: ['achievement'],
+  props: ['goal'],
   methods: {
     passed: function(passing) {
       return {
@@ -1072,8 +1072,8 @@ let cookieRewards = Vue.component('cookie-rewards', {
           .reduce((total, reward) => total + reward.amount, 0);
         window.cookies += cookies;
       } else if (this.state == 'rewards') {
-        let firstNew = achievements.find(achievement => achievement.unlocked && !achievement.seen && !achievement.completed);
-        mainVue.selectedAchievement = firstNew || achievements[achievements.length-1] || {checks: [], hints: []};
+        let firstNew = goals.find(goal => goal.unlocked && !goal.seen && !goal.completed);
+        mainVue.selectedGoal = firstNew || goals[goals.length-1] || {checks: [], hints: []};
         mainVue.goalRewards = [];
       }
     },
@@ -1085,14 +1085,14 @@ Vue.config.ignoredElements = ['bk'];
 let mainVue = new Vue({
   el: '#main',
   data: {
-    achievements: achievements,
-    selectedAchievement: achievements.find(achievement => !achievement.completed) || achievements[0] || {checks: [], hints: []},
+    goals: goals,
+    selectedGoal: goals.find(goal => !goal.completed) || goals[0] || {checks: [], hints: []},
     cookies: window.cookies,
     goalRewards: [],
   },
   methods: {
-    selectAchievement: function(achievement) {
-      this.selectedAchievement = achievement;
+    selectGoal: function(goal) {
+      this.selectedGoal = goal;
     },
   },
   watch: {

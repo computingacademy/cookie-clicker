@@ -18,7 +18,7 @@
 <body>
   <div id="main">
     <nav>
-      <achievement-list v-bind:achievements="achievements" v-bind:selected="selectedAchievement" v-on:select="selectAchievement"></achievement-list>
+      <goal-list v-bind:goals="goals" v-bind:selected="selectedGoal" v-on:select="selectGoal"></goal-list>
     </nav>
     <content>
       <aside>
@@ -30,8 +30,8 @@
         <cookie-clicker-controls></cookie-clicker-controls>
       </aside>
       <div id="program">
-        <achievement-description v-bind:achievement="selectedAchievement"></achievement-description>
-        <blockly-hints v-bind:hints="selectedAchievement.hints"></blockly-hints>
+        <goal-description v-bind:goal="selectedGoal"></goal-description>
+        <blockly-hints v-bind:hints="selectedGoal.hints"></blockly-hints>
         <blockly-editor></blockly-editor>
       </div>
     </content>
