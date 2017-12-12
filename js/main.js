@@ -1052,6 +1052,11 @@ let cookieRewards = Vue.component('cookie-rewards', {
         let x = bbox.left + bbox.width/2;
         let y = bbox.top + bbox.width/2;
         screenCookieFirework(document.querySelector('#firework-overlay'), x, y);
+
+        let cookies = this.rewards
+          .filter(reward => reward.type == 'cookies')
+          .reduce((total, reward) => total + reward.amount, 0);
+        window.cookies += cookies;
       } else if (this.state == 'rewards') {
         let firstNew = achievements.find(achievement => achievement.unlocked && !achievement.seen && !achievement.completed);
         mainVue.selectedAchievement = firstNew || achievements[achievements.length-1] || {checks: [], hints: []};
