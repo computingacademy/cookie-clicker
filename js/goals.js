@@ -77,7 +77,7 @@ let goals = [{
       // Click cookie
       cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
       // Was the cookie value changed?
-      let changed = window._cookies !== 0;
+      let changed = window._testCookies !== 0;
 
       return changed;
     },
@@ -90,7 +90,7 @@ let goals = [{
       // Click cookie
       cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
       // Was the cookie value incremented?
-      let incremented = window._cookies > cookies;
+      let incremented = window._testCookies > cookies;
 
       return incremented;
     },
@@ -100,15 +100,10 @@ let goals = [{
     test: function(cookieClicker, cookies) {
       // Get original heading text
       let originalText = cookieClicker.querySelector('h1').textContent;
-      // Run the code to see if the change cookies variable was added at the start of the program
-      runCode();
       // Click cookie
       cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
       // Was the cookie value incremented?
-      let incremented = window._cookies == cookies+1;
-      // Reset cookie value
-      window._cookies = cookies;
-      cookieClicker.querySelector('h1').textContent = originalText;
+      let incremented = window._testCookies == cookies+1;
 
       return incremented;
     },
@@ -194,9 +189,9 @@ let goals = [{
       // Was the heading set?
       let headingSet = cookieClicker.querySelector('h1').textContent !== originalText;
       // Was the cookie value incremented?
-      let incremented = window._cookies == cookies+1;
+      let incremented = window._testCookies == cookies+1;
       // Was the heading updated as the number of cookies changed?
-      let headingUpdated = parseInt(cookieClicker.querySelector('h1').textContent.replace(/[^\d]*/g, '')) == window._cookies;
+      let headingUpdated = parseInt(cookieClicker.querySelector('h1').textContent.replace(/[^\d]*/g, '')) == window._testCookies;
 
       return headingSet && incremented && headingUpdated;
     },
@@ -292,9 +287,9 @@ let goals = [{
       // Click cookie
       cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
       // Does the heading have the correct number?
-      let headingNumber = parseInt(cookieClicker.querySelector('h1').textContent.replace(/[^\d]*/g, '')) == window._cookies;
+      let headingNumber = parseInt(cookieClicker.querySelector('h1').textContent.replace(/[^\d]*/g, '')) == window._testCookies;
       // Does the heading have some text?
-      let headingText = cookieClicker.querySelector('h1').textContent !== window._cookies+'';
+      let headingText = cookieClicker.querySelector('h1').textContent !== window._testCookies+'';
 
       return noCookies && headingNumber && headingText;
     },

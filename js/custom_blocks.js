@@ -18,7 +18,7 @@ Blockly.Blocks['image_set'] = {
 
 Blockly.JavaScript['image_set'] = function(block) {
   var picture = block.getFieldValue('PICTURE');
-  var code = 'document.querySelector("#cookie-clicker img").src = "' + picture + '";\n';
+  var code = 'image.src = "' + picture + '";\n';
   return code;
 }
 
@@ -36,7 +36,7 @@ Blockly.Blocks['heading_set'] = {
 Blockly.JavaScript['heading_set'] = function(block) {
   var text = Blockly.JavaScript.valueToCode(block, 'VALUE',
       Blockly.JavaScript.ORDER_FUNCTION_CALL) || '\'\'';;
-  var code = 'document.querySelector("#cookie-clicker h1").textContent = ' + text + ';\n';
+  var code = 'heading.textContent = ' + text + ';\n';
   return code;
 };
 
@@ -57,7 +57,7 @@ Blockly.Blocks['on_click'] = {
 
 Blockly.JavaScript['on_click'] = function(block) {
   var doCode = Blockly.JavaScript.statementToCode(block, 'DO');
-  var code = 'document.querySelector("#cookie-clicker img").addEventListener("click", function() {\n' + doCode + '});\n';
+  var code = 'image.addEventListener("click", function() {\n' + doCode + '});\n';
   return code;
 };
 

@@ -1,17 +1,43 @@
 window._cookies = 0;
+window._testCookies = 0;
 
-function runCode() {
+function code(workspace) {
   Blockly.JavaScript.addReservedWords('code');
   var code = 'window._cookies = 0;\n'
-    + 'document.querySelector("#cookie-clicker h1").textContent = "No cookies";\n'
-    + 'var image = document.querySelector("#cookie-clicker img");\n'
-    + 'var clone = image.cloneNode(true);\n'
+    + 'let heading = document.querySelector("#cookie-clicker h1");\n'
+    + 'heading.textContent = "No cookies";\n'
+    + 'let image = document.querySelector("#cookie-clicker img");\n'
+    + 'let clone = image.cloneNode(true);\n'
     + 'clone.src = "";\n'
     + 'image.parentNode.replaceChild(clone, image);\n'
+    + 'image = clone;\n'
     + Blockly.JavaScript.workspaceToCode(workspace).replace(/var cookies;\n/, '');
+  return code;
+}
+
+function testCode(workspace) {
+  Blockly.JavaScript.addReservedWords('code');
+  var code = 'window._test = true;\n'
+    + 'window._testCookies = 0;\n'
+    + 'let cookieClicker = document.createElement("div");\n'
+    + 'let heading = document.createElement("h1");\n'
+    + 'heading.textContent = "No cookies";\n'
+    + 'let image = document.createElement("img");\n'
+    + 'image.src = "";\n'
+    + 'cookieClicker.appendChild(heading);\n' 
+    + 'cookieClicker.appendChild(image);\n' 
+    + Blockly.JavaScript.workspaceToCode(workspace).replace(/var cookies;\n/, '')
+    + 'let result = test(cookieClicker, cookies);\n'
+    + 'window._test = false;\n'
+    + 'result;\n';
+  return code;
+}
+
+function runCode(code, test) {
   try {
-    eval(code);
+    return eval(code);
   } catch (e) {
+    console.error(e);
   }
 }
 
@@ -89,17 +115,7 @@ function updateGoals(silent) {
 }
 
 function doCheck(check) {
-  var cookieClicker = document.querySelector('#cookie-clicker');
-  var cookiesFreeze = window._cookiesFreeze;
-  window._cookiesFreeze = true;
-  var originalCookies = window._cookies;
-  var originalHeading = cookieClicker.querySelector('h1').textContent;
-  runCode();
-  var result = check.test(cookieClicker, window.cookies);
-  window._cookies = originalCookies;
-  cookieClicker.querySelector('h1').textContent = originalHeading;
-  window._cookiesFreeze = cookiesFreeze;
-  return result;
+  return runCode(testCode(workspace), check.test);
 }
 
 function goalRewards(goal) {
@@ -242,7 +258,7 @@ let blocklyComponent = Vue.component('blockly-editor', {
 
       if (!dragCreation && !selection) {
         updateGoals();
-        runCode();
+        runCode(code(workspace));
         save();
       }
     });
@@ -292,7 +308,7 @@ let cookieClickerControls =  Vue.component('cookie-clicker-controls', {
 </div>`,
   methods: {
     reset: function() {
-      runCode();
+      runCode(code(workspace));
       save();
     },
     mark: function() {
@@ -558,7 +574,7 @@ let mainVue = new Vue({
   data: {
     goals: goals,
     selectedGoal: goals.find(goal => !goal.completed) || goals[0] || {checks: [], hints: []},
-    cookies: window.cookies,
+    cookies: window._cookies,
     goalRewards: [],
   },
   methods: {
@@ -578,13 +594,18 @@ let mainVue = new Vue({
 Object.defineProperty(window, 'cookies', {
   get: function() {
     // Get the number of cookies
-    return this._cookies;
+    if (window._test)
+      return this._testCookies;
+    else
+      return this._cookies;
   },
   set: function(val) {
     // Update cookies value
-    if (!window._cookiesFreeze) {
+    if (window._test)
+      this._testCookies = val;
+    else {
       mainVue.cookies = (mainVue.cookies + val-this._cookies) || val;
+      this._cookies = val;
     }
-    this._cookies = val;
   }
 });
