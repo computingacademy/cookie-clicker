@@ -781,7 +781,7 @@ let blocklyComponent = Vue.component('blockly-editor', {
       load();
       updateAchievements(true);
       // Select first uncompleted achievement or the last one if they are all completed
-      mainVue.selectedAchievement = achievements.find(achievement => !achievement.completed) || achievements[achievements.length-1] || {checks: []};
+      mainVue.selectedAchievement = achievements.find(achievement => !achievement.completed) || achievements[achievements.length-1] || {checks: [], hints: []};
     }, 10);
 
     this.__instance = workspace;
@@ -1054,7 +1054,7 @@ let cookieRewards = Vue.component('cookie-rewards', {
         screenCookieFirework(document.querySelector('#firework-overlay'), x, y);
       } else if (this.state == 'rewards') {
         let firstNew = achievements.find(achievement => achievement.unlocked && !achievement.seen && !achievement.completed);
-        mainVue.selectedAchievement = firstNew;
+        mainVue.selectedAchievement = firstNew || achievements[achievements.length-1] || {checks: [], hints: []};
         mainVue.goalRewards = [];
       }
     },
@@ -1067,7 +1067,7 @@ let mainVue = new Vue({
   el: '#main',
   data: {
     achievements: achievements,
-    selectedAchievement: achievements.find(achievement => !achievement.completed) || achievements[0] || {checks: []},
+    selectedAchievement: achievements.find(achievement => !achievement.completed) || achievements[0] || {checks: [], hints: []},
     cookies: window.cookies,
     goalRewards: [],
   },
