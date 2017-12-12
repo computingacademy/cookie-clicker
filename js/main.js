@@ -285,15 +285,31 @@ let cookieCounter = Vue.component('cookie-counter', {
   template: `
 <div id="cookie-counter">
   <img src="images/choc-chip.png">
-  <span id="cookie-count">{{cookies}}</span>
+  <span id="cookie-count">{{count}}</span>
 </div>`,
   props: ['cookies'],
+  data: function() {
+    return {
+      count: this.cookies,
+    };
+  },
   watch: {
     cookies: function(newValue, oldValue) {
       let img = this.$el.querySelector('img');
       let delta = newValue - oldValue;
 
       if (delta) {
+        this.count = oldValue;
+        let vm = this;
+        let addEvent = img.addEventListener("animationiteration", function() {
+          vm.count += 1;
+        }, false);
+        let endEvent = img.addEventListener("animationend", function() {
+          vm.count = newValue;
+          img.removeEventListener(addEvent);
+          img.removeEventListener(endEvent);
+        }, false);
+
         img.classList.remove('animated');
         setTimeout(function() {
           img.style.animationIterationCount = delta;
