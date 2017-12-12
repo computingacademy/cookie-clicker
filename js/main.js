@@ -795,6 +795,20 @@ let cookieCounter = Vue.component('cookie-counter', {
   <span id="cookie-count">{{cookies}}</span>
 </div>`,
   props: ['cookies'],
+  watch: {
+    cookies: function(newValue, oldValue) {
+      let img = this.$el.querySelector('img');
+      let delta = newValue - oldValue;
+
+      if (delta) {
+        img.classList.remove('animated');
+        setTimeout(function() {
+          img.style.animationIterationCount = delta;
+          img.classList.add('animated');
+        }, 1);
+      }
+    },
+  },
 });
 
 let cookieClickerControls =  Vue.component('cookie-clicker-controls', {
