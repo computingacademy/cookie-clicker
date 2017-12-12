@@ -28,6 +28,7 @@
           <img src>
         </div>
         <cookie-clicker-controls></cookie-clicker-controls>
+        <interaction-check v-bind:goal="selectedGoal" v-bind:clicks="clicks"></interaction-check>
       </aside>
       <div id="program">
         <goal-description v-bind:goal="selectedGoal"></goal-description>

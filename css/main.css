@@ -64,6 +64,12 @@ content {
   display: none;
 }
 
+#interaction-check {
+  padding: 1px 10px;
+  background: #eee;
+  border-radius: 10px;
+}
+
 #achievement {
   width: 100%;
   padding: 4px;

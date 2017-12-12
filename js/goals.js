@@ -20,6 +20,11 @@ let goals = [{
     hint: '<p>Drag the <bk class="io">set image</bk> block into the workspace.</p>',
     location: 'workspace',
   }],
+  interaction: {
+    afterHint: 0,
+    message: '<p>You did it!</p><p>Click the crumbs!</p>',
+    clicks: 1,
+  },
   prerequisites: [],
   blocks: ['image_set'],
 }, {
@@ -52,6 +57,11 @@ let goals = [{
       return block.type === 'image_set';
     },
   }],
+  interaction: {
+    afterHint: 1,
+    message: '<p>Awesome cookie!</p><p>Click it!</p>',
+    clicks: 1,
+  },
   prerequisites: [
     'Set image',
   ],
@@ -136,6 +146,11 @@ let goals = [{
       return block.type === 'variables_add';
     },
   }],
+  interaction: {
+    afterHint: 1,
+    message: '<p>Can you click the cookie 5 times?</p>',
+    clicks: 5,
+  },
   prerequisites: [
     'Set image',
     'Choose image',
@@ -230,6 +245,11 @@ let goals = [{
       return block.type === 'heading_set';
     },
   }],
+  interaction: {
+    afterHint: 1,
+    message: '<p>Click the cookie to see the heading change.</p>',
+    clicks: 5,
+  },
   prerequisites: [
     'On click',
   ],
@@ -348,6 +368,11 @@ let goals = [{
       return block.type === 'text_join';
     },
   }],
+  interaction: {
+    afterHint: 1,
+    message: '<p>Click the cookie to see the heading change.</p>',
+    clicks: 5,
+  },
   prerequisites: [
     'Set heading on click',
   ],
@@ -516,6 +541,11 @@ let goals = [{
       return block.type === 'controls_if';
     },
   }],
+  interaction: {
+    afterHint: 0,
+    message: '<p>Click the cookie to check if the cookie changes after 10 clicks.</p>',
+    clicks: 10,
+  },
   prerequisites: [
     'On click',
   ],

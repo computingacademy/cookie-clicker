@@ -9,6 +9,7 @@ function code(workspace) {
     + 'let image = document.querySelector("#cookie-clicker img");\n'
     + 'let clone = image.cloneNode(true);\n'
     + 'clone.src = "";\n'
+    + 'clone.addEventListener("click", function() { mainVue.clicks++; });\n'
     + 'image.parentNode.replaceChild(clone, image);\n'
     + 'image = clone;\n'
     + Blockly.JavaScript.workspaceToCode(workspace).replace(/var cookies;\n/, '');
@@ -61,8 +62,12 @@ function updateGoals(silent) {
       Vue.set(check, 'passing', passed);
       return passed;
     });
+
+    // Has the interaction for this goal been completed?
+    goal.interacted = mainVue.selectedGoal === goal? mainVue.clicks >= goal.interaction.clicks : (goal.interacted || goal.completed);
+
     // Is this goal currently passing all checks?
-    let passing = passes.every(pass => pass);
+    let passing = passes.every(pass => pass) && goal.interacted;
     Vue.set(goal, 'passing', passing);
     // Is this a new goal completion?
     if (!goal.completed && passing) {
@@ -257,6 +262,7 @@ let blocklyComponent = Vue.component('blockly-editor', {
       let selection = event.type == Blockly.Events.UI && event.element == 'selected';
 
       if (!dragCreation && !selection) {
+        mainVue.clicks = 0;
         updateGoals();
         runCode(code(workspace));
         save();
@@ -308,11 +314,32 @@ let cookieClickerControls =  Vue.component('cookie-clicker-controls', {
 </div>`,
   methods: {
     reset: function() {
+      mainVue.clicks = 0;
       runCode(code(workspace));
       save();
     },
     mark: function() {
       updateGoals();
+    },
+  },
+});
+
+let interactionCheck =  Vue.component('interaction-check', {
+  template: `
+<div id="interaction-check" v-if="hintsCompleted(goal)">
+  <div v-html="goal.interaction.message"></div>
+</div>`,
+  props: ['goal', 'clicks'],
+  watch: {
+    clicks: function(clicks) {
+      updateGoals();
+    }
+  },
+  methods: {
+    hintsCompleted: function(goal) {
+      let firstUsefulHint = goal.hints.findIndex(hint => hint.useful);
+      let completed = firstUsefulHint < 0 || firstUsefulHint > goal.interaction.afterHint;
+      return completed;
     },
   },
 });
@@ -576,6 +603,7 @@ let mainVue = new Vue({
     selectedGoal: goals.find(goal => !goal.completed) || goals[0] || {checks: [], hints: []},
     cookies: window._cookies,
     goalRewards: [],
+    clicks: 0,
   },
   methods: {
     selectGoal: function(goal) {
