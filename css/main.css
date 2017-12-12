@@ -25,9 +25,14 @@ content {
   flex-grow: 1;
 }
 
+  #blockly-div .blocklySvg {
+    background: none;
+    z-index: 6;
+  }
+
 #blockly-hints {
   position: absolute;
-  z-index: 40;
+  z-index: 5;
   pointer-events: none;
 }
   .blockly-hint {
