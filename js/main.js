@@ -600,7 +600,7 @@ let cookieRewards = Vue.component('cookie-rewards', {
         let cookies = this.rewards
           .filter(reward => reward.type == 'cookies')
           .reduce((total, reward) => total + reward.amount, 0);
-        window.cookies += cookies;
+        mainVue.cookies += cookies;
       } else if (this.state == 'rewards') {
         let firstNew = goals.find(goal => goal.unlocked && !goal.seen && !goal.completed);
         mainVue.selectedGoal = firstNew || goals[goals.length-1] || {checks: [], hints: []};
