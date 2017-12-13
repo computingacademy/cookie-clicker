@@ -247,7 +247,7 @@ function load() {
 }
 
 let blocklyComponent = Vue.component('blockly-editor', {
-  template: '<div id="blockly-div"></div>',
+  template: '<div id="blockly-div" class="noselect"></div>',
   mounted:function() {
     window.workspace = Blockly.inject(this.$el,
       { media: 'blockly/media/',
@@ -283,7 +283,7 @@ let blocklyComponent = Vue.component('blockly-editor', {
 
 let cookieCounter = Vue.component('cookie-counter', {
   template: `
-<div id="cookie-counter">
+<div id="cookie-counter" class="noselect">
   <img src="images/choc-chip.png">
   <span id="cookie-count">{{count}}</span>
 </div>`,
@@ -322,7 +322,7 @@ let cookieCounter = Vue.component('cookie-counter', {
 
 let cookieClickerControls =  Vue.component('cookie-clicker-controls', {
   template: `
-<div id="cookie-clicker-controls">
+<div id="cookie-clicker-controls" class="noselect">
   <button v-on:click="reset()" id="reset">
     <span class="icon icon-spinner11"></span>
     Reset
@@ -542,7 +542,7 @@ let goalMarks = Vue.component('goal-marks', {
 
 let cookieRewards = Vue.component('cookie-rewards', {
   template: `
-<div v-if="rewards.length !== 0" id="cookie-rewards">
+<div v-if="rewards.length !== 0" id="cookie-rewards" class="noselect">
   <h1>You unlocked...</h1>
   <div v-if="state == 'cookie'" v-bind:style="position()" class="reward-cookie"></div>
   <ul v-if="state == 'rewards'" v-bind:style="position()">

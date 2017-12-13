@@ -17,13 +17,13 @@
 </head>
 <body>
   <div id="main">
-    <nav>
+    <nav class="noselect">
       <goal-list v-bind:goals="goals" v-bind:selected="selectedGoal" v-on:select="selectGoal"></goal-list>
     </nav>
     <content>
       <aside>
         <cookie-counter v-bind:cookies="cookies"></cookie-counter>
-        <div id="cookie-clicker">
+        <div id="cookie-clicker" class="noselect">
           <h1>No cookies</h1>
           <img src>
         </div>
