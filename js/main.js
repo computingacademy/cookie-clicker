@@ -540,7 +540,7 @@ let goalMarks = Vue.component('goal-marks', {
 let cookieRewards = Vue.component('cookie-rewards', {
   template: `
 <div v-if="rewards.length !== 0" id="cookie-rewards" class="noselect">
-  <h1>You unlocked...</h1>
+  <h1 v-if="state != 'next'">You unlocked...</h1>
   <div v-if="state == 'cookie'" v-bind:style="position()" class="reward-cookie" v-on:click="unlock()"></div>
   <ul v-if="state == 'rewards'" v-bind:style="position()">
     <li v-for="reward in rewards">
@@ -562,9 +562,17 @@ let cookieRewards = Vue.component('cookie-rewards', {
       </span>
     </li>
   </ul>
-<div id="fullscreen" v-if="state == 'rewards'" v-on:click="unlock()"></div>
+  <div v-if="state == 'next'">
+    <h1>Next goal...</h1>
+    <h2 v-html="goal.title"></h2>
+    <h3 v-html="goal.shortDescription"></h3>
+  </div>
+  <button v-if="state != 'cookie'" v-on:click="unlock()">
+    <span class="icon icon-arrow-right"></span>
+    Next
+  </button>
 </div>`,
-  props: ['rewards'],
+  props: ['rewards', 'goal'],
   data: function() {
     return {
       state: 'cookie',
@@ -599,8 +607,10 @@ let cookieRewards = Vue.component('cookie-rewards', {
           .reduce((total, reward) => total + reward.amount, 0);
         mainVue.cookies += cookies;
       } else if (this.state == 'rewards') {
+        this.state = 'next';
         let firstNew = goals.find(goal => goal.unlocked && !goal.seen && !goal.completed);
         mainVue.selectedGoal = firstNew || goals[goals.length-1] || {checks: [], hints: []};
+      } else if (this.state == 'next') {
         mainVue.goalRewards = [];
       }
     },

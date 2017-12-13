@@ -5,6 +5,7 @@ let goals = [{
   completed: false,
   seen: true,
   description: '<p>To make a Cookie Clicker first we need a picture to click!<p>',
+  shortDescription: 'Set the image',
   checks: [{
     description: 'Add the set image block',
     hint: '<p>Drag the <bk class="io">set image</bk> block into the workspace.</p>',
@@ -34,6 +35,7 @@ let goals = [{
   completed: false,
   seen: false,
   description: '<p>Hmmm... looks like the image isn\'t a cookie yet.<p>',
+  shortDescription: 'Set the image to a cookie',
   checks: [{
     description: 'Set the image to a cookie',
     hint: '<p>Click the dropdown arrow on the <bk class="io">set image</bk> block in your workspace. Then choose your cookie!</p>',
@@ -73,6 +75,7 @@ let goals = [{
   completed: false,
   seen: false,
   description: '<p>Now that we have the cookie we need to add the most fun part of the Cookie Clicker. Adding cookies when we click!</p>',
+  shortDescription: 'Add a cookie on click',
   checks: [{
     description: 'Add the on click block',
     hint: '<p>Drag the <bk class="control">on click</bk> block into the workspace.</p>',
@@ -163,6 +166,7 @@ let goals = [{
   completed: false,
   seen: false,
   description: '<p>How many cookies have we clicked this game? Set the heading to the number of cookies so we can see!</p>',
+  shortDescription: 'On click set the heading to the number of cookies',
   checks: [{
     description: 'Show \'No cookies\' at the start',
     hint: '<p>Make sure you don\'t use the <bk class="io">set heading</bk> block outside of the <bk class="control">on click</bk> block!</p>',
@@ -261,6 +265,7 @@ let goals = [{
   completed: false,
   seen: false,
   description: '<p>Once you\'re counting the number of cookies add the word "cookies" to the heading so a person playing knows what the number means!</p>',
+  shortDescription: 'Set the heading to "X cookies"',
   checks: [{
     description: 'Count the number of cookies clicked',
     hint: '<p>Set the heading to the number of cookies on click. You can do this by finishing the \'How many cookies?\' goal.</p>',
@@ -384,6 +389,7 @@ let goals = [{
   completed: false,
   seen: false,
   description: '<p>We need some cool rewards for people playing our cookie clicker so they keep clicking that cookie! Let\'s change the cookie picture to a cooler cookie once 10 cookies have been clicked.</p>',
+  shortDescription: 'Upgrade the cookie after 10 clicks',
   checks: [{
     description: 'Count the number of cookies clicked',
     hint: '<p>Add a cookie every time the cookie image is clicked. You can do this by finishing the \'Click that cookie!\' goal.</p>',

@@ -237,7 +237,9 @@ nav {
   background: rgba(0,0,0, 0.7);
 }
 
-  #cookie-rewards h1 {
+  #cookie-rewards h1,
+  #cookie-rewards h2,
+  #cookie-rewards h3 {
     color: white;
   }
 
@@ -272,6 +274,14 @@ nav {
     background-size: contain;
     background-repeat: no-repeat;
     padding-left: 60px;
+  }
+
+  #cookie-rewards button {
+    font-size: 20px;
+    background-color: #1b79bf;
+  }
+  #cookie-rewards button:hover {
+    background-color: #2891e0;
   }
 
 #firework-overlay {
