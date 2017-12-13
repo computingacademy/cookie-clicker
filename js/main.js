@@ -293,28 +293,25 @@ let cookieCounter = Vue.component('cookie-counter', {
       count: this.cookies,
     };
   },
+  mounted: function() {
+    let img = this.$el.querySelector('img');
+    let vm = this;
+    let addEvent = img.addEventListener("animationiteration", function() {
+      if (vm.count < vm.cookies) {
+        vm.count += 1;
+      } else {
+        img.classList.remove('animated');
+      }
+    }, false);
+  },
   watch: {
     cookies: function(newValue, oldValue) {
       let img = this.$el.querySelector('img');
       let delta = newValue - oldValue;
 
-      if (delta) {
+      if (delta > 0) {
         this.count = oldValue;
-        let vm = this;
-        let addEvent = img.addEventListener("animationiteration", function() {
-          vm.count += 1;
-        }, false);
-        let endEvent = img.addEventListener("animationend", function() {
-          vm.count = newValue;
-          img.removeEventListener(addEvent);
-          img.removeEventListener(endEvent);
-        }, false);
-
-        img.classList.remove('animated');
-        setTimeout(function() {
-          img.style.animationIterationCount = delta;
-          img.classList.add('animated');
-        }, 1);
+        img.classList.add('animated');
       }
     },
   },

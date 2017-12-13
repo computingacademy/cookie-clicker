@@ -92,7 +92,7 @@
 }
 
 #cookie-counter .animated {
-  animation: count 0.2s linear;
+  animation: count 0.2s linear infinite;
 }
 
 @keyframes count {
