@@ -540,7 +540,7 @@ let goalMarks = Vue.component('goal-marks', {
 let cookieRewards = Vue.component('cookie-rewards', {
   template: `
 <div v-if="rewards.length !== 0" id="cookie-rewards" class="noselect">
-  <h1 v-if="state != 'next'">You unlocked...</h1>
+  <h1 v-if="state == 'cookie' || state == 'rewards'">You unlocked...</h1>
   <div v-if="state == 'cookie'" v-bind:style="position()" class="reward-cookie" v-on:click="unlock()"></div>
   <ul v-if="state == 'rewards'" v-bind:style="position()">
     <li v-for="reward in rewards">
@@ -562,12 +562,11 @@ let cookieRewards = Vue.component('cookie-rewards', {
       </span>
     </li>
   </ul>
-  <div v-if="state == 'next'">
+  <div v-if="state == 'next' || state == 'nextContinue'">
     <h1>Next goal...</h1>
-    <h2 v-html="goal.title"></h2>
     <h3 v-html="goal.shortDescription"></h3>
   </div>
-  <button v-if="state != 'cookie'" v-on:click="unlock()">
+  <button v-if="state == 'rewards' || state == 'nextContinue'" v-on:click="unlock()">
     <span class="icon icon-arrow-right"></span>
     Next
   </button>
@@ -610,7 +609,13 @@ let cookieRewards = Vue.component('cookie-rewards', {
         this.state = 'next';
         let firstNew = goals.find(goal => goal.unlocked && !goal.seen && !goal.completed);
         mainVue.selectedGoal = firstNew || goals[goals.length-1] || {checks: [], hints: []};
+
+        let vm = this;
+        setTimeout(function() {
+          vm.state = 'nextContinue';
+        }, 2000);
       } else if (this.state == 'next') {
+      } else if (this.state == 'nextContinue') {
         mainVue.goalRewards = [];
       }
     },
