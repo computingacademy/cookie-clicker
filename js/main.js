@@ -544,7 +544,7 @@ let cookieRewards = Vue.component('cookie-rewards', {
   template: `
 <div v-if="rewards.length !== 0" id="cookie-rewards" class="noselect">
   <h1>You unlocked...</h1>
-  <div v-if="state == 'cookie'" v-bind:style="position()" class="reward-cookie"></div>
+  <div v-if="state == 'cookie'" v-bind:style="position()" class="reward-cookie" v-on:click="unlock()"></div>
   <ul v-if="state == 'rewards'" v-bind:style="position()">
     <li v-for="reward in rewards">
       <span v-if="reward.type == 'cookies'" class="cookies">
@@ -565,7 +565,7 @@ let cookieRewards = Vue.component('cookie-rewards', {
       </span>
     </li>
   </ul>
-<div id="fullscreen" v-on:click="unlock()"></div>
+<div id="fullscreen" v-if="state == 'rewards'" v-on:click="unlock()"></div>
 </div>`,
   props: ['rewards'],
   data: function() {
