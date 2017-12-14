@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Code a Cookie Clicker</title>
+  <script src="https://unpkg.com/vue"></script>
+  <script src="blockly/blockly_compressed.js"></script>
+  <script src="blockly/blocks_compressed.js"></script>
+  <script src="blockly/javascript_compressed.js"></script>
+  <script src="blockly/msg/js/en.js"></script>
+  <script src="js/lib/cookie.js"></script>
+  <link rel="stylesheet" href="https://static.groklearning-cdn.com/static/combined/main-v3-css/056115f8d31159dedf454a7c74a4aee3fab3009edf957780e7b75834.css">
+  <link rel="stylesheet" href="css/icomoon.css">
+  <link rel="stylesheet" href="css/animation.css">
+  <link rel="stylesheet" href="css/main.css">
+  <script src="js/animation.js"></script>
+</head>
+<body>
+  <div id="main">
+    <nav class="noselect">
+      <goal-list v-bind:goals="goals" v-bind:selected="selectedGoal" v-on:select="selectGoal"></goal-list>
+    </nav>
+    <content>
+      <aside>
+        <cookie-counter v-bind:cookies="cookies"></cookie-counter>
+        <div id="cookie-clicker" class="noselect">
+          <h1>No cookies</h1>
+          <img src>
+        </div>
+        <cookie-clicker-controls v-bind:hintsOn="hints"></cookie-clicker-controls>
+        <interaction-check v-bind:goal="selectedGoal" v-bind:clicks="clicks"></interaction-check>
+      </aside>
+      <div id="program">
+        <goal-description v-bind:goal="selectedGoal"></goal-description>
+        <blockly-hints v-bind:hints="selectedGoal.hints" v-bind:hintsOn="hints"></blockly-hints>
+        <blockly-editor></blockly-editor>
+      </div>
+    </content>
+    <cookie-rewards v-bind:rewards="goalRewards" v-bind:goal="selectedGoal" v-bind:hintsOn="hints"></cookie-rewards>
+  </div>
+
+  <div id="firework-overlay"></div>
+
+  <xml id="toolbox" style="display: none">
+    <block type="image_set"></block>
+    <block type="on_click"></block>
+    <block type="variables_add">
+      <field name="VARIABLE">cookies</field>
+      <field name="NUMBER">1</field>
+    </block>
+    <block type="heading_set"></block>
+    <block type="variables_get">
+      <field name="VAR">cookies</field>
+    </block>
+    <block type="text_join"></block>
+    <block type="text">
+      <field name="TEXT"> Cookies</field>
+    </block>
+    <block type="controls_if"></block>
+    <block type="logic_compare">
+        <field name="OP">GTE</field>
+        <value name="B">
+            <block type="math_number">
+              <field name="NUM">10</field>
+            </block>
+        </value>
+    </block>
+  </xml>
+
+  <script src="js/custom_blocks.js"></script>
+  <script src="js/goals.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
