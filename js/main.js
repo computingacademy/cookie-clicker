@@ -324,7 +324,13 @@ let cookieClickerControls =  Vue.component('cookie-clicker-controls', {
     <span class="icon icon-spinner11"></span>
     Reset
   </button>
+  <button v-on:click="hintsToggle()" id="hints" v-bind:class="{on: hintson, off: !hintson}">
+    <span v-bind:class="hintIcon(hintson)"></span>
+    <span v-if="hintson">Hints on</span>
+    <span v-if="!hintson">Hints off</span>
+  </button>
 </div>`,
+  props: ['hintson'],
   methods: {
     reset: function() {
       mainVue.clicks = 0;
@@ -333,6 +339,16 @@ let cookieClickerControls =  Vue.component('cookie-clicker-controls', {
     },
     mark: function() {
       updateGoals();
+    },
+    hintsToggle: function() {
+      mainVue.hints = !this.hintson;
+    },
+    hintIcon: function(hintson) {
+      return {
+        'icon': true,
+        'icon-eye': hintson,
+        'icon-eye-blocked': !hintson,
+      };
     },
   },
 });
@@ -411,11 +427,11 @@ let goalDescription = Vue.component('goal-description', {
 
 let blocklyHints = Vue.component('blockly-hints', {
   template: `
-<div id="blockly-hints" v-bind:style="workspacePosition(top, left, width, height)">
+<div id="blockly-hints" v-if="hintson" v-bind:style="workspacePosition(top, left, width, height)">
   <div v-for="hint in hints" v-if="hint.useful" v-html="hint.hint" class="blockly-hint" v-bind:style="position(hint.location, moved)">
   </div>
 </div>`,
-  props: ['hints'],
+  props: ['hints', 'hintson'],
   data: function(hints) {
     return {
       top: 0,
@@ -632,6 +648,7 @@ let mainVue = new Vue({
     cookies: window._cookies,
     goalRewards: [],
     clicks: 0,
+    hints: true,
   },
   methods: {
     selectGoal: function(goal) {

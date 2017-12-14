@@ -27,12 +27,12 @@
           <h1>No cookies</h1>
           <img src>
         </div>
-        <cookie-clicker-controls></cookie-clicker-controls>
+        <cookie-clicker-controls v-bind:hintsOn="hints"></cookie-clicker-controls>
         <interaction-check v-bind:goal="selectedGoal" v-bind:clicks="clicks"></interaction-check>
       </aside>
       <div id="program">
         <goal-description v-bind:goal="selectedGoal"></goal-description>
-        <blockly-hints v-bind:hints="selectedGoal.hints"></blockly-hints>
+        <blockly-hints v-bind:hints="selectedGoal.hints" v-bind:hintsOn="hints"></blockly-hints>
         <blockly-editor></blockly-editor>
       </div>
     </content>

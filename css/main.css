@@ -157,6 +157,12 @@ button {
   #mark:hover {
     background-color: #fc6f7a;
   }
+  #hints.on {
+    background-color: #fb4251;
+  }
+  #hints.on:hover {
+    background-color: #fc6f7a;
+  }
 
 nav {
   text-align: center;
