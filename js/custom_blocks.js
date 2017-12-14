@@ -101,3 +101,17 @@ setColour('text', '#00aa00');
 setColour('controls_if', '#ff7700');
 setColour('logic_compare', '#fed651');
 setColour('math_number', '#0080e4');
+
+// Remove mutators from existing blocks
+function removeMutator(block) {
+  let prev_init = Blockly.Blocks[block].init;
+  Blockly.Blocks[block] = {
+    init: function() {
+      prev_init.call(this, arguments);
+      this.setMutator(undefined);
+    },
+  }
+}
+
+removeMutator('controls_if');
+removeMutator('text_join');
