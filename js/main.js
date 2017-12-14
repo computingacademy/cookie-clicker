@@ -34,6 +34,17 @@ function testCode(workspace) {
   return code;
 }
 
+function viewCode(workspace) {
+  let url = window.location.pathname.split('/').slice(0, -1).join('/');
+  Blockly.JavaScript.addReservedWords('code');
+  var code = 'let heading = document.querySelector(\'h1\');\n'
+    + 'let image = document.querySelector(\'img\');\n'
+    + Blockly.JavaScript.workspaceToCode(workspace)
+        .replace(/var cookies;\n/, 'let cookies = 0;\n')
+        .replace(/"(images\/[^"]*)"/g, (match, image) => `"${location.origin}${url}/${image}"`);
+  return code;
+}
+
 function runCode(code, test) {
   try {
     return eval(code);
@@ -330,6 +341,7 @@ let cookieClickerControls =  Vue.component('cookie-clicker-controls', {
     <span v-if="hintson">Hints on</span>
     <span v-if="!hintson">Hints off</span>
   </button>
+  <view-code></view-code>
 </div>`,
   props: ['hintson'],
   methods: {
@@ -657,6 +669,43 @@ let cookieRewards = Vue.component('cookie-rewards', {
     cookieBonus: function() {
       let bonus = !(Cookies.get(`goals[${this.goal.id}].hintsSeen`) === 'true');
       return bonus;
+    },
+  },
+});
+
+let viewCodeButton = Vue.component('view-code', {
+  template: `
+<span>
+  <form action="https://codepen.io/pen/define" method="POST" target="_blank" style="display: none;">
+    <input type="hidden" name="data">
+  </form>
+  <button v-on:click="submit()">
+    <span class="icon icon-terminal"></span>
+    View code
+  </button>
+</span>`,
+  data: function() {
+    return {
+      codepen: '',
+    };
+  },
+  methods: {
+    submit: function() {
+      let css =
+`body {
+  text-align: center;
+}`;
+      let code = viewCode(workspace);
+      let codepenJSON = {
+        title: 'Cookie Clicker',
+        html: '<h1>No cookies</h1>\n<img src="">',
+        js: code,
+        css: css,
+      };
+
+      let form = this.$el.querySelector('form');
+      form.data.value = JSON.stringify(codepenJSON);
+      form.submit();
     },
   },
 });
