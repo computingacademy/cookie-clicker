@@ -300,7 +300,9 @@ let cookieCounter = Vue.component('cookie-counter', {
     let addEvent = img.addEventListener("animationiteration", function() {
       if (vm.count < vm.cookies) {
         vm.count += 1;
-      } else {
+      }
+
+      if (vm.count === vm.cookies) {
         img.classList.remove('animated');
       }
     }, false);
@@ -311,7 +313,7 @@ let cookieCounter = Vue.component('cookie-counter', {
       let delta = newValue - oldValue;
 
       if (delta > 0) {
-        this.count = oldValue;
+        img.style.animationDuration = (0.2/Math.max((this.cookies-this.count)/3, 1))+'s';
         img.classList.add('animated');
       }
     },
