@@ -267,7 +267,7 @@ nav {
     border-radius: 100px;
   }
 
-  #cookie-rewards li span {
+  #cookie-rewards li > span {
     display: inline-block;
     margin: 10px;
     padding: 15px 20px;
@@ -282,12 +282,23 @@ nav {
     padding-left: 60px;
   }
 
-  #cookie-rewards button {
+  #cookie-rewards button.highlighted {
     font-size: 20px;
+  }
+  #cookie-rewards button {
     background-color: #1b79bf;
   }
   #cookie-rewards button:hover {
     background-color: #2891e0;
+  }
+
+  #cookie-rewards button img {
+    margin-top: -2px;
+    height: 14px;
+  }
+  #cookie-rewards button.highlighted img {
+    margin-top: -4px;
+    height: 28px;
   }
 
 #firework-overlay {

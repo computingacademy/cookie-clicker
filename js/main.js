@@ -275,6 +275,7 @@ let blocklyComponent = Vue.component('blockly-editor', {
       updateGoals(true);
       // Select first uncompleted goal or the last one if they are all completed
       mainVue.selectedGoal = goals.find(goal => !goal.completed) || goals[goals.length-1] || {checks: [], hints: []};
+      Cookies.set(`goals[${mainVue.selectedGoal.id}].hintsSeen`, true);
     }, 10);
 
     this.__instance = workspace;
@@ -342,6 +343,8 @@ let cookieClickerControls =  Vue.component('cookie-clicker-controls', {
     },
     hintsToggle: function() {
       mainVue.hints = !this.hintson;
+      if (mainVue.hints)
+        Cookies.set(`goals[${mainVue.selectedGoal.id}].hintsSeen`, true);
     },
     hintIcon: function(hintson) {
       return {
@@ -463,8 +466,6 @@ let blocklyHints = Vue.component('blockly-hints', {
       });
     }, 100);
   },
-  computed: {
-  },
   methods: {
     workspacePosition(top, left, width, height) {
       return {
@@ -562,6 +563,7 @@ let cookieRewards = Vue.component('cookie-rewards', {
     <li v-for="reward in rewards">
       <span v-if="reward.type == 'cookies'" class="cookies">
         {{ reward.amount }} cookies
+        <span v-if="cookieBonus()">x 2</span>
       </span>
       <span v-if="reward.type == 'block'" class="block">
         The
@@ -578,16 +580,28 @@ let cookieRewards = Vue.component('cookie-rewards', {
       </span>
     </li>
   </ul>
+  <button v-if="state == 'rewards'" v-on:click="unlock()" class="highlighted">
+    <span class="icon icon-arrow-right"></span>
+    Next
+  </button>
   <div v-if="state == 'next' || state == 'nextContinue'">
     <h1>Next goal...</h1>
     <h3 v-html="goal.shortDescription"></h3>
   </div>
-  <button v-if="state == 'rewards' || state == 'nextContinue'" v-on:click="unlock()">
-    <span class="icon icon-arrow-right"></span>
-    Next
-  </button>
+  <p>
+    <button v-if="state == 'nextContinue'" v-on:click="unlock({hintsOn: true})" v-bind:class="{highlighted: hintson}">
+      <span class="icon icon-arrow-right"></span>
+      Hints on
+    </button>
+  </p>
+  <p>
+    <button v-if="state == 'nextContinue'" v-on:click="unlock({hintsOn: false})" v-bind:class="{highlighted: !hintson}">
+      <span class="icon icon-arrow-right"></span>
+      Hints off <img src="images/choc-chip.png">×2
+    </button>
+  </p>
 </div>`,
-  props: ['rewards', 'goal'],
+  props: ['rewards', 'goal', 'hintson'],
   data: function() {
     return {
       state: 'cookie',
@@ -609,7 +623,7 @@ let cookieRewards = Vue.component('cookie-rewards', {
         height: height+'px',
       };
     },
-    unlock: function() {
+    unlock: function(config) {
       if (this.state == 'cookie') {
         this.state = 'rewards';
         let bbox = document.querySelector('.reward-cookie').getBoundingClientRect();
@@ -620,6 +634,8 @@ let cookieRewards = Vue.component('cookie-rewards', {
         let cookies = this.rewards
           .filter(reward => reward.type == 'cookies')
           .reduce((total, reward) => total + reward.amount, 0);
+        if (this.cookieBonus())
+          cookies *= 2;
         mainVue.cookies += cookies;
       } else if (this.state == 'rewards') {
         this.state = 'next';
@@ -633,7 +649,14 @@ let cookieRewards = Vue.component('cookie-rewards', {
       } else if (this.state == 'next') {
       } else if (this.state == 'nextContinue') {
         mainVue.goalRewards = [];
+        mainVue.hints = config.hintsOn;
+        if (config.hintsOn)
+          Cookies.set(`goals[${this.goal.id}].hintsSeen`, true);
       }
+    },
+    cookieBonus: function() {
+      let bonus = !(Cookies.get(`goals[${this.goal.id}].hintsSeen`) === 'true');
+      return bonus;
     },
   },
 });
@@ -662,6 +685,8 @@ let mainVue = new Vue({
     }
   },
 });
+
+Cookies.set(`goals[${mainVue.selectedGoal.id}].hintsSeen`, true);
 
 // Connect the cookies variable in the cookie clicker game to the overall cookie counter
 Object.defineProperty(window, 'cookies', {
