@@ -560,6 +560,7 @@ let cookieRewards = Vue.component('cookie-rewards', {
   template: `
 <div v-if="rewards.length !== 0" id="cookie-rewards" class="noselect">
   <h1 v-if="state == 'cookie' || state == 'rewards'">You unlocked...</h1>
+  <h1 v-if="state == 'finished'">You finished the cookie clicker!</h1>
   <div v-if="state == 'cookie'" v-bind:style="position()" class="reward-cookie" v-on:click="unlock()"></div>
   <ul v-if="state == 'rewards'" v-bind:style="position()">
     <li v-for="reward in rewards">
@@ -582,7 +583,7 @@ let cookieRewards = Vue.component('cookie-rewards', {
       </span>
     </li>
   </ul>
-  <button v-if="state == 'rewards'" v-on:click="unlock()" class="highlighted">
+  <button v-if="state == 'rewards' || state == 'finished'" v-on:click="unlock()" class="highlighted">
     <span class="icon icon-arrow-right"></span>
     Next
   </button>
@@ -640,20 +641,33 @@ let cookieRewards = Vue.component('cookie-rewards', {
           cookies *= 2;
         mainVue.cookies += cookies;
       } else if (this.state == 'rewards') {
-        this.state = 'next';
         let firstNew = goals.find(goal => goal.unlocked && !goal.seen && !goal.completed);
-        mainVue.selectedGoal = firstNew || goals[goals.length-1] || {checks: [], hints: []};
 
-        let vm = this;
-        setTimeout(function() {
-          vm.state = 'nextContinue';
-        }, 2000);
+          let vm = this;
+        if (firstNew) {
+          this.state = 'next';
+          mainVue.selectedGoal = firstNew;
+
+          setTimeout(function() {
+            vm.state = 'nextContinue';
+          }, 2000);
+        } else {
+          this.state = 'finished';
+          let fireworkOverlay = document.querySelector('#firework-overlay');
+          let repeat = setInterval(function() {
+            cookieFirework(fireworkOverlay, screen.availWidth*Math.random(), screen.availHeight*Math.random(), 0.8 + Math.random()*2);
+            if (vm.state != 'finished')
+              clearInterval(repeat);
+          }, 500);
+        }
       } else if (this.state == 'next') {
       } else if (this.state == 'nextContinue') {
         mainVue.goalRewards = [];
         mainVue.hints = config.hintsOn;
         if (config.hintsOn)
           Cookies.set(`goals[${this.goal.id}].hintsSeen`, true);
+      } else if (this.state == 'finished') {
+        mainVue.goalRewards = [];
       }
     },
     cookieBonus: function() {
