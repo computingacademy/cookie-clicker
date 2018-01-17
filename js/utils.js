@@ -159,14 +159,14 @@ function workspaceToBlocks(workspace, list) {
   let topBlocks = xml.querySelectorAll('xml > block');
 
   let blocks = [...topBlocks]
-    .map(block => xmlToBlocks(block, list))
+    .map(block => xmlToBlocks(workspace, block, list))
     .reduce((a,b) => a.concat(b), []);
 
   return blocks;
 }
 
 // Turn workspace XML into block JSON
-function xmlToBlocks(xml, list) {
+function xmlToBlocks(workspace, xml, list) {
   let blockSvg = workspace.getBlockById(xml.id);
   let blocks = [];
   let block = {
@@ -197,11 +197,11 @@ function xmlToBlocks(xml, list) {
           value = input.textContent;
         } else if (input.nodeName === 'STATEMENT') {
           value = [...subBlocks]
-            .map(subBlock => xmlToBlocks(subBlock, list))
+            .map(subBlock => xmlToBlocks(workspace, subBlock, list))
             .reduce((a,b) => a.concat(b), []);
         } else if (input.nodeName === 'VALUE') {
           value = [...subBlocks]
-            .map(subBlock => xmlToBlocks(subBlock, list))
+            .map(subBlock => xmlToBlocks(workspace, subBlock, list))
             .reduce((a,b) => a.concat(b), [])[0];
         }
 
@@ -215,12 +215,52 @@ function xmlToBlocks(xml, list) {
 
   if (!!nexts) {
     let nextBlocks = [...nexts]
-      .map(nextBlock => xmlToBlocks(nextBlock, list))
+      .map(nextBlock => xmlToBlocks(workspace, nextBlock, list))
       .reduce((a,b) => a.concat(b), []);
 
     return blocks.concat(nextBlocks);
   } else {
     return blocks;
+  }
+}
+
+function locationToCoords(workspace, location) {
+  let offset = workspace.getOriginOffsetInPixels();
+  if (location === 'workspace') {
+    return {
+      left: offset.x + 10,
+      top: offset.y + 10,
+    };
+  } else if (location) {
+    if (location.flyout) {
+      workspace = workspace.getFlyout_().getWorkspace();
+      location = location.location;
+      let blockTree = workspaceToBlocks(workspace);
+      let blockList = workspaceToBlocks(workspace, true);
+      let block = blockList.find(location);
+
+      if (!!block)
+        return {
+          left: (block.bounds.topLeft.x+block.bounds.bottomRight.x)/2,
+          top: (block.bounds.topLeft.y+block.bounds.bottomRight.y)/2,
+        }
+      else
+        return {};
+    } else {
+      let blockTree = workspaceToBlocks(workspace);
+      let blockList = workspaceToBlocks(workspace, true);
+      let block = blockList.find(location);
+
+      if (!!block)
+        return {
+          left: (block.bounds.bottomRight.x+offset.x),
+          top: (block.bounds.topLeft.y+offset.y),
+        };
+      else
+        return {};
+    }
+  } else {
+    return {};
   }
 }
 

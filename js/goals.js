@@ -19,6 +19,15 @@ let goals = [{
       return !blocks.find(block => block.type === 'image_set');
     },
     hint: '<p>Drag the <bk class="io">set image</bk> block into the workspace.</p>',
+    pointer: {
+      from: {
+        flyout: true,
+        location: function(block) {
+          return block.type === 'image_set';
+        },
+      },
+      to: 'workspace',
+    },
     location: 'workspace',
   }],
   interaction: {
@@ -126,6 +135,15 @@ let goals = [{
       return !blocks.find(block => block.type === 'on_click');
     },
     hint: '<p>Drag the <bk class="control">on click</bk> block into the workspace.</p>',
+    pointer: {
+      from: {
+        flyout: true,
+        location: function(block) {
+          return block.type === 'on_click';
+        },
+      },
+      to: 'workspace',
+    },
     location: 'workspace',
   }, {
     condition: function(blocks) {

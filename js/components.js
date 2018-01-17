@@ -184,8 +184,13 @@ let goalDescription = Vue.component('goal-description', {
 
 let blocklyHints = Vue.component('blockly-hints', {
   template: `
-<div id="blockly-hints" v-if="hintson" v-bind:style="workspacePosition(top, left, width, height)">
-  <div v-for="hint in hints" v-if="hint.useful" v-html="hint.hint" class="blockly-hint" v-bind:style="position(hint.location, moved)">
+<div id="hints">
+  <div id="blockly-hints" v-if="hintson" v-bind:style="workspacePosition(top, left, width, height)">
+    <div v-for="hint in hints" v-if="hint.useful" v-html="hint.hint" class="blockly-hint" v-bind:style="position(hint.location, moved)">
+    </div>
+  </div>
+  <div id="pointer-hints" v-if="hintson" v-bind:style="workspacePosition(top, left, width, height)">
+    <pointer-hint v-for="hint in hints" v-if="hint.useful" v-bind:hint="hint" v-bind:hintson="hintson"></pointer-hint>
   </div>
 </div>`,
   props: ['hints', 'hintson'],
@@ -230,27 +235,80 @@ let blocklyHints = Vue.component('blockly-hints', {
       };
     },
     position: function(location, moved) {
-      let offset = workspace.getOriginOffsetInPixels();
-      if (location === 'workspace') {
-        return {
-          left: offset.x+'px',
-          top: offset.y+'px',
-        };
-      } else if (location) {
-        let blockTree = workspaceToBlocks(workspace);
-        let blockList = workspaceToBlocks(workspace, true);
-        let block = blockList.find(location);
+      let coords = locationToCoords(workspace, location);
+      return {
+        left: `${coords.left}px`,
+        top: `${coords.top}px`,
+      };
+    },
+  },
+});
 
-        if (!!block)
-          return {
-            left: (block.bounds.bottomRight.x+offset.x)+'px',
-            top: (block.bounds.topLeft.y+offset.y)+'px',
-          };
-        else
-          return {};
+let pointerHint = Vue.component('pointer-hint', {
+  template: `
+<div v-if="hint.useful && hint.pointer" class="pointer-hint" v-bind:style="position(left, top, hintson)">
+</div>`,
+  props: ['hint', 'hintson'],
+  data: function() {
+    let coords;
+    if (this.hint.pointer) {
+      coords = locationToCoords(workspace, this.hint.pointer.from);
+    } else {
+      coords = {
+        left: 0,
+        top: 0,
+      };
+    }
+
+    this.tween = new TWEEN.Tween(coords);
+    this.animation();
+    return coords;
+  },
+  watch: {
+    hintson: function(hintson) {
+      if (hintson) {
+        this.tween.start();
       } else {
-        return {};
+        this.tween.stop();
       }
+    },
+    hint: function(hint) {
+      this.tween.stop();
+      if (hint.useful && hint.pointer) {
+        let coords = locationToCoords(workspace, this.hint.pointer.from);
+        this.left = coords.left;
+        this.top = coords.top;
+        this.animation();
+      }
+    },
+  },
+  methods: {
+    animation: function() {
+      var vm = this;
+      function animate () {
+        if (vm.hintson && TWEEN.update()) {
+          requestAnimationFrame(animate);
+        }
+      }
+
+      if (this.hint.pointer) {
+        let coords = locationToCoords(workspace, this.hint.pointer.from);
+        let to = locationToCoords(workspace, this.hint.pointer.to);
+        this.tween
+          .to(to, 2000)
+          .repeat(Infinity)
+          .delay(1000)
+          .start();
+
+        animate();
+      }
+    },
+    position: function(left, top, hintson) {
+      return {
+        position: 'absolute',
+        left: `${left.toFixed(0)}px`,
+        top: `${top.toFixed(0)}px`,
+      };
     },
   },
 });
