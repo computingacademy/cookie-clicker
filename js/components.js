@@ -1,73 +1,137 @@
-let blocklyComponent = Vue.component('blockly-editor', {
+let blocklyEditor = Vue.component('blockly-editor', {
   template: '<div id="blockly-div" class="noselect"></div>',
+  data: function() {
+    return {
+      workspace: undefined,
+    };
+  },
   mounted:function() {
-    window.workspace = Blockly.inject(this.$el,
+    // Load blockly
+    this.workspace = Blockly.inject(this.$el,
       { media: 'blockly/media/',
         toolbox: document.getElementById('toolbox')
       });
 
-    workspace.addChangeListener(function(event) {
-      // This is a little bit hacky
-      // We are checking to see if the block is still in the process of being dragged in from the toolbox
-      let dragCreation = event.xml && event.xml.getAttribute('x') < 0;
-      // Check if the event is just selecting a block
-      let selection = event.type == Blockly.Events.UI && event.element == 'selected';
-
-      if (!dragCreation && !selection) {
-        mainVue.clicks = 0;
-        updateGoals();
-        runCode(code(workspace));
-        save();
-      }
+    // Update the model when events happen
+    let vm = this;
+    this.workspace.addChangeListener(function(event) {
+      vm.$emit('input', vm.value());
     });
 
-    // A nasty hack to wait until Blockly is set up to load blocks
-    setTimeout(function() {
-      load();
-      updateGoals(true);
-      // Select first uncompleted goal or the last one if they are all completed
-      mainVue.selectedGoal = goals.find(goal => !goal.completed) || goals[goals.length-1] || {checks: [], hints: []};
-      Cookies.set(`goals[${mainVue.selectedGoal.id}].hintsSeen`, true);
-    }, 10);
+    // Update the model when the page is resized
+    window.addEventListener('resize', function() {
+      vm.$emit('input', vm.value());
+    }, false);
 
-    this.__instance = workspace;
+    // Initial model update
+    vm.$emit('input', vm.value());
+
+    // Use blockly element as this component's element
+    this.__instance = this.workspace;
+  },
+  methods: {
+    value: function() {
+      // Get the blockly model
+      return {
+        workspace: this.workspace,
+        code: code(this.workspace),
+        blocks: workspaceToBlocks(this.workspace, true),
+        toolbox: workspaceToBlocks(this.workspace.getFlyout_().getWorkspace()),
+        offset: this.workspace.getOriginOffsetInPixels(),
+      };
+    },
   },
 });
 
-let cookieCounter = Vue.component('cookie-counter', {
+let animatedCounter = Vue.component('animated-counter', {
   template: `
-<div id="cookie-counter" class="noselect">
-  <img src="images/choc-chip.png">
-  <span id="cookie-count">{{count}}</span>
+<div id="animated-counter" class="noselect">
+  <img src="images/choc-chip.png" v-bind:style="jump()">
+  <span>{{ animatedCount }}</span>
 </div>`,
-  props: ['cookies'],
+  props: ['count'],
   data: function() {
     return {
-      count: this.cookies,
+      jumpHeight: 0,
+      animatedCount: 0,
     };
   },
-  mounted: function() {
-    let img = this.$el.querySelector('img');
-    let vm = this;
-    let addEvent = img.addEventListener("animationiteration", function() {
-      if (vm.count < vm.cookies) {
-        vm.count += 1;
+  watch: {
+    count: function(newValue, oldValue) {
+      // Update the animation each frame
+      var vm = this
+      function animate () {
+        if (TWEEN.update()) {
+          requestAnimationFrame(animate)
+        }
       }
 
-      if (vm.count === vm.cookies) {
-        img.classList.remove('animated');
-      }
-    }, false);
+      // Define the animation for the jumping cookie
+      let maxHeight = 20;
+      let down = new TWEEN.Tween({ jump: newValue > oldValue ? maxHeight : 0 })
+        .easing(TWEEN.Easing.Quadratic.In)
+        .to({ jump: 0 }, 300)
+        .onUpdate(function () {
+          vm.jumpHeight = this.jump;
+        });
+
+      let up = new TWEEN.Tween({ jump: 0 })
+        .easing(TWEEN.Easing.Quadratic.Out)
+        .to({ jump: newValue > oldValue ? maxHeight : 0 }, 100)
+        .onUpdate(function () {
+          vm.jumpHeight = this.jump;
+        })
+        .chain(down)
+        .start();
+
+      // Define the animation from oldValue to newValue
+      new TWEEN.Tween({ tweeningCount: oldValue })
+        .easing(TWEEN.Easing.Quadratic.Out)
+        .to({ tweeningCount: newValue }, 500)
+        .onUpdate(function () {
+          vm.animatedCount = parseInt(this.tweeningCount);
+        })
+        .start()
+
+      animate()
+    },
+  },
+  methods: {
+    jump: function() {
+      // Turn jump height into an element style
+      return {
+        transform: `translateY(${-this.jumpHeight}px)`,
+      };
+    },
+  },
+});
+
+let cookieClicker = Vue.component('cookie-clicker', {
+  template: `
+<div id="cookie-clicker" class="noselect">
+  <h1>No cookies</h1>
+  <img src>
+</div>`,
+  props: ['code'],
+  data: function() {
+    return {
+      cookies: 0,
+      clicks: 0,
+    };
   },
   watch: {
-    cookies: function(newValue, oldValue) {
-      let img = this.$el.querySelector('img');
-      let delta = newValue - oldValue;
-
-      if (delta > 0) {
-        img.style.animationDuration = (0.2/Math.max((this.cookies-this.count)/3, 1))+'s';
-        img.classList.add('animated');
-      }
+    code: function(code) {
+      // Update cookie clicker with new code
+      // Pass in the component so cookie count can be updated
+      runCookieClicker(code, this);
+    },
+    cookies: function(cookies, oldCookies) {
+      // Update the model
+      this.$emit('cookies', Math.max(cookies - oldCookies, 0));
+    },
+    clicks: function(clicks) {
+      // Update the model
+      this.$emit('clicks', clicks);
     },
   },
 });
@@ -88,19 +152,15 @@ let cookieClickerControls =  Vue.component('cookie-clicker-controls', {
   props: ['hintson'],
   methods: {
     reset: function() {
-      mainVue.clicks = 0;
-      runCode(code(workspace));
-      save();
-    },
-    mark: function() {
-      updateGoals();
+      // Rerun the code
+      runCookieClicker(code);
     },
     hintsToggle: function() {
-      mainVue.hints = !this.hintson;
-      if (mainVue.hints)
-        Cookies.set(`goals[${mainVue.selectedGoal.id}].hintsSeen`, true);
+      // Toggle hints
+      this.$emit('hints-toggle', !this.hintson);
     },
     hintIcon: function(hintson) {
+      // Turn hint status into icons
       return {
         'icon': true,
         'icon-eye': hintson,
@@ -116,21 +176,22 @@ let interactionCheck =  Vue.component('interaction-check', {
   <div v-html="goal.interaction.message"></div>
 </div>`,
   props: ['goal', 'clicks'],
-  watch: {
-    clicks: function(clicks) {
-      updateGoals();
-    }
-  },
   methods: {
     hintsCompleted: function(goal) {
-      let firstUsefulHint = goal.hints.findIndex(hint => hint.useful);
-      let completed = firstUsefulHint < 0 || firstUsefulHint > goal.interaction.afterHint;
-      return completed;
+      if (goal) {
+        // Find the first hint yet to be completed
+        let firstUncompletedHint = goal.hints.findIndex(hint => hint.useful);
+        // Check that all the hints before this interaction check have
+        let completed = firstUncompletedHint < 0 || firstUncompletedHint > goal.interaction.afterHint;
+        return completed;
+      } else {
+        return false;
+      }
     },
   },
 });
 
-let goalsComponent = Vue.component('goal-list', {
+let goalsList = Vue.component('goal-list', {
   template: `
 <div id="course-nav-tray">
 <div id="course-nav-tray-container" class="">
@@ -164,6 +225,7 @@ let goalsComponent = Vue.component('goal-list', {
       this.$emit('select', goal);
     },
     classes: function(goal) {
+      // Turn goal status into CSS class
       return {
         current: goal == this.selected,
         solved: goal.completed,
@@ -175,7 +237,7 @@ let goalsComponent = Vue.component('goal-list', {
 
 let goalDescription = Vue.component('goal-description', {
   template: `
-<div id="goal">
+<div id="goal" v-if="goal">
   <h2>{{ goal.title }}</h2>
   <div id="description" v-html="goal.description"></div>
 </div>`,
@@ -184,58 +246,25 @@ let goalDescription = Vue.component('goal-description', {
 
 let blocklyHints = Vue.component('blockly-hints', {
   template: `
-<div id="hints">
-  <div id="blockly-hints" v-if="hintson" v-bind:style="workspacePosition(top, left, width, height)">
-    <div v-for="hint in hints" v-if="hint.useful" v-html="hint.hint" class="blockly-hint" v-bind:style="position(hint.location, moved)">
+<div id="hints" v-if="hintson">
+  <div id="blockly-hints">
+    <div v-for="hint in hints" v-if="useful(hint)" v-html="hint.hint" class="blockly-hint" v-bind:style="position(hint.location, blockly)">
     </div>
   </div>
-  <div id="pointer-hints" v-if="hintson" v-bind:style="workspacePosition(top, left, width, height)">
-    <pointer-hint v-for="hint in hints" v-if="hint.useful" v-bind:hint="hint" v-bind:hintson="hintson"></pointer-hint>
+  <div id="pointer-hints">
+    <pointer-hint v-for="hint in hints" v-if="hint.pointer && useful(hint)" v-bind:hint="hint" v-bind:blockly="blockly"></pointer-hint>
   </div>
 </div>`,
-  props: ['hints', 'hintson'],
-  data: function(hints) {
-    return {
-      top: 0,
-      left: 0,
-      width: 0,
-      height: 0,
-      moved: 0,
-    };
-  },
-  mounted: function() {
-    let vue = this;
-    let resize = function(event) {
-      let blocklyDiv = document.querySelector('#blockly-div');
-      let bbox = blocklyDiv.getBoundingClientRect();
-      vue.top = bbox.top;
-      vue.left = bbox.left;
-      vue.width = bbox.width;
-      vue.height = bbox.height;
-    };
-
-    resize();
-    window.addEventListener('resize', resize);
-
-    // Hack!
-    setTimeout(function() {
-      window.workspace.addChangeListener(function(event) {
-        if (event.type === Blockly.Events.BLOCK_MOVE)
-          vue.moved++;
-      });
-    }, 100);
-  },
+  props: ['hints', 'hintson', 'blockly'],
   methods: {
-    workspacePosition(top, left, width, height) {
-      return {
-        top: top+'px',
-        left: left+'px',
-        width: width+'px',
-        height: height+'px',
-      };
+    useful: function(hint) {
+      // Check if the hint is helpful
+      return hint.condition(this.blockly.blocks);
     },
-    position: function(location, moved) {
-      let coords = locationToCoords(workspace, location);
+    position: function(location, blockly) {
+      // Get location coordinates
+      let coords = locationToCoords(blockly, location);
+      // Output as element style
       return {
         left: `${coords.left}px`,
         top: `${coords.top}px`,
@@ -246,122 +275,67 @@ let blocklyHints = Vue.component('blockly-hints', {
 
 let pointerHint = Vue.component('pointer-hint', {
   template: `
-<div v-if="hint.useful && hint.pointer" class="pointer-hint" v-bind:style="position(left, top, hintson)">
-</div>`,
-  props: ['hint', 'hintson'],
+<div class="pointer-hint" v-bind:style="position(left, top)"></div>`,
+  props: ['hint', 'blockly'],
   data: function() {
-    let coords;
-    if (this.hint.pointer) {
-      coords = locationToCoords(workspace, this.hint.pointer.from);
-    } else {
-      coords = {
+    // Get the coordinates to animate the pointer from
+    let coords = locationToCoords(this.blockly, this.hint.pointer.from)
+      || {
         left: 0,
         top: 0,
       };
-    }
 
+    // Create the animation
     this.tween = new TWEEN.Tween(coords);
     this.animation();
+
+    // Set the initial coordinates
     return coords;
   },
   watch: {
-    hintson: function(hintson) {
-      if (hintson) {
-        this.tween.start();
-      } else {
-        this.tween.stop();
-      }
-    },
     hint: function(hint) {
+      // Restart animation if hint changes
       this.tween.stop();
-      if (hint.useful && hint.pointer) {
-        let coords = locationToCoords(workspace, this.hint.pointer.from);
-        this.left = coords.left;
-        this.top = coords.top;
-        this.animation();
-      }
+      this.animation();
+    },
+    blockly: function() {
+      // Restart animation if the blockly model changes 
+      this.tween.stop();
+      this.animation();
     },
   },
   methods: {
     animation: function() {
-      var vm = this;
+      // Update the animation each frame
       function animate () {
-        if (vm.hintson && TWEEN.update()) {
+        if (TWEEN.update()) {
           requestAnimationFrame(animate);
         }
       }
 
-      if (this.hint.pointer) {
-        let coords = locationToCoords(workspace, this.hint.pointer.from);
-        let to = locationToCoords(workspace, this.hint.pointer.to);
-        this.tween
-          .to(to, 2000)
-          .repeat(Infinity)
-          .delay(1000)
-          .start();
-
-        animate();
+      // Get the start/end position of the pointer
+      let coords = locationToCoords(this.blockly, this.hint.pointer.from);
+      let to = locationToCoords(this.blockly, this.hint.pointer.to);
+      // Animate the pointer from start/end
+      if (coords) {
+        this.left = coords.left;
+        this.top = coords.top;
       }
+      this.tween
+        .to(to, 2000)
+        .repeat(Infinity)
+        .delay(1000)
+        .start();
+
+      animate();
     },
-    position: function(left, top, hintson) {
+    position: function(left, top) {
+      // Turn coordinates into an element style
       return {
         position: 'absolute',
         left: `${left.toFixed(0)}px`,
         top: `${top.toFixed(0)}px`,
       };
-    },
-  },
-});
-
-let goalMarks = Vue.component('goal-marks', {
-  template: `
-<ul id="marks">
-  <li v-for="check in goal.checks" class="result-wrapper">
-    <div class="result-indicator" v-bind:class="passed(check.passing)">
-      <span v-bind:class="completion(check.passing)" title="title(check.passing)" role="img"></span>
-    </div>
-    <div class="result-text">
-      <button v-if="!check.showHint" v-on:click="show(check)">
-        <span class="icon icon-eye"></span>
-        Show hint
-      </button>
-      <button v-if="check.showHint" v-on:click="hide(check)">
-        <span class="icon icon-eye-blocked"></span>
-        Hide hint
-      </button>
-      <h3>{{ check.description }}</h3>
-      <div v-if="check.showHint" v-html="check.hint"></div>
-    </div>
-  </li>
-</ul>`,
-  props: ['goal'],
-  methods: {
-    passed: function(passing) {
-      return {
-        'passed': passing,
-        'failed': !passing,
-      };
-    },
-    completion: function(passing) {
-      return {
-        'icon-checkbox-checked': passing,
-        'passed-indicator': passing,
-        'icon-checkbox-unchecked': !passing,
-        'failed-indicator': !passing,
-      };
-    },
-    title: function(passed) {
-      if (passed) {
-        return 'Passed';
-      } else {
-        return 'Failed';
-      }
-    },
-    show: function(check) {
-      Vue.set(check, 'showHint', true);
-    },
-    hide: function(check) {
-      Vue.set(check, 'showHint', false);
     },
   },
 });
@@ -427,11 +401,13 @@ let cookieRewards = Vue.component('cookie-rewards', {
   },
   methods: {
     position: function() {
+      // Center the cookie clicker over the whole screen
       let width = 400;
       let height = 600;
+      let bbox = document.body.getBoundingClientRect();
       return {
-        left: (screen.availWidth - width)/2 + 'px',
-        top: (screen.availHeight - height)/2 + 'px',
+        left: (bbox.width - width)/2 + 'px',
+        top: (bbox.height - height)/2 + 'px',
         width: width+'px',
         height: height+'px',
       };
@@ -457,6 +433,7 @@ let cookieRewards = Vue.component('cookie-rewards', {
         if (firstNew) {
           this.state = 'next';
           mainVue.selectedGoal = firstNew;
+          mainVue.hintson = false;
 
           setTimeout(function() {
             vm.state = 'nextContinue';
@@ -473,7 +450,7 @@ let cookieRewards = Vue.component('cookie-rewards', {
       } else if (this.state == 'next') {
       } else if (this.state == 'nextContinue') {
         mainVue.goalRewards = [];
-        mainVue.hints = config.hintsOn;
+        mainVue.hintson = config.hintsOn;
         if (config.hintsOn)
           Cookies.set(`goals[${this.goal.id}].hintsSeen`, true);
       } else if (this.state == 'finished') {
@@ -488,28 +465,3 @@ let cookieRewards = Vue.component('cookie-rewards', {
 });
 
 Vue.config.ignoredElements = ['bk'];
-
-let mainVue = new Vue({
-  el: '#main',
-  data: {
-    goals: goals,
-    selectedGoal: goals.find(goal => !goal.completed) || goals[0] || {checks: [], hints: []},
-    cookies: window._cookies,
-    goalRewards: [],
-    clicks: 0,
-    hints: true,
-  },
-  methods: {
-    selectGoal: function(goal) {
-      this.selectedGoal = goal;
-    },
-  },
-  watch: {
-    cookies: function() {
-      // Save cookies to web page's cookie
-      Cookies.set('cookies', this.cookies);
-    }
-  },
-});
-
-

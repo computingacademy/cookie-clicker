@@ -19,25 +19,22 @@
 <body>
   <div id="main">
     <nav class="noselect">
-      <goal-list v-bind:goals="goals" v-bind:selected="selectedGoal" v-on:select="selectGoal"></goal-list>
+      <goal-list v-bind:goals="goals" v-bind:selected="selectedGoal" v-on:select="goal => selectedGoal = goal"></goal-list>
     </nav>
     <content>
       <aside>
-        <cookie-counter v-bind:cookies="cookies"></cookie-counter>
-        <div id="cookie-clicker" class="noselect">
-          <h1>No cookies</h1>
-          <img src>
-        </div>
-        <cookie-clicker-controls v-bind:hintsOn="hints"></cookie-clicker-controls>
+        <animated-counter v-bind:count="cookies"></animated-counter>
+        <cookie-clicker v-bind:code="blockly.code" v-bind:cookies="cookies" v-on:cookies="val => cookies += val" v-on:clicks="val => clicks = val"></cookie-clicker>
+        <cookie-clicker-controls v-bind:hintson="hintson" v-on:hints-toggle="val => hintson = val"></cookie-clicker-controls>
         <interaction-check v-bind:goal="selectedGoal" v-bind:clicks="clicks"></interaction-check>
       </aside>
       <div id="program">
         <goal-description v-bind:goal="selectedGoal"></goal-description>
-        <blockly-hints v-bind:hints="selectedGoal.hints" v-bind:hintsOn="hints"></blockly-hints>
-        <blockly-editor></blockly-editor>
+        <blockly-hints v-bind:blockly="blockly" v-bind:hints="selectedGoal ? selectedGoal.hints : []" v-bind:hintson="hintson"></blockly-hints>
+        <blockly-editor v-model="blockly"></blockly-editor>
       </div>
     </content>
-    <cookie-rewards v-bind:rewards="goalRewards" v-bind:goal="selectedGoal" v-bind:hintsOn="hints"></cookie-rewards>
+    <cookie-rewards v-bind:rewards="goalRewards" v-bind:goal="selectedGoal" v-bind:hintsOn="hintson"></cookie-rewards>
   </div>
 
   <div id="firework-overlay"></div>
@@ -71,7 +68,6 @@
   <script src="js/custom_blocks.js"></script>
   <script src="js/goals.js"></script>
   <script src="js/utils.js"></script>
-  <script src="js/vars.js"></script>
   <script src="js/components.js"></script>
   <script src="js/main.js"></script>
 </body>

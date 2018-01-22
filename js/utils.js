@@ -1,37 +1,40 @@
 function code(workspace) {
   Blockly.JavaScript.addReservedWords('code');
-  var code = 'window._cookies = 0;\n'
+  var code = '\n'
     + 'let heading = document.querySelector("#cookie-clicker h1");\n'
     + 'heading.textContent = "No cookies";\n'
     + 'let image = document.querySelector("#cookie-clicker img");\n'
     + 'let clone = image.cloneNode(true);\n'
     + 'clone.src = "";\n'
-    + 'clone.addEventListener("click", function() { mainVue.clicks++; });\n'
+    + 'clone.addEventListener("click", function() { cookieClickerEnvironment.clicks++; cookieClickerEnvironment.cookies++; });\n'
     + 'image.parentNode.replaceChild(clone, image);\n'
     + 'image = clone;\n'
-    + Blockly.JavaScript.workspaceToCode(workspace).replace(/var cookies;\n/, '');
+    + 'let cookies = 0;\n'
+    + Blockly.JavaScript.workspaceToCode(workspace).replace(/var cookies;\n/, '')
+    + 'cookies;\n';
   return code;
 }
 
 function testCode(workspace) {
   Blockly.JavaScript.addReservedWords('code');
-  var code = 'window._test = true;\n'
-    + 'window._testCookies = 0;\n'
+  var code = '\n'
     + 'let cookieClicker = document.createElement("div");\n'
     + 'let heading = document.createElement("h1");\n'
     + 'heading.textContent = "No cookies";\n'
     + 'let image = document.createElement("img");\n'
     + 'image.src = "";\n'
+    + 'image.cookies = 0;\n'
+    + 'image.addEventListener("click", function() { image.cookies++; });\n'
     + 'cookieClicker.appendChild(heading);\n' 
     + 'cookieClicker.appendChild(image);\n' 
+    + 'let cookies = 0;\n'
     + Blockly.JavaScript.workspaceToCode(workspace).replace(/var cookies;\n/, '')
-    + 'let result = test(cookieClicker, cookies);\n'
-    + 'window._test = false;\n'
+    + 'let result = test(cookieClicker, blockly, cookies);\n'
     + 'result;\n';
   return code;
 }
 
-function runCode(code, test) {
+function runCode(code, test, blockly) {
   try {
     return eval(code);
   } catch (e) {
@@ -39,11 +42,20 @@ function runCode(code, test) {
   }
 }
 
+function runCookieClicker(code, environment) {
+  // Set up cookie clicker environment
+  window.cookieClickerEnvironment = environment || window.cookieClickerEnvironment || {};
+  window.cookieClickerEnvironment.cookies = 0;
+  window.cookieClickerEnvironment.clicks = 0;
+  // Run code and get cookies
+  window.cookieClickerEnvironment.cookies = runCode(code);
+}
+
 let unlockedBlocks = ['image_set'];
-function updateGoals(silent) {
+function updateGoals(env, silent) {
   // Get blocks from workspace
-  let blockTree = workspaceToBlocks(workspace);
-  let blockList = workspaceToBlocks(workspace, true);
+  let blockTree = workspaceToBlocks(env.blockly.workspace);
+  let blockList = workspaceToBlocks(env.blockly.workspace, true);
   // Keep track of if any new goals have been completed
   let newCompletions = [];
 
@@ -55,17 +67,22 @@ function updateGoals(silent) {
 
     // Perform each check
     let passes = goal.checks.map(function(check) {
-      let passed = doCheck(check);
-      Vue.set(check, 'passing', passed);
-      return passed;
+      if (env.blockly.workspace) {
+        let passed = doCheck(env, check);
+        Vue.set(check, 'passing', passed);
+        return passed;
+      } else {
+        return false;
+      }
     });
 
     // Has the interaction for this goal been completed?
-    goal.interacted = mainVue.selectedGoal === goal? mainVue.clicks >= goal.interaction.clicks : (goal.interacted || goal.completed);
+    goal.interacted = env.selectedGoal === goal? env.clicks >= goal.interaction.clicks : (goal.interacted || goal.completed);
 
     // Is this goal currently passing all checks?
     let passing = passes.every(pass => pass) && goal.interacted;
     Vue.set(goal, 'passing', passing);
+
     // Is this a new goal completion?
     if (!goal.completed && passing) {
       newCompletions.push(goal)
@@ -113,11 +130,12 @@ function updateGoals(silent) {
   });
 
   let toolbox = document.querySelector('#toolbox');
-  workspace.updateToolbox(toolbox);
+  env.blockly.workspace.updateToolbox(toolbox);
 }
 
-function doCheck(check) {
-  return runCode(testCode(workspace), check.test);
+function doCheck(env, check) {
+  // Run the code in the test environment
+  return runCode(testCode(env.blockly.workspace), check.test, env.blockly);
 }
 
 function goalRewards(goal) {
@@ -224,61 +242,54 @@ function xmlToBlocks(workspace, xml, list) {
   }
 }
 
-function locationToCoords(workspace, location) {
-  let offset = workspace.getOriginOffsetInPixels();
+function locationToCoords(blockly, location) {
   if (location === 'workspace') {
     return {
-      left: offset.x + 10,
-      top: offset.y + 10,
+      left: blockly.offset.x,
+      top: blockly.offset.y,
     };
   } else if (location) {
-    if (location.flyout) {
-      workspace = workspace.getFlyout_().getWorkspace();
-      location = location.location;
-      let blockTree = workspaceToBlocks(workspace);
-      let blockList = workspaceToBlocks(workspace, true);
-      let block = blockList.find(location);
+    location = location.location || location;
+    let block = blockly.blocks.concat(blockly.toolbox || []).find(location);
 
-      if (!!block)
-        return {
-          left: (block.bounds.topLeft.x+block.bounds.bottomRight.x)/2,
-          top: (block.bounds.topLeft.y+block.bounds.bottomRight.y)/2,
-        }
-      else
-        return {};
+    if (!!block) {
+      return {
+        left: blockly.offset.x + (block.bounds.topLeft.x+block.bounds.bottomRight.x)/2,
+        top: blockly.offset.y + (block.bounds.topLeft.y+block.bounds.bottomRight.y)/2,
+      }
     } else {
-      let blockTree = workspaceToBlocks(workspace);
-      let blockList = workspaceToBlocks(workspace, true);
-      let block = blockList.find(location);
-
-      if (!!block)
-        return {
-          left: (block.bounds.bottomRight.x+offset.x),
-          top: (block.bounds.topLeft.y+offset.y),
-        };
-      else
-        return {};
+      return undefined;
     }
-  } else {
-    return {};
   }
 }
 
-function save() {
-  var xml = Blockly.Xml.workspaceToDom(workspace);
+function save(vm) {
+  // Genereate blockly XML
+  var xml = Blockly.Xml.workspaceToDom(vm.blockly.workspace);
   var xml_text = Blockly.Xml.domToText(xml);
+  // Save blockly blocks and number of cookies
   Cookies.set('blocks', xml_text);
-  Cookies.set('cookies', mainVue.cookies);
+  Cookies.set('cookies', vm.cookies);
 }
 
-function load() {
+function load(vm) {
+  // Get blockly XML
   var xml_text = Cookies.get('blocks');
   var xml = Blockly.Xml.textToDom(xml_text);
-  Blockly.Xml.domToWorkspace(xml, workspace);
-  mainVue.cookies = parseInt(Cookies.get('cookies')) || 0;
+  // Insert blocks into workspace
+  Blockly.Xml.domToWorkspace(xml, vm.blockly.workspace);
+
+  // Set the number of cookies
+  vm.cookies = parseInt(Cookies.get('cookies')) || 0;
+
   // Load goal completion and seen statuses
-  goals.map(function(goal) {
+  vm.goals.map(function(goal) {
     goal.completed = goal.completed || Cookies.get(`goals[${goal.id}].completed`) === 'true';
     goal.seen = goal.seen || Cookies.get(`goals[${goal.id}].seen`) === 'true';
+  });
+
+  // Set the selected goal to the first incomplete goal
+  vm.selectedGoal = goals.find(function(goal) {
+    return goal.completed !== true;
   });
 }

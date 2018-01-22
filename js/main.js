@@ -1,21 +1,50 @@
-Cookies.set(`goals[${mainVue.selectedGoal.id}].hintsSeen`, true);
-
-// Connect the cookies variable in the cookie clicker game to the overall cookie counter
-Object.defineProperty(window, 'cookies', {
-  get: function() {
-    // Get the number of cookies
-    if (window._test)
-      return this._testCookies;
-    else
-      return this._cookies;
+let mainVue = new Vue({
+  el: '#main',
+  data: {
+    blockly: {
+      workspace: undefined,
+      code: '',
+      blocks: [],
+      toolbox: [],
+      offset: {},
+    },
+    cookies: 0,
+    clicks: 0,
+    hintson: false,
+    goals: goals,
+    goalRewards: [],
+    selectedGoal: undefined,
   },
-  set: function(val) {
-    // Update cookies value
-    if (window._test)
-      this._testCookies = val;
-    else {
-      mainVue.cookies = (mainVue.cookies + val-this._cookies) || val;
-      this._cookies = val;
-    }
+  mounted: function() {
+    // Load previous progress
+    load(this);
+
+    // Update goal statuses
+    updateGoals(this, true);
+    // Turn on hints
+    this.hintson = true;
+  },
+  watch: {
+    'blockly.blocks': function() {
+      // Update goal statuses
+      updateGoals(this);
+
+      // Save progress every time blocks are changed
+      save(this);
+    },
+    clicks: function() {
+      // Update goal statuses
+      updateGoals(this);
+    },
+    goals: function() {
+      // Save updated goal progress
+      save(this);
+    },
+    hintson: function() {
+      // Have the hints been seen?
+      if (this.hintson && this.selectedGoal)
+        // Save the 'hint seen' status
+        Cookies.set(`goals[${this.selectedGoal.id}].hintsSeen`, true);
+    },
   }
 });

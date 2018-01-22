@@ -1,4 +1,7 @@
 body {
+  width: 100vw;
+  height: 100vh;
+
   background-color: #fff;
   font-family: sans-serif;
 }
@@ -117,22 +120,22 @@ content {
     background-color: #fc6f7a;
   }
 
-#cookie-counter {
+#animated-counter {
   height: 40px;
   margin: 10px;
   background: lightgrey;
   border-radius: 40px;
 }
-#cookie-counter img {
-  height: 32px;
-  margin: 4px;
-}
-#cookie-count {
-  float: right;
-  margin-top: 8px;
-  margin-right: 8px;
-  font-size: 20px;
-}
+  #animated-counter img {
+    height: 32px;
+    margin: 4px;
+  }
+  #animated-counter span {
+    float: right;
+    margin-top: 8px;
+    margin-right: 8px;
+    font-size: 20px;
+  }
 
 #cookie-clicker-controls {
   text-align: center;
@@ -244,7 +247,7 @@ nav {
 
 #cookie-rewards,
 #fullscreen {
-  z-index: 30;
+  z-index: 80;
   position: absolute;
   top: 0px;
   left: 0px;
