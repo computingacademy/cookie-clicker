@@ -19,6 +19,7 @@ let goals = [{
       return !blocks.find(block => block.type === 'image_set');
     },
     hint: '<p>Drag the <bk class="io">set image</bk> block into the workspace.</p>',
+    revealed: true,
     pointer: {
       from: {
         flyout: true,
@@ -29,6 +30,7 @@ let goals = [{
       to: 'workspace',
     },
     location: 'workspace',
+    cost: 5,
   }],
   interaction: {
     afterHint: 0,
@@ -58,15 +60,19 @@ let goals = [{
       return !blocks.find(block => block.type === 'image_set');
     },
     hint: '<p>Drag the <bk class="io">set image</bk> block into the workspace.</p>',
+    revealed: true,
     location: 'workspace',
+    cost: 5,
   }, {
     condition: function(blocks) {
       return !!blocks.find(block => block.type === 'image_set' && block.inputs['PICTURE'] === 'images/crumbs.jpg');
     },
     hint: '<p>Click the dropdown arrow on the <bk class="io">set image</bk> block. Then choose your cookie!</p>',
+    revealed: true,
     location: function(block) {
       return block.type === 'image_set';
     },
+    cost: 5,
   }],
   interaction: {
     afterHint: 1,
@@ -145,6 +151,7 @@ let goals = [{
       to: 'workspace',
     },
     location: 'workspace',
+    cost: 5,
   }, {
     condition: function(blocks) {
       // Do no on_click blocks have a variables_add block?
@@ -158,6 +165,7 @@ let goals = [{
     location: function(block) {
       return block.type === 'on_click';
     },
+    cost: 5,
   }, {
     condition: function(blocks) {
       return !!blocks.find(block => block.type === 'variables_add');
@@ -166,6 +174,7 @@ let goals = [{
     location: function(block) {
       return block.type === 'variables_add';
     },
+    cost: 5,
   }],
   interaction: {
     afterHint: 1,
@@ -239,6 +248,7 @@ let goals = [{
     },
     hint: '<p>Drag the <bk class="control">on click</bk> block into the workspace.</p>',
     location: 'workspace',
+    cost: 5,
   }, {
     condition: function(blocks) {
       // Do no on_click blocks have a heading_set block?
@@ -252,6 +262,7 @@ let goals = [{
     location: function(block) {
       return block.type === 'on_click';
     },
+    cost: 5,
   }, {
     condition: function(blockList) {
       // Are there any heading set blocks?
@@ -266,6 +277,7 @@ let goals = [{
     location: function(block) {
       return block.type === 'heading_set';
     },
+    cost: 5,
   }],
   interaction: {
     afterHint: 1,
@@ -343,6 +355,7 @@ let goals = [{
     },
     hint: '<p>Drag the <bk class="control">on click</bk> block into the workspace.</p>',
     location: 'workspace',
+    cost: 5,
   }, {
     condition: function(blocks) {
       // Do no on_click blocks have a heading_set block?
@@ -356,6 +369,7 @@ let goals = [{
     location: function(block) {
       return block.type === 'on_click';
     },
+    cost: 5,
   }, {
     condition: function(blockList) {
       // Are there any set_heading blocks?
@@ -370,6 +384,7 @@ let goals = [{
     location: function(block) {
       return block.type === 'heading_set';
     },
+    cost: 5,
   }, {
     condition: function(blockList) {
       // Are there any text_join blocks?
@@ -390,6 +405,7 @@ let goals = [{
     location: function(block) {
       return block.type === 'text_join';
     },
+    cost: 5,
   }],
   interaction: {
     afterHint: 1,
@@ -481,6 +497,7 @@ let goals = [{
     },
     hint: '<p>Drag the <bk class="control">on click</bk> block into the workspace.</p>',
     location: 'workspace',
+    cost: 5,
   }, {
     condition: function(blocks) {
       // Do no on_click blocks have an if block?
@@ -494,6 +511,7 @@ let goals = [{
     location: function(block) {
       return block.type === 'on_click';
     },
+    cost: 5,
   }, {
     condition: function(blockList) {
       // Are there any controls_if blocks?
@@ -508,6 +526,7 @@ let goals = [{
     location: function(block) {
       return block.type === 'controls_if';
     },
+    cost: 5,
   }, {
     condition: function(blockList) {
       // Are there any logic_compare blocks?
@@ -532,6 +551,7 @@ let goals = [{
     location: function(block) {
       return block.type === 'controls_if';
     },
+    cost: 5,
   }, {
     condition: function(blockList) {
       // Are there any controls_if blocks?
@@ -546,6 +566,7 @@ let goals = [{
     location: function(block) {
       return block.type === 'controls_if';
     },
+    cost: 5,
   }, {
     condition: function(blockList) {
       return blockList.some(block => block.type === 'image_set' && block.inputs['PICTURE'] === 'images/crumbs.jpg');
@@ -554,6 +575,7 @@ let goals = [{
     location: function(block) {
       return block.type === 'image_set' && block.inputs['PICTURE'] === 'images/crumbs.jpg';
     },
+    cost: 5,
   }, {
     condition: function(blockList) {
       let ifIndex = blockList.findIndex(block => block.type === 'controls_if');
@@ -564,6 +586,7 @@ let goals = [{
     location: function(block) {
       return block.type === 'controls_if';
     },
+    cost: 5,
   }],
   interaction: {
     afterHint: 0,

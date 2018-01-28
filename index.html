@@ -25,16 +25,16 @@
       <aside>
         <animated-counter v-bind:count="cookies"></animated-counter>
         <cookie-clicker v-bind:code="blockly.code" v-bind:cookies="cookies" v-on:cookies="val => cookies += val" v-on:clicks="val => clicks = val"></cookie-clicker>
-        <cookie-clicker-controls v-bind:hintson="hintson" v-on:hints-toggle="val => hintson = val"></cookie-clicker-controls>
+        <cookie-clicker-controls v-bind:next-hint="nextHint" v-bind:cookies="cookies" v-on:buy-hint="buyHint"></cookie-clicker-controls>
         <interaction-check v-bind:goal="selectedGoal" v-bind:clicks="clicks"></interaction-check>
       </aside>
       <div id="program">
         <goal-description v-bind:goal="selectedGoal"></goal-description>
-        <blockly-hints v-bind:blockly="blockly" v-bind:hints="selectedGoal ? selectedGoal.hints : []" v-bind:hintson="hintson"></blockly-hints>
+        <blockly-hints v-bind:blockly="blockly" v-bind:hint="nextHint"></blockly-hints>
         <blockly-editor v-model="blockly"></blockly-editor>
       </div>
     </content>
-    <cookie-rewards v-bind:rewards="goalRewards" v-bind:goal="selectedGoal" v-bind:hintsOn="hintson"></cookie-rewards>
+    <cookie-rewards v-bind:rewards="goalRewards" v-bind:goal="selectedGoal"></cookie-rewards>
   </div>
 
   <div id="firework-overlay"></div>

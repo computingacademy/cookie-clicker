@@ -63,6 +63,7 @@ function updateGoals(env, silent) {
     // Check hint conditions
     goal.hints.forEach(function(hint) {
       Vue.set(hint, 'useful', hint.condition(blockTree, blockList));
+      Vue.set(hint, 'revealed', hint.revealed);
     });
 
     // Perform each check
@@ -249,13 +250,23 @@ function locationToCoords(blockly, location) {
       top: blockly.offset.y,
     };
   } else if (location) {
+    let blocks, offsetX, offsetY;
+    if (location.flyout) {
+      offsetX = 0;
+      offsetY = 0;
+      blocks = blockly.toolbox;
+    } else {
+      offsetX = blockly.offset.x;
+      offsetY = blockly.offset.y;
+      blocks = blockly.blocks;
+    }
     location = location.location || location;
-    let block = blockly.blocks.concat(blockly.toolbox || []).find(location);
+    let block = blocks.concat(blockly.toolbox || []).find(location);
 
     if (!!block) {
       return {
-        left: blockly.offset.x + (block.bounds.topLeft.x+block.bounds.bottomRight.x)/2,
-        top: blockly.offset.y + (block.bounds.topLeft.y+block.bounds.bottomRight.y)/2,
+        left: offsetX + (block.bounds.topLeft.x+block.bounds.bottomRight.x)/2,
+        top: offsetY + (block.bounds.topLeft.y+block.bounds.bottomRight.y)/2,
       }
     } else {
       return undefined;

@@ -143,29 +143,19 @@ let cookieClickerControls =  Vue.component('cookie-clicker-controls', {
     <span class="icon icon-spinner11"></span>
     Reset
   </button>
-  <button v-on:click="hintsToggle()" id="hints" v-bind:class="{on: hintson, off: !hintson}">
-    <span v-bind:class="hintIcon(hintson)"></span>
-    <span v-if="hintson">Hints on</span>
-    <span v-if="!hintson">Hints off</span>
+  <button v-on:click="buyHint()" id="hints" v-bind:class="{on: cookies >= nextHint.cost && !nextHint.revealed}">
+    Buy hint
   </button>
 </div>`,
-  props: ['hintson'],
+  props: ['nextHint', 'cookies'],
   methods: {
     reset: function() {
       // Rerun the code
       runCookieClicker(code);
     },
-    hintsToggle: function() {
-      // Toggle hints
-      this.$emit('hints-toggle', !this.hintson);
-    },
-    hintIcon: function(hintson) {
-      // Turn hint status into icons
-      return {
-        'icon': true,
-        'icon-eye': hintson,
-        'icon-eye-blocked': !hintson,
-      };
+    buyHint: function() {
+      // Reveal the hint
+      this.$emit('buy-hint', this.nextHint);
     },
   },
 });
@@ -246,21 +236,17 @@ let goalDescription = Vue.component('goal-description', {
 
 let blocklyHints = Vue.component('blockly-hints', {
   template: `
-<div id="hints" v-if="hintson">
+<div id="hints">
   <div id="blockly-hints">
-    <div v-for="hint in hints" v-if="useful(hint)" v-html="hint.hint" class="blockly-hint" v-bind:style="position(hint.location, blockly)">
+    <div v-if="hint.revealed" v-html="hint.hint" class="blockly-hint" v-bind:style="position(hint.location, blockly)">
     </div>
   </div>
   <div id="pointer-hints">
-    <pointer-hint v-for="hint in hints" v-if="hint.pointer && useful(hint)" v-bind:hint="hint" v-bind:blockly="blockly"></pointer-hint>
+    <pointer-hint v-if="hint.pointer && hint.revealed" v-bind:hint="hint" v-bind:blockly="blockly"></pointer-hint>
   </div>
 </div>`,
-  props: ['hints', 'hintson', 'blockly'],
+  props: ['hint', 'blockly'],
   methods: {
-    useful: function(hint) {
-      // Check if the hint is helpful
-      return hint.condition(this.blockly.blocks);
-    },
     position: function(location, blockly) {
       // Get location coordinates
       let coords = locationToCoords(blockly, location);
@@ -350,7 +336,6 @@ let cookieRewards = Vue.component('cookie-rewards', {
     <li v-for="reward in rewards">
       <span v-if="reward.type == 'cookies'" class="cookies">
         {{ reward.amount }} cookies
-        <span v-if="cookieBonus()">x 2</span>
       </span>
       <span v-if="reward.type == 'block'" class="block">
         The
@@ -367,28 +352,16 @@ let cookieRewards = Vue.component('cookie-rewards', {
       </span>
     </li>
   </ul>
-  <button v-if="state == 'rewards' || state == 'finished'" v-on:click="unlock()" class="highlighted">
-    <span class="icon icon-arrow-right"></span>
-    Next
-  </button>
   <div v-if="state == 'next' || state == 'nextContinue'">
     <h1>Next goal...</h1>
     <h3 v-html="goal.shortDescription"></h3>
   </div>
-  <p>
-    <button v-if="state == 'nextContinue'" v-on:click="unlock({hintsOn: true})" v-bind:class="{highlighted: hintson}">
-      <span class="icon icon-arrow-right"></span>
-      Hints on
-    </button>
-  </p>
-  <p>
-    <button v-if="state == 'nextContinue'" v-on:click="unlock({hintsOn: false})" v-bind:class="{highlighted: !hintson}">
-      <span class="icon icon-arrow-right"></span>
-      Hints off <img src="images/choc-chip.png">×2
-    </button>
-  </p>
+  <button v-if="state == 'rewards' || state == 'finished' || state == 'nextContinue'" v-on:click="unlock()" class="highlighted">
+    <span class="icon icon-arrow-right"></span>
+    Next
+  </button>
 </div>`,
-  props: ['rewards', 'goal', 'hintson'],
+  props: ['rewards', 'goal'],
   data: function() {
     return {
       state: 'cookie',
@@ -423,8 +396,6 @@ let cookieRewards = Vue.component('cookie-rewards', {
         let cookies = this.rewards
           .filter(reward => reward.type == 'cookies')
           .reduce((total, reward) => total + reward.amount, 0);
-        if (this.cookieBonus())
-          cookies *= 2;
         mainVue.cookies += cookies;
       } else if (this.state == 'rewards') {
         let firstNew = goals.find(goal => goal.unlocked && !goal.seen && !goal.completed);
@@ -433,7 +404,6 @@ let cookieRewards = Vue.component('cookie-rewards', {
         if (firstNew) {
           this.state = 'next';
           mainVue.selectedGoal = firstNew;
-          mainVue.hintson = false;
 
           setTimeout(function() {
             vm.state = 'nextContinue';
@@ -450,16 +420,9 @@ let cookieRewards = Vue.component('cookie-rewards', {
       } else if (this.state == 'next') {
       } else if (this.state == 'nextContinue') {
         mainVue.goalRewards = [];
-        mainVue.hintson = config.hintsOn;
-        if (config.hintsOn)
-          Cookies.set(`goals[${this.goal.id}].hintsSeen`, true);
       } else if (this.state == 'finished') {
         mainVue.goalRewards = [];
       }
-    },
-    cookieBonus: function() {
-      let bonus = !(Cookies.get(`goals[${this.goal.id}].hintsSeen`) === 'true');
-      return bonus;
     },
   },
 });

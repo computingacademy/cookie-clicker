@@ -10,10 +10,10 @@ let mainVue = new Vue({
     },
     cookies: 0,
     clicks: 0,
-    hintson: false,
     goals: goals,
     goalRewards: [],
     selectedGoal: undefined,
+    nextHint: {},
   },
   mounted: function() {
     // Load previous progress
@@ -31,6 +31,10 @@ let mainVue = new Vue({
 
       // Save progress every time blocks are changed
       save(this);
+
+      // Update hint
+      if (this.selectedGoal)
+        this.nextHint = this.selectedGoal.hints.find(hint => hint.condition(this.blockly.blocks)) || {};
     },
     clicks: function() {
       // Update goal statuses
@@ -40,11 +44,19 @@ let mainVue = new Vue({
       // Save updated goal progress
       save(this);
     },
-    hintson: function() {
-      // Have the hints been seen?
-      if (this.hintson && this.selectedGoal)
-        // Save the 'hint seen' status
-        Cookies.set(`goals[${this.selectedGoal.id}].hintsSeen`, true);
+    'selectedGoal.hints': function(hints) {
+      // Update hint
+      this.nextHint = hints.find(hint => hint.condition(this.blockly.blocks)) || {};
     },
-  }
+  },
+  methods: {
+    buyHint: function(hint) {
+      // If there are enough cookies
+      if (this.cookies >= hint.cost) {
+        // Use the cookies to reveal the hint
+        this.cookies -= hint.cost;
+        hint.revealed = true;
+      }
+    },
+  },
 });
