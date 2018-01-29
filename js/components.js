@@ -143,6 +143,7 @@ let cookieClickerControls =  Vue.component('cookie-clicker-controls', {
     <span class="icon icon-spinner11"></span>
     Reset
   </button>
+  <animated-pointer v-if="nextHint.buyHintDelay == 0 && !nextHint.revealed"></animated-pointer>
   <button v-on:click="buyHint()" id="hints" v-bind:class="{on: cookies >= nextHint.cost && !nextHint.revealed}">
     Buy hint
   </button>
@@ -254,6 +255,60 @@ let blocklyHints = Vue.component('blockly-hints', {
       return {
         left: `${coords.left}px`,
         top: `${coords.top}px`,
+      };
+    },
+  },
+});
+
+let animatedPointer = Vue.component('animated-pointer', {
+  template: `
+<div class="pointer-hint" v-bind:style="position(left, top)"></div>`,
+  data: function() {
+    // Get the coordinates to animate the pointer from
+    let pos = document.querySelector('button#hints').getBoundingClientRect();
+    let coords = {
+        top: pos.top-60,
+        left: pos.left,
+      };
+
+    // Create the animation
+    this.tween = new TWEEN.Tween(coords);
+    this.animation();
+
+    // Set the initial coordinates
+    return coords;
+  },
+  methods: {
+    animation: function() {
+      // Update the animation each frame
+      function animate () {
+        if (TWEEN.update()) {
+          requestAnimationFrame(animate);
+        }
+      }
+
+      // Get the start/end position of the pointer
+      let pos = document.querySelector('button#hints').getBoundingClientRect();
+      let coords = {left: (pos.left+pos.right)/2, top: pos.top-60};
+      let to = {top: pos.top-40};
+      // Animate the pointer from start/end
+      this.top = coords.top;
+      this.left = coords.left;
+      this.tween
+        .to(to, 400)
+        .repeat(Infinity)
+        .delay(1000)
+        .start();
+
+      animate();
+    },
+    position: function(left, top) {
+      // Turn coordinates into an element style
+      return {
+        position: 'absolute',
+        left: `${left.toFixed(0)}px`,
+        top: `${top.toFixed(0)}px`,
+        transform: 'rotate(180deg)',
       };
     },
   },

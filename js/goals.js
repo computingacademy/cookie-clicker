@@ -68,7 +68,7 @@ let goals = [{
       return !!blocks.find(block => block.type === 'image_set' && block.inputs['PICTURE'] === 'images/crumbs.jpg');
     },
     hint: '<p>Click the dropdown arrow on the <bk class="io">set image</bk> block. Then choose your cookie!</p>',
-    revealed: true,
+    buyHintDelay: 0,
     location: function(block) {
       return block.type === 'image_set';
     },
