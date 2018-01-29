@@ -25,7 +25,7 @@
       <aside>
         <animated-counter v-bind:count="cookies"></animated-counter>
         <cookie-clicker v-bind:code="blockly.code" v-bind:cookies="cookies" v-on:cookies="val => cookies += val" v-on:clicks="val => clicks = val"></cookie-clicker>
-        <cookie-clicker-controls v-bind:next-hint="nextHint" v-bind:cookies="cookies" v-on:buy-hint="buyHint"></cookie-clicker-controls>
+        <cookie-clicker-controls v-bind:next-hint="nextHint" v-bind:cookies="cookies" v-bind:code="blockly.code" v-on:buy-hint="buyHint"></cookie-clicker-controls>
         <interaction-check v-bind:goal="selectedGoal" v-bind:clicks="clicks"></interaction-check>
       </aside>
       <div id="program">

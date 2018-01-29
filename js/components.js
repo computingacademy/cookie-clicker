@@ -148,11 +148,11 @@ let cookieClickerControls =  Vue.component('cookie-clicker-controls', {
     Buy hint
   </button>
 </div>`,
-  props: ['nextHint', 'cookies'],
+  props: ['nextHint', 'cookies', 'code'],
   methods: {
     reset: function() {
       // Rerun the code
-      runCookieClicker(code);
+      runCookieClicker(this.code);
     },
     buyHint: function() {
       // Reveal the hint
