@@ -52,7 +52,7 @@ let mainVue = new Vue({
   methods: {
     buyHint: function(hint) {
       // If there are enough cookies
-      if (this.cookies >= hint.cost) {
+      if (!hint.revealed && this.cookies >= hint.cost) {
         // Use the cookies to reveal the hint
         this.cookies -= hint.cost;
         hint.revealed = true;
