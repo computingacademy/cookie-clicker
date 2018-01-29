@@ -180,6 +180,10 @@ button {
   #hints.on:hover {
     background-color: #fc6f7a;
   }
+    #hints img {
+      margin-top: -2px;
+      height: 22px;
+    }
 
 nav {
   text-align: center;

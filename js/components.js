@@ -146,6 +146,7 @@ let cookieClickerControls =  Vue.component('cookie-clicker-controls', {
   <animated-pointer v-if="nextHint.buyHintDelay == 0 && !nextHint.revealed"></animated-pointer>
   <button v-on:click="buyHint()" id="hints" v-bind:class="{on: cookies >= nextHint.cost && !nextHint.revealed}">
     Buy hint
+    <img src="images/choc-chip.png">×{{ nextHint.cost }}
   </button>
 </div>`,
   props: ['nextHint', 'cookies', 'code'],
