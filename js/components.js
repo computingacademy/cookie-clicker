@@ -143,10 +143,13 @@ let cookieClickerControls =  Vue.component('cookie-clicker-controls', {
     <span class="icon icon-spinner11"></span>
     Reset
   </button>
-  <animated-pointer v-if="nextHint.buyHintDelay == 0 && !nextHint.revealed"></animated-pointer>
-  <button v-on:click="buyHint()" id="hints" v-bind:class="{on: cookies >= nextHint.cost && !nextHint.revealed}">
+  <animated-pointer v-if="nextHint && nextHint.buyHintDelay == 0 && !nextHint.revealed"></animated-pointer>
+  <button v-if="nextHint" v-on:click="buyHint()" id="hints" v-bind:class="{on: cookies >= nextHint.cost && !nextHint.revealed}">
     Buy hint
     <img src="images/choc-chip.png">×{{ nextHint.cost }}
+  </button>
+  <button v-if="!nextHint">
+    Click the cookie!
   </button>
 </div>`,
   props: ['nextHint', 'cookies', 'code'],
@@ -240,11 +243,11 @@ let blocklyHints = Vue.component('blockly-hints', {
   template: `
 <div id="hints">
   <div id="blockly-hints">
-    <div v-if="hint.revealed" v-html="hint.hint" class="blockly-hint" v-bind:style="position(hint.location, blockly)">
+    <div v-if="hint && hint.revealed" v-html="hint.hint" class="blockly-hint" v-bind:style="position(hint.location, blockly)">
     </div>
   </div>
   <div id="pointer-hints">
-    <pointer-hint v-if="hint.pointer && hint.revealed" v-bind:hint="hint" v-bind:blockly="blockly"></pointer-hint>
+    <pointer-hint v-if="hint && hint.pointer && hint.revealed" v-bind:hint="hint" v-bind:blockly="blockly"></pointer-hint>
   </div>
 </div>`,
   props: ['hint', 'blockly'],
@@ -408,16 +411,21 @@ let cookieRewards = Vue.component('cookie-rewards', {
       </span>
     </li>
   </ul>
-  <div v-if="state == 'next' || state == 'nextContinue'">
-    <h1>Next goal...</h1>
-    <h3 v-html="goal.shortDescription"></h3>
-  </div>
-  <button v-if="state == 'rewards' || state == 'finished' || state == 'nextContinue'" v-on:click="unlock()" class="highlighted">
+  <button v-if="state == 'rewards' || state == 'finished'" v-on:click="unlock()" class="highlighted">
     <span class="icon icon-arrow-right"></span>
     Next
   </button>
+  <div v-if="state == 'next'">
+    <h1>Choose a goal...</h1>
+    <ol id="next-goals">
+      <li v-for="goal in goals" v-if="!goal.completed && goal.unlocked" v-on:click="unlock({goal: goal})">
+        <h2 v-html="goal.title"></h2>
+        <p v-html="goal.shortDescription"></p>
+      </li>
+    </ol>
+  </div>
 </div>`,
-  props: ['rewards', 'goal'],
+  props: ['rewards', 'goal', 'goals'],
   data: function() {
     return {
       state: 'cookie',
@@ -460,10 +468,6 @@ let cookieRewards = Vue.component('cookie-rewards', {
         if (firstNew) {
           this.state = 'next';
           mainVue.selectedGoal = firstNew;
-
-          setTimeout(function() {
-            vm.state = 'nextContinue';
-          }, 2000);
         } else {
           this.state = 'finished';
           let fireworkOverlay = document.querySelector('#firework-overlay');
@@ -474,7 +478,7 @@ let cookieRewards = Vue.component('cookie-rewards', {
           }, 500);
         }
       } else if (this.state == 'next') {
-      } else if (this.state == 'nextContinue') {
+        mainVue.selectedGoal = config.goal;
         mainVue.goalRewards = [];
       } else if (this.state == 'finished') {
         mainVue.goalRewards = [];

@@ -322,6 +322,26 @@ nav {
     height: 28px;
   }
 
+#next-goals {
+  width: 600px;
+  margin: auto;
+}
+  #next-goals h2 {
+    color: #333;
+  }
+
+  #next-goals li {
+    cursor: pointer;
+    margin: 5px;
+    padding: 5px;
+
+    background: #eee;
+    color: #333;
+  }
+  #next-goals li:hover {
+    background: #fff;
+  }
+
 #firework-overlay {
   z-index: 40;
   position: absolute;

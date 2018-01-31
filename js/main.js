@@ -26,6 +26,9 @@ let mainVue = new Vue({
   },
   watch: {
     'blockly.blocks': function() {
+      // Reset the number of clicks
+      this.clicks = 0
+
       // Update goal statuses
       updateGoals(this);
 
@@ -34,7 +37,7 @@ let mainVue = new Vue({
 
       // Update hint
       if (this.selectedGoal)
-        this.nextHint = this.selectedGoal.hints.find(hint => hint.condition(this.blockly.blocks)) || {};
+        this.nextHint = this.selectedGoal.hints.find(hint => hint.condition(this.blockly.blocks));
     },
     clicks: function() {
       // Update goal statuses
