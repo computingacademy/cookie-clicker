@@ -30,10 +30,10 @@
       </aside>
       <div id="program">
         <goal-description v-bind:goal="selectedGoal"></goal-description>
-        <blockly-hints v-bind:blockly="blockly" v-bind:hint="nextHint"></blockly-hints>
         <blockly-editor v-model="blockly"></blockly-editor>
       </div>
     </content>
+    <goal-hints v-bind:blockly="blockly" v-bind:hint="nextHint"></goal-hints>
     <cookie-rewards v-bind:rewards="goalRewards" v-bind:goal="selectedGoal" v-bind:goals="goals"></cookie-rewards>
   </div>
 

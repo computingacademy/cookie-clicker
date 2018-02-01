@@ -26,6 +26,11 @@ let blocklyEditor = Vue.component('blockly-editor', {
     // Initial model update
     vm.$emit('input', vm.value());
 
+    // Update once the blockly DOM has loaded
+    setTimeout(function() {
+      vm.$emit('input', vm.value());
+    }, 10);
+
     // Use blockly element as this component's element
     this.__instance = this.workspace;
   },
@@ -36,8 +41,8 @@ let blocklyEditor = Vue.component('blockly-editor', {
         workspace: this.workspace,
         code: code(this.workspace),
         blocks: workspaceToBlocks(this.workspace, true),
-        toolbox: workspaceToBlocks(this.workspace.getFlyout_().getWorkspace()),
-        offset: this.workspace.getOriginOffsetInPixels(),
+        toolbox: workspaceToBlocks(this.workspace.getFlyout_().getWorkspace(), true),
+        offset: this.$el.getBoundingClientRect(),
       };
     },
   },
@@ -169,11 +174,11 @@ let interactionCheck =  Vue.component('interaction-check', {
   template: `
 <div id="interaction-check" v-if="hintsCompleted(goal)">
   <div v-html="goal.interaction.message"></div>
-</div>`,
-  props: ['goal', 'clicks'],
-  methods: {
-    hintsCompleted: function(goal) {
-      if (goal) {
+ </div>`,
+   props: ['goal', 'clicks'],
+   methods: {
+   hintsCompleted: function(goal) {
+     if (goal) {
         // Find the first hint yet to be completed
         let firstUncompletedHint = goal.hints.findIndex(hint => hint.useful);
         // Check that all the hints before this interaction check have
@@ -239,27 +244,23 @@ let goalDescription = Vue.component('goal-description', {
   props: ['goal'],
 });
 
-let blocklyHints = Vue.component('blockly-hints', {
+let goalHints = Vue.component('goal-hints', {
   template: `
-<div id="hints">
-  <div id="blockly-hints">
-    <div v-if="hint && hint.revealed" v-html="hint.hint" class="blockly-hint" v-bind:style="position(hint.location, blockly)">
-    </div>
-  </div>
-  <div id="pointer-hints">
-    <pointer-hint v-if="hint && hint.pointer && hint.revealed" v-bind:hint="hint" v-bind:blockly="blockly"></pointer-hint>
-  </div>
-</div>`,
+  <div v-if="hint && hint.revealed" v-html="message(hint)" v-bind:style="position(hint, blockly)">
+  </div>`,
   props: ['hint', 'blockly'],
   methods: {
-    position: function(location, blockly) {
+    position: function(hint, blockly) {
       // Get location coordinates
-      let coords = locationToCoords(blockly, location);
+      let coords = locationToCoords(blockly, hintLocation(hint));
       // Output as element style
       return {
         left: `${coords.left}px`,
         top: `${coords.top}px`,
       };
+    },
+    message: function(hint) {
+      return hintMessage(hint);
     },
   },
 });

@@ -15,30 +15,16 @@ let goals = [{
     },
   }],
   hints: [{
-    condition: function(blocks) {
-      return !blocks.find(block => block.type === 'image_set');
-    },
-    hint: '<p>Drag the <bk class="io">set image</bk> block into the workspace.</p>',
     revealed: true,
-    pointer: {
-      from: {
-        flyout: true,
-        location: function(block) {
-          return block.type === 'image_set';
-        },
-      },
-      to: 'workspace',
-    },
-    location: 'workspace',
     cost: 5,
+    type: 'drag block',
+    block: 'image_set',
   }],
   interaction: {
-    afterHint: 0,
-    message: '<p>You did it!</p><p>Click the crumbs!</p>',
     clicks: 1,
+    message: '<p>You did it!</p><p>Click the crumbs!</p>',
   },
   prerequisites: [],
-  blocks: ['image_set'],
 }, {
   id: 'Choose image',
   title: 'Choose a cookie',
@@ -56,33 +42,26 @@ let goals = [{
     },
   }],
   hints: [{
-    condition: function(blocks) {
-      return !blocks.find(block => block.type === 'image_set');
-    },
-    hint: '<p>Drag the <bk class="io">set image</bk> block into the workspace.</p>',
     revealed: true,
-    location: 'workspace',
     cost: 5,
+    type: 'drag block',
+    block: 'image_set',
   }, {
-    condition: function(blocks) {
-      return !!blocks.find(block => block.type === 'image_set' && block.inputs['PICTURE'] === 'images/crumbs.jpg');
-    },
-    hint: '<p>Click the dropdown arrow on the <bk class="io">set image</bk> block. Then choose your cookie!</p>',
-    buyHintDelay: 0,
-    location: function(block) {
-      return block.type === 'image_set';
-    },
     cost: 5,
+    type: 'set block value',
+    block: 'image_set',
+    key: 'PICTURE',
+    notValue: 'images/crumbs.jpg',
+    message: '<p>Click the dropdown arrow on the <bk class="io">set image</bk> block. Then choose your cookie!</p>',
+    buyHintDelay: 0,
   }],
   interaction: {
-    afterHint: 1,
-    message: '<p>Awesome cookie!</p><p>Click it!</p>',
     clicks: 1,
+    message: '<p>Awesome cookie!</p><p>Click it!</p>',
   },
   prerequisites: [
     'Set image',
   ],
-  blocks: ['image_set'],
 }, {
   id: 'On click',
   title: 'Click that cookie!',
@@ -111,7 +90,7 @@ let goals = [{
     },
   }, {
     description: 'Add to the cookies variable when the cookie is clicked',
-    hint: '<p>Make sure the <bk class="var">add to <bk class="inner">cookies</bk></bk> block is inside of the <bk class="control">on click</bk> block.</p>',
+    hint: '<p>Make sure the <bk class="var">add to <bk class="inner">cookies</bk></bk> block is key of the <bk class="control">on click</bk> block.</p>',
     test: function(cookieClicker, blockly, cookies) {
       // Get original heading text
       let originalText = cookieClicker.querySelector('h1').textContent;
@@ -137,55 +116,26 @@ let goals = [{
     },
   }],
   hints: [{
-    condition: function(blocks) {
-      return !blocks.find(block => block.type === 'on_click');
-    },
-    hint: '<p>Drag the <bk class="control">on click</bk> block into the workspace.</p>',
-    pointer: {
-      from: {
-        flyout: true,
-        location: function(block) {
-          return block.type === 'on_click';
-        },
-      },
-      to: 'workspace',
-    },
-    location: 'workspace',
     cost: 5,
+    type: 'drag block',
+    block: 'on_click',
   }, {
-    condition: function(blocks) {
-      // Do no on_click blocks have a variables_add block?
-      let clickBlocks = blocks.filter(block => block.type === 'on_click');
-      return clickBlocks.length !== 0 &&
-        !clickBlocks
-        .filter(block => block.inputs['DO'] !== undefined)
-        .some(block => !!block.inputs['DO'].find(block => block.type === 'variables_add'));
-    },
-    hint: '<p>Drag the <bk class="var">add to <bk class="inner">cookies</bk></bk> block into the <bk class="control">on click</bk> block.</p>',
-    location: function(block) {
-      return block.type === 'on_click';
-    },
     cost: 5,
-  }, {
-    condition: function(blocks) {
-      return !!blocks.find(block => block.type === 'variables_add');
+    type: 'drag block',
+    block: 'variables_add',
+    into: {
+      block: 'on_click',
+      key: 'DO',
     },
-    hint: '<p>If you don\'t  use the <bk class="var">add to <bk class="inner">cookies</bk></bk> block in the <bk class="control">on click</bk> block it will only add a cookie when you click the reset button!</p>',
-    location: function(block) {
-      return block.type === 'variables_add';
-    },
-    cost: 5,
   }],
   interaction: {
-    afterHint: 1,
-    message: '<p>Can you click the cookie 5 times?</p>',
     clicks: 5,
+    message: '<p>Can you click the cookie 5 times?</p>',
   },
   prerequisites: [
     'Set image',
     'Choose image',
   ],
-  blocks: ['on_click', 'variables_add'],
 }, {
   id: 'Set heading on click',
   title: 'How many cookies?',
@@ -226,7 +176,7 @@ let goals = [{
   }, {
     description: 'Set the heading to the number of cookies on click',
     hint: '<p>Connect the <bk class="var">cookies</bk> <em>variable</em> to the <bk class="io">set heading</bk> block.</p>'
-    + '<p>Make sure it\'s all inside of the <bk class="control">on click</bk> block.</p>',
+    + '<p>Make sure it\'s all key of the <bk class="control">on click</bk> block.</p>',
     test: function(cookieClicker, blockly, cookies) {
       // Get original heading text
       let originalText = cookieClicker.querySelector('h1').textContent;
@@ -243,51 +193,34 @@ let goals = [{
     },
   }],
   hints: [{
-    condition: function(blockList) {
-      return !blockList.find(block => block.type === 'on_click');
-    },
-    hint: '<p>Drag the <bk class="control">on click</bk> block into the workspace.</p>',
-    location: 'workspace',
     cost: 5,
+    type: 'drag block',
+    block: 'on_click',
   }, {
-    condition: function(blocks) {
-      // Do no on_click blocks have a heading_set block?
-      let clickBlocks = blocks.filter(block => block.type === 'on_click');
-      return clickBlocks.length !== 0 &&
-        !clickBlocks
-        .filter(block => block.inputs['DO'] !== undefined)
-        .some(block => !!block.inputs['DO'].find(block => block.type === 'heading_set'));
-    },
-    hint: '<p>Drag the <bk class="io">set heading</bk> block into the <bk class="control">on click</bk> block.</p>',
-    location: function(block) {
-      return block.type === 'on_click';
-    },
     cost: 5,
+    type: 'drag block',
+    block: 'heading_set',
+    into: {
+      block: 'on_click',
+      key: 'DO',
+      after: 'variables_add',
+    },
   }, {
-    condition: function(blockList) {
-      // Are there any heading set blocks?
-      // Do none of them have a variables_get block?
-      let headingSets = blockList.filter(block => block.type === 'heading_set');
-      return headingSets.length !== 0 &&
-        !headingSets
-        .filter(block => block.inputs['VALUE'] !== undefined)
-        .find(block => block.inputs['VALUE'].type === 'variables_get');
-    },
-    hint: '<p>Connect <bk class="var">cookies</bk> to <bk class="io">set heading</bk> to change the heading to the number of cookies.</p>',
-    location: function(block) {
-      return block.type === 'heading_set';
-    },
     cost: 5,
+    type: 'drag block',
+    block: 'variables_get',
+    into: {
+      block: 'heading_set',
+      key: 'VALUE',
+    },
   }],
   interaction: {
-    afterHint: 1,
-    message: '<p>Click the cookie to see the heading change.</p>',
     clicks: 5,
+    message: '<p>Click the cookie to see the heading change.</p><p>Click 5 times to complete the goal!</p>',
   },
   prerequisites: [
     'On click',
   ],
-  blocks: ['heading_set', 'variables_get'],
 }, {
   id: 'Join text',
   title: 'Show me the cookies!',
@@ -334,7 +267,7 @@ let goals = [{
     },
   }, {
     description: 'Set the heading to the joined text on click',
-    hint: '<p>Make sure you use the <bk class="io">set heading</bk> block inside of the <bk class="control">on click</bk> block!</p>',
+    hint: '<p>Make sure you use the <bk class="io">set heading</bk> block key of the <bk class="control">on click</bk> block!</p>',
     test: function(cookieClicker, blockly, cookies) {
       // Get original heading text
       let originalText = cookieClicker.querySelector('h1').textContent;
@@ -350,72 +283,48 @@ let goals = [{
     },
   }],
   hints: [{
-    condition: function(blockList) {
-      return !blockList.find(block => block.type === 'on_click');
-    },
-    hint: '<p>Drag the <bk class="control">on click</bk> block into the workspace.</p>',
-    location: 'workspace',
     cost: 5,
+    type: 'drag block',
+    block: 'on_click',
   }, {
-    condition: function(blocks) {
-      // Do no on_click blocks have a heading_set block?
-      let clickBlocks = blocks.filter(block => block.type === 'on_click');
-      return clickBlocks.length !== 0 &&
-        !clickBlocks
-        .filter(block => block.inputs['DO'] !== undefined)
-        .some(block => !!block.inputs['DO'].find(block => block.type === 'heading_set'));
-    },
-    hint: '<p>Drag the <bk class="io">set heading</bk> block into the <bk class="control">on click</bk> block.</p>',
-    location: function(block) {
-      return block.type === 'on_click';
-    },
     cost: 5,
+    type: 'drag block',
+    block: 'heading_set',
+    into: {
+      block: 'on_click',
+      key: 'DO',
+      after: 'variables_add',
+    },
   }, {
-    condition: function(blockList) {
-      // Are there any set_heading blocks?
-      // Do none of them have a text_join block?
-      let headingSets = blockList.filter(block => block.type === 'heading_set');
-      return headingSets.length !== 0 &&
-        !headingSets
-        .filter(block => block.inputs['VALUE'] !== undefined)
-        .find(block => block.inputs['VALUE'].type === 'text_join');
-    },
-    hint: '<p>Connect <bk class="str">join text</bk> to <bk class="io">set heading</bk> to set the heading to the joined text.</p>',
-    location: function(block) {
-      return block.type === 'heading_set';
-    },
     cost: 5,
+    type: 'drag block',
+    block: 'text_join',
+    into: {
+      block: 'heading_set',
+      key: 'VALUE',
+    },
   }, {
-    condition: function(blockList) {
-      // Are there any text_join blocks?
-      // Do none of them have a variables_get and text block?
-      let textJoins = blockList.filter(block => block.type === 'text_join');
-      return textJoins.length !== 0 &&
-        !(
-        textJoins
-        .filter(block => block.inputs['ADD0'] !== undefined)
-        .find(block => block.inputs['ADD0'].type === 'variables_get')
-        &&
-        textJoins
-        .filter(block => block.inputs['ADD1'] !== undefined)
-        .find(block => block.inputs['ADD1'].type === 'text')
-        );
-    },
-    hint: '<p>Connect <bk class="var">cookies</bk> and <bk class="str lit">cookies</bk> to <bk class="str">join text</bk> to join them.</p>',
-    location: function(block) {
-      return block.type === 'text_join';
-    },
     cost: 5,
+    type: 'drag block',
+    block: 'variables_get',
+    into: {
+      block: 'text_join',
+    },
+  }, {
+    cost: 5,
+    type: 'drag block',
+    block: 'text',
+    into: {
+      block: 'text_join',
+    },
   }],
   interaction: {
-    afterHint: 1,
-    message: '<p>Click the cookie to see the heading change.</p>',
     clicks: 5,
+    message: '<p>Click the cookie 5 times and watch the heading change.</p>',
   },
   prerequisites: [
     'Set heading on click',
   ],
-  blocks: ['text_join', 'text', 'variables_get'],
 }, {
   id: 'If statement',
   title: 'Cookie upgrade',
@@ -433,7 +342,7 @@ let goals = [{
     },
   }, {
     description: 'Compare cookies with a number',
-    hint: '<p>Use the <bk class="var">cookies</bk> variable inside of the <bk class="logic">≥ <bk class="math">10</bk></bk> block to check if at least 10 cookies have been clicked.</p>'
+    hint: '<p>Use the <bk class="var">cookies</bk> variable key of the <bk class="logic">≥ <bk class="math">10</bk></bk> block to check if at least 10 cookies have been clicked.</p>'
     + '<p>Connect <bk class="logic"><bk class="var">cookies</bk> ≥ <bk class="math">10</bk></bk> to the <bk class="control">if</bk> block.</p>',
     test: function(cookieClicker, blockly, cookies) {
       // Was the comparison block used with cookies, >=, and 10?
@@ -469,8 +378,8 @@ let goals = [{
   }, {
     description: 'Upgrade the cookie only once it has been clicked 10 times',
     hint: '<p>Connect <bk class="logic"><bk class="var">cookies</bk> ≥ <bk class="math">10</bk></bk> to the <bk class="control">if</bk> block.</p>'
-    + '<p>Use <bk class="io">set image</bk> inside of the <bk class="control">if</bk> block.</p>'
-    + '<p>Make sure the <bk class="control">if</bk> block is inside of the <bk class="control">on click</bk> block.</p>',
+    + '<p>Use <bk class="io">set image</bk> key of the <bk class="control">if</bk> block.</p>'
+    + '<p>Make sure the <bk class="control">if</bk> block is key of the <bk class="control">on click</bk> block.</p>',
     test: function(cookieClicker, blockly, cookies) {
       // Keep track of whether the cookie changes before 10 clicks
       let earlyChange = false;
@@ -492,109 +401,62 @@ let goals = [{
     },
   }],
   hints: [{
-    condition: function(blockList) {
-      return !blockList.find(block => block.type === 'on_click');
-    },
-    hint: '<p>Drag the <bk class="control">on click</bk> block into the workspace.</p>',
-    location: 'workspace',
     cost: 5,
+    type: 'drag block',
+    block: 'on_click',
   }, {
-    condition: function(blocks) {
-      // Do no on_click blocks have an if block?
-      let clickBlocks = blocks.filter(block => block.type === 'on_click');
-      return clickBlocks.length !== 0 &&
-        !clickBlocks
-        .filter(block => block.inputs['DO'] !== undefined)
-        .some(block => !!block.inputs['DO'].find(block => block.type === 'controls_if'));
-    },
-    hint: '<p>Drag the <bk class="control">if</bk> block into the <bk class="control">on click</bk> block.</p>',
-    location: function(block) {
-      return block.type === 'on_click';
-    },
     cost: 5,
+    type: 'drag block',
+    block: 'controls_if',
+    into: {
+      block: 'on_click',
+      key: 'DO',
+    },
   }, {
-    condition: function(blockList) {
-      // Are there any controls_if blocks?
-      // Do none of them have a logic_compare block?
-      let controlsIf = blockList.filter(block => block.type === 'controls_if');
-      return controlsIf.length !== 0 &&
-        !controlsIf
-        .filter(block => block.inputs['IF0'] !== undefined)
-        .find(block => block.inputs['IF0'].type === 'logic_compare');
-    },
-    hint: '<p>Connect <bk class="logic"> ≥ <bk class="math">10</bk></bk> to <bk class="control">if</bk> to check if a value is 10 or more.</p>',
-    location: function(block) {
-      return block.type === 'controls_if';
-    },
     cost: 5,
+    type: 'drag block',
+    block: 'logic_compare',
+    into: {
+      block: 'controls_if',
+      key: 'IF0',
+    },
   }, {
-    condition: function(blockList) {
-      // Are there any logic_compare blocks?
-      // Do none of them have a variables_get and math_number block and GTE operator?
-      let logicCompares = blockList.filter(block => block.type === 'logic_compare');
-      return logicCompares.length !== 0 &&
-        !(
-        logicCompares
-        .filter(block => block.inputs['A'] !== undefined)
-        .find(block => block.inputs['A'].type === 'variables_get')
-        &&
-        logicCompares
-        .filter(block => block.inputs['OP'] !== undefined)
-        .find(block => block.inputs['OP'] === 'GTE')
-        &&
-        logicCompares
-        .filter(block => block.inputs['B'] !== undefined)
-        .find(block => block.inputs['B'].type === 'math_number')
-        );
-    },
-    hint: '<p>Add <bk class="var">cookies</bk> inside of <bk class="logic"> ≥ <bk class="math">10</bk></bk> to check if there are 10 or more cookies.</p>',
-    location: function(block) {
-      return block.type === 'controls_if';
-    },
     cost: 5,
+    type: 'drag block',
+    block: 'variables_get',
+    into: {
+      block: 'logic_compare',
+      key: 'A',
+    },
   }, {
-    condition: function(blockList) {
-      // Are there any controls_if blocks?
-      // Do none of them have a image_set block?
-      let controlsIf = blockList.filter(block => block.type === 'controls_if');
-      return controlsIf.length !== 0 &&
-        !controlsIf
-        .filter(block => block.inputs['DO0'] !== undefined)
-        .find(block => block.inputs['DO0'].find(block => block.type === 'image_set'));
-    },
-    hint: '<p>Add the <bk class="io">set image</bk> block to the <em>do</em> section of <bk class="control">if</bk> so it will happen when the condition is <em>true</em>.</p>',
-    location: function(block) {
-      return block.type === 'controls_if';
-    },
     cost: 5,
+    type: 'set block value',
+    block: 'logic_compare',
+    key: 'OP',
+    value: 'GTE',
+    message: '<p>Click the dropdown arrow and select the ≥ symbol to check that the number of cookies is <em>greater than or equal to</em> 10.</p>',
   }, {
-    condition: function(blockList) {
-      return blockList.some(block => block.type === 'image_set' && block.inputs['PICTURE'] === 'images/crumbs.jpg');
-    },
-    hint: '<p>Click the dropdown arrow on the <bk class="io">set image</bk> block. Then choose your cookie!</p>',
-    location: function(block) {
-      return block.type === 'image_set' && block.inputs['PICTURE'] === 'images/crumbs.jpg';
-    },
     cost: 5,
+    type: 'drag block',
+    block: 'math_number',
+    into: {
+      block: 'logic_compare',
+      key: 'B',
+    },
   }, {
-    condition: function(blockList) {
-      let ifIndex = blockList.findIndex(block => block.type === 'controls_if');
-      let addIndex = blockList.findIndex(block => block.type === 'variables_add');
-      return (ifIndex > 1) && ifIndex < addIndex;
-    },
-    hint: '<p>Make sure the <bk class="control">if</bk> check happens after you <bk class="var">add to cookies</bk>.</p>',
-    location: function(block) {
-      return block.type === 'controls_if';
-    },
     cost: 5,
+    type: 'drag block',
+    block: 'image_set',
+    into: {
+      block: 'controls_if',
+      key: 'DO0'
+    },
   }],
   interaction: {
-    afterHint: 0,
+    clicks: 5,
     message: '<p>Click the cookie to check if the cookie changes after 10 clicks.</p>',
-    clicks: 10,
   },
   prerequisites: [
     'On click',
   ],
-  blocks: ['controls_if', 'logic_compare', 'image_set'],
 }];

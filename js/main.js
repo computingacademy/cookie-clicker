@@ -37,7 +37,7 @@ let mainVue = new Vue({
 
       // Update hint
       if (this.selectedGoal)
-        this.nextHint = this.selectedGoal.hints.find(hint => hint.condition(this.blockly.blocks));
+        this.nextHint = this.getNextHint(this.selectedGoal.hints);
     },
     clicks: function() {
       // Update goal statuses
@@ -49,7 +49,7 @@ let mainVue = new Vue({
     },
     'selectedGoal.hints': function(hints) {
       // Update hint
-      this.nextHint = hints.find(hint => hint.condition(this.blockly.blocks)) || {};
+      this.nextHint = this.getNextHint(this.selectedGoal.hints);
     },
   },
   methods: {
@@ -60,6 +60,9 @@ let mainVue = new Vue({
         this.cookies -= hint.cost;
         hint.revealed = true;
       }
+    },
+    getNextHint: function(hints) {
+      return hints.find(hint => usefulHint(hint, this.blockly.blocks));
     },
   },
 });

@@ -62,7 +62,7 @@ function updateGoals(env, silent) {
   goals.map(function(goal) {
     // Check hint conditions
     goal.hints.forEach(function(hint) {
-      Vue.set(hint, 'useful', hint.condition(blockTree, blockList));
+      Vue.set(hint, 'useful', usefulHint(hint, blockTree, blockList));
       Vue.set(hint, 'revealed', hint.revealed);
     });
 
@@ -120,7 +120,7 @@ function updateGoals(env, silent) {
     // Only use unlocked goals
     .filter(goal => goal.unlocked)
     // Get the blocks
-    .map(goal => goal.blocks)
+    .map(goal => goal.hints.map(hint => hint.block).filter(block => !!block))
     // Stick them all in one list (may contain duplicates
     .reduce((a, b) => a.concat(b));
 
@@ -244,33 +244,194 @@ function xmlToBlocks(workspace, xml, list) {
 }
 
 function locationToCoords(blockly, location) {
-  if (location === 'workspace') {
-    return {
-      left: blockly.offset.x,
-      top: blockly.offset.y,
-    };
-  } else if (location) {
-    let blocks, offsetX, offsetY;
-    if (location.flyout) {
-      offsetX = 0;
-      offsetY = 0;
-      blocks = blockly.toolbox;
-    } else {
-      offsetX = blockly.offset.x;
-      offsetY = blockly.offset.y;
-      blocks = blockly.blocks;
-    }
-    location = location.location || location;
-    let block = blocks.concat(blockly.toolbox || []).find(location);
+  // Put the hint next to a block
+  if (location.block) {
+    // Get the blockly workspace location
+    let offset = location.toolbox ? blockly.workspace.getFlyout_().getWorkspace().getOriginOffsetInPixels() : blockly.workspace.getOriginOffsetInPixels();
+    let offsetX = blockly.offset.x + offset.x;
+    let offsetY = blockly.offset.y + offset.y;
+
+    // Put the hint after a block
+    let blocks = location.toolbox ? blockly.toolbox : blockly.blocks;
+    let block = blocks.find(block => block.type == location.block);
 
     if (!!block) {
       return {
-        left: offsetX + (block.bounds.topLeft.x+block.bounds.bottomRight.x)/2,
-        top: offsetY + (block.bounds.topLeft.y+block.bounds.bottomRight.y)/2,
+        // To the right of the block
+        left: offsetX + block.bounds.bottomRight.x,
+        // At the top of the block
+        top: offsetY + block.bounds.topLeft.y,
       }
     } else {
       return undefined;
     }
+  }
+  // Put the hint after the last block
+  else {
+    // Get the blockly workspace location
+    let offset = location.toolbox ? blockly.workspace.getFlyout_().getWorkspace().getOriginOffsetInPixels() : blockly.workspace.getOriginOffsetInPixels();
+    let offsetX = blockly.offset.x + offset.x;
+    let offsetY = blockly.offset.y + offset.y;
+    
+    // Get the last block
+    let blocks = location.toolbox ? blockly.toolbox : blockly.blocks;
+    let lastBlock = blocks[blocks.length - 1];
+
+    if (!!lastBlock) {
+      return {
+        // On left side of the block
+        left: offsetX + lastBlock.bounds.topLeft.x,
+        // At the bottom of the block
+        top: offsetY + lastBlock.bounds.bottomRight.y,
+      };
+    } else {
+      return undefined;
+    }
+  }
+}
+
+// Turn a block type into a CSS class
+function blockClass(blockType) {
+  // Get the category part of the block type
+  let category = blockType.split('_')[0];
+
+  // Get the class
+  let theClass;
+  if (category == 'image' || category == 'heading') {
+    theClass = 'io';
+  } else if (category == 'controls' || category == 'on') {
+    theClass = 'control';
+  } else if (category == 'variables') {
+    theClass = 'var';
+  } else if (category == 'text') {
+    theClass = 'str';
+  } else {
+    theClass = category;
+  }
+
+  return theClass;
+}
+
+// Turn a block type into a label
+function blockLabel(blockType) {
+  if (blockType == 'image_set') {
+    return 'set image';
+  } else if (blockType == 'on_click') {
+    return 'on click';
+  } else if (blockType == 'variables_add') {
+    return 'add to <bk class="inner">cookies</bk>';
+  } else if (blockType == 'variables_get') {
+    return '<bk class="inner">cookies</bk>';
+  } else if (blockType == 'heading_set') {
+    return 'set heading';
+  } else if (blockType == 'text_join') {
+    return 'join text';
+  } else if (blockType == 'text') {
+    return '“ <bk class="inner"> Cookies</bk> ”';
+  } else if (blockType == 'controls_if') {
+    return 'if';
+  } else if (blockType == 'logic_compare') {
+    return '≥ <bk class="math">10</bk>';
+  } else {
+    return blockType;
+  }
+}
+
+// Turn a block type into inline html
+function inlineBlock(blockType) {
+  return `<bk class="${blockClass(blockType)}">
+  ${blockLabel(blockType)}
+</bk>`
+}
+
+function usefulHint(hint, blockTree) {
+  // Hints for dragging the block to the right place
+  if (hint.type == 'drag block') {
+    // If the block needs to be dragged into another block
+    if (hint.into) {
+      // Get the block that the block needs to be dragged into
+      let outerBlock = blockTree.find(block => block.type == hint.into.block);
+
+      if (outerBlock) {
+        let contained;
+        if (key) {
+          // Is the block in the outer block's key?
+          contained = blockContains(outerBlock, hint.into.key, hint.block);
+        } else {
+          // Is the block in the outer block anywhere?
+          contained = false;
+          for (var key in outerBlock.inputs)
+            contained = contained || blockContains(outerBlock, key, hint.block);
+        }
+
+        if (contained && hint.into.after) {
+          // Is the block after the other block already?
+          let inner = outerBlock.inputs[hint.into.key];
+          let blockIndex = inner.findIndex(block => block.type == hint.block);
+          let afterIndex = inner.findIndex(block => block.type == hint.into.after);
+          // The hint is useful if the block is before the one it's meant to be after
+          return blockIndex < afterIndex;
+        } else {
+          // The hint is useful if the block isn't inside the block it's meant to be inside
+          return !contained;
+        }
+      } else {
+      // If the block to be dragged into doesn't exist yet this hint isn't useful yet
+        return false;
+      }
+    // If the block just needs to be dragged into the workspace
+    } else {
+      // Does the block already exist in the workspace?
+      return !blockTree.find(block => block.type == hint.block);
+    }
+  }
+  // Hints for setting a block value
+  else if (hint.type == 'set block value') {
+    let block = blockTree.find(block => block.type == hint.block);
+    let value = block ? block.inputs[hint.key] : undefined;
+    // The hint is useful if the value isn't the correct one yet or it is the incorrect one
+    return (hint.value && value != hint.value) || (hint.notValue && value == hint.notValue);
+  }
+}
+
+function blockContains(outerBlock, key, innerBlockType) {
+  // Get the block(s) for the given key
+  let inner = outerBlock.inputs[key];
+
+  if (inner) {
+    // Does the outer block contain the inner block (either as a single block or one of multiple)?
+    return inner.type == innerBlockType || (inner.find && !!inner.find(block => block.type == innerBlockType));
+  } else {
+    return false;
+  }
+}
+
+function hintMessage(hint) {
+  if (hint.type == 'drag block') {
+    return `<p>Drag the <bk class="${blockClass(hint.block)}">${blockLabel(hint.block)}</bk> block into the ${hint.into ? inlineBlock(hint.into.block)+' block' : 'workspace'}.</p>`;
+  } else if (hint.type == 'set block value') {
+    return hint.message;
+  }
+}
+
+function hintLocation(hint) {
+  // Put the hint where it's being dragged to
+  if (hint.type == 'drag block') {
+    if (hint.into) {
+      return {
+        block: hint.into.block,
+      };
+    } else {
+      return {
+        place: 'workspace',
+      };
+    }
+  }
+  // Put the hint where the block being modified is
+  else if (hint.type == 'set block value') {
+    return {
+      block: hint.block,
+    };
   }
 }
 
