@@ -17,6 +17,7 @@ let goals = [{
   hints: [{
     revealed: true,
     cost: 5,
+    hint: '<p>We need to <em>set the image</em> so we can see it!</p>',
     type: 'drag block',
     block: 'image_set',
   }],
@@ -44,10 +45,12 @@ let goals = [{
   hints: [{
     revealed: true,
     cost: 5,
+    hint: '<p>We need to set the image so we can see it!</p>',
     type: 'drag block',
     block: 'image_set',
   }, {
     cost: 5,
+    hint: '<p>Change the image from <bk class="io"><bk class="inner">none</bk></bk> to a picture of a cookie.</p>',
     type: 'set block value',
     block: 'image_set',
     key: 'PICTURE',
@@ -117,10 +120,12 @@ let goals = [{
   }],
   hints: [{
     cost: 5,
+    hint: '<p>We need to use a block that detects when a click happens.</p>',
     type: 'drag block',
     block: 'on_click',
   }, {
     cost: 5,
+    hint: '<p>Every time we click we need to add a cookie.</p><p>You can drag a block <em>into</em> <bk class="control">on click</bk> to make that block happen when the cookie is clicked.</p>',
     type: 'drag block',
     block: 'variables_add',
     into: {
@@ -194,10 +199,21 @@ let goals = [{
   }],
   hints: [{
     cost: 5,
+    hint: '<p>You need to change the heading <em>on click</em>.<p>',
     type: 'drag block',
     block: 'on_click',
   }, {
     cost: 5,
+    hint: '<p>Make sure you add a cookie on every click!<p>',
+    type: 'drag block',
+    block: 'variables_add',
+    into: {
+      block: 'on_click',
+      key: 'DO',
+    },
+  }, {
+    cost: 5,
+    hint: '<p>You need to <em>set the heading</em> after each time you change the number of cookies.<p>',
     type: 'drag block',
     block: 'heading_set',
     into: {
@@ -207,6 +223,7 @@ let goals = [{
     },
   }, {
     cost: 5,
+    hint: '<p>Set the heading to the number of <bk class="var"><bk class="inner">cookies</bk></bk>.<p>',
     type: 'drag block',
     block: 'variables_get',
     into: {
@@ -284,10 +301,12 @@ let goals = [{
   }],
   hints: [{
     cost: 5,
+    hint: '<p>We need to make sure that we can detect when a click happens!</p>',
     type: 'drag block',
     block: 'on_click',
   }, {
     cost: 5,
+    hint: '<p>Set the heading after you add cookies on click.</p>',
     type: 'drag block',
     block: 'heading_set',
     into: {
@@ -297,6 +316,7 @@ let goals = [{
     },
   }, {
     cost: 5,
+    hint: '<p>You need to <em>join</em> together two blocks when you set this heading.</p>',
     type: 'drag block',
     block: 'text_join',
     into: {
@@ -305,6 +325,7 @@ let goals = [{
     },
   }, {
     cost: 5,
+    hint: '<p>We need to have the number of <bk class="var"><bk class="inner">cookies</bk></bk> in our joined text.</p>',
     type: 'drag block',
     block: 'variables_get',
     into: {
@@ -312,6 +333,7 @@ let goals = [{
     },
   }, {
     cost: 5,
+    hint: '<p>We need to have the text <bk class="str">“ <bk class="inner"> Cookies</bk> ”</bk> in our joined text.</p>',
     type: 'drag block',
     block: 'text',
     into: {
@@ -402,10 +424,12 @@ let goals = [{
   }],
   hints: [{
     cost: 5,
+    hint: '<p>Which block can detect if a click has happened? Make sure you include that block!</p>',
     type: 'drag block',
     block: 'on_click',
   }, {
     cost: 5,
+    hint: '<p>Which block can detect <em>if</em> something is true?</p>',
     type: 'drag block',
     block: 'controls_if',
     into: {
@@ -414,6 +438,7 @@ let goals = [{
     },
   }, {
     cost: 5,
+    hint: '<p>We need to tell the <bk class="control">if</bk> block that we need something to be <em>greater than or equal to 10</em>.</p>',
     type: 'drag block',
     block: 'logic_compare',
     into: {
@@ -422,6 +447,7 @@ let goals = [{
     },
   }, {
     cost: 5,
+    hint: '<p>What value do we need to make sure is more than 10?</p>',
     type: 'drag block',
     block: 'variables_get',
     into: {
@@ -430,13 +456,15 @@ let goals = [{
     },
   }, {
     cost: 5,
+    hint:'You need to check that the number of cookies is <em>greater than or equal to</em> 10.</p>',
     type: 'set block value',
     block: 'logic_compare',
     key: 'OP',
     value: 'GTE',
-    message: '<p>Click the dropdown arrow and select the ≥ symbol to check that the number of cookies is <em>greater than or equal to</em> 10.</p>',
+    message: '<p>Click the dropdown arrow and select the ≥ symbol</p>',
   }, {
     cost: 5,
+    hint: '<p>Make sure you\'re comparing the cookies to the correct number!</p>',
     type: 'drag block',
     block: 'math_number',
     into: {
@@ -445,6 +473,7 @@ let goals = [{
     },
   }, {
     cost: 5,
+    hint: '<p>Now we know <em>if</em> there are greater than or equal to 10 cookies.</p><p>We need the image of the cookie to change <em>if</em> there are greater than or equal to 10 cookies.</p><p>You can put a block <em>inside</em> of an <bk class="control>if</bk> to make that block happen when the <bk class="control">if</bk> is true.</p>',
     type: 'drag block',
     block: 'image_set',
     into: {

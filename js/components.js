@@ -246,7 +246,9 @@ let goalDescription = Vue.component('goal-description', {
 
 let goalHints = Vue.component('goal-hints', {
   template: `
-  <div v-if="hint && hint.revealed" v-html="message(hint)" v-bind:style="position(hint, blockly)">
+  <div v-if="hint && hint.revealed" class="blockly-hint" v-bind:style="position(hint, blockly)">
+    <div v-html="hint.hint" ></div>
+    <div v-html="message(hint)" ></div>
   </div>`,
   props: ['hint', 'blockly'],
   methods: {

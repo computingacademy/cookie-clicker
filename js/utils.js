@@ -272,7 +272,7 @@ function locationToCoords(blockly, location) {
     let offset = location.toolbox ? blockly.workspace.getFlyout_().getWorkspace().getOriginOffsetInPixels() : blockly.workspace.getOriginOffsetInPixels();
     let offsetX = blockly.offset.x + offset.x;
     let offsetY = blockly.offset.y + offset.y;
-    
+
     // Get the last block
     let blocks = location.toolbox ? blockly.toolbox : blockly.blocks;
     let lastBlock = blocks[blocks.length - 1];
