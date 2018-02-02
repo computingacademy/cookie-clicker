@@ -64,5 +64,15 @@ let mainVue = new Vue({
     getNextHint: function(hints) {
       return hints.find(hint => usefulHint(hint, this.blockly.blocks));
     },
+    pointerStart: function(blockly, hint) {
+      if (hint && blockly.workspace) {
+        return locationToCoords(blockly, pointerStartLocation(hint));
+      }
+    },
+    pointerEnd: function(blockly, hint) {
+      if (hint && blockly.workspace) {
+        return locationToCoords(blockly, pointerEndLocation(hint));
+      }
+    },
   },
 });

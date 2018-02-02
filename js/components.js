@@ -148,7 +148,7 @@ let cookieClickerControls =  Vue.component('cookie-clicker-controls', {
     <span class="icon icon-spinner11"></span>
     Reset
   </button>
-  <animated-pointer v-if="nextHint && nextHint.buyHintDelay == 0 && !nextHint.revealed"></animated-pointer>
+  <buy-hint-pointer v-if="nextHint && nextHint.buyHintDelay == 0 && !nextHint.revealed"></buy-hint-pointer>
   <button v-if="nextHint" v-on:click="buyHint()" id="hints" v-bind:class="{on: cookies >= nextHint.cost && !nextHint.revealed}">
     Buy hint
     <img src="images/choc-chip.png">×{{ nextHint.cost }}
@@ -256,10 +256,16 @@ let goalHints = Vue.component('goal-hints', {
       // Get location coordinates
       let coords = locationToCoords(blockly, hintLocation(hint));
       // Output as element style
-      return {
-        left: `${coords.left}px`,
-        top: `${coords.top}px`,
-      };
+      if (coords) {
+        return {
+          left: `${coords.left}px`,
+          top: `${coords.top}px`,
+        };
+      } else {
+        return {
+          display: 'none',
+        };
+      }
     },
     message: function(hint) {
       return hintMessage(hint);
@@ -269,7 +275,74 @@ let goalHints = Vue.component('goal-hints', {
 
 let animatedPointer = Vue.component('animated-pointer', {
   template: `
-<div class="pointer-hint" v-bind:style="position(left, top)"></div>`,
+<div class="pointer" v-on:enter="animate" v-bind:style="position(coords)"></div>`,
+  props: ['start', 'end'],
+  data: function() {
+    return {
+      coords: undefined,
+      tween: undefined,
+    };
+  },
+  mounted: function() {
+    // Begin animation
+    this.animation();
+  },
+  watch: {
+    start: function() {
+      this.animation();
+    },
+    end: function() {
+      this.animation();
+    },
+  },
+  methods: {
+    animate: function() {
+      // Update the animation each frame
+      function animate() {
+        if (TWEEN.update()) {
+          requestAnimationFrame(animate);
+        }
+      }
+      animate();
+    },
+    animation: function() {
+      // Stop previous animation
+      if (this.tween) {
+        this.tween.stop();
+      }
+
+      // Animate the pointer from start/end
+      let vm = this;
+      this.tween = new TWEEN.Tween(this.start)
+        .to(this.end, 600)
+        .repeat(Infinity)
+        .delay(1000)
+        .onUpdate(function() {
+          vm.coords = this;
+        })
+        .start();
+      this.animate();
+    },
+    position: function(coords) {
+      // Turn coordinates into an element style
+      if (coords) {
+        return {
+          position: 'absolute',
+          left: `${coords.left.toFixed(0)}px`,
+          top: `${coords.top.toFixed(0)}px`,
+        };
+      } else {
+        return {
+          display: 'none',
+        };
+      }
+    },
+  },
+});
+
+let buyHintPointer = Vue.component('buy-hint-pointer', {
+  template: `
+<div class="pointer" v-bind:style="position(left, top)"></div>`,
   data: function() {
     // Get the coordinates to animate the pointer from
     let pos = document.querySelector('button#hints').getBoundingClientRect();

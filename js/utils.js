@@ -256,11 +256,27 @@ function locationToCoords(blockly, location) {
     let block = blocks.find(block => block.type == location.block);
 
     if (!!block) {
-      return {
-        // To the right of the block
-        left: offsetX + block.bounds.bottomRight.x,
-        // At the top of the block
-        top: offsetY + block.bounds.topLeft.y,
+      if (location.dragBlock || location.modifyBlock) {
+        return {
+          // The left side of the block
+          left: offsetX + block.bounds.topLeft.x + 10,
+          // In the middle of the block
+          top: offsetY + (block.bounds.topLeft.y + block.bounds.bottomRight.y)/2,
+        };
+      } else if (location.dragIntoBlock) { 
+        return {
+          // A bit in from the left side of the block
+          left: offsetX + block.bounds.topLeft.x + 40,
+          // A bit up from the bottom of the block
+          top: offsetY + block.bounds.bottomRight.y - 40,
+        };
+      } else {
+        return {
+          // To the right of the block
+          left: offsetX + block.bounds.bottomRight.x,
+          // At the top of the block
+          top: offsetY + block.bounds.topLeft.y,
+        };
       }
     } else {
       return undefined;
@@ -285,7 +301,12 @@ function locationToCoords(blockly, location) {
         top: offsetY + lastBlock.bounds.bottomRight.y,
       };
     } else {
-      return undefined;
+      return {
+        // On the left side of the workspace 
+        left: offsetX + 50,
+        // At the top of the workspace
+        top: offsetY + 50,
+      };
     }
   }
 }
@@ -431,6 +452,50 @@ function hintLocation(hint) {
   else if (hint.type == 'set block value') {
     return {
       block: hint.block,
+    };
+  }
+}
+
+function pointerStartLocation(hint) {
+  // Start at the block in the toolbox
+  if (hint.type == 'drag block') {
+    return {
+      block: hint.block,
+      toolbox: true,
+      dragBlock: true,
+    };
+  }
+  // Start at the block being modified
+  else if (hint.type == 'set block value') {
+    return {
+      block: hint.block,
+      modifyBlock: true,
+    };
+  }
+}
+
+function pointerEndLocation(hint) {
+  // End at the location to drag to
+  if (hint.type == 'drag block') {
+    // Either into a block
+    if (hint.into) {
+      return {
+        block: hint.into.block,
+        dragIntoBlock: true,
+      };
+    }
+    // Or just the workspace
+    else {
+      return {
+        place: 'workspace',
+      };
+    }
+  }
+  // End at the block being modified
+  else if (hint.type == 'set block value') {
+    return {
+      block: hint.block,
+      modifyBlock: true,
     };
   }
 }

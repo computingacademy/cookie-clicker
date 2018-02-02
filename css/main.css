@@ -47,19 +47,21 @@ content {
     color: #534402;
   }
 
-#pointer-hints {
-  position: absolute;
+  .blockly-hint em {
+    font-weight: bold;
+    font-style: normal;
+    color: black;
+  }
+
+.pointer {
   z-index: 70;
   pointer-events: none;
+  width: 50px;
+  height: 50px;
+  background-image: url(../images/pointer.svg);
+  background-size: cover;
+  background-position: center;
 }
-
-  .pointer-hint {
-    width: 50px;
-    height: 50px;
-    background-image: url(../images/pointer.svg);
-    background-size: cover;
-    background-position: center;
-  }
 
 #cookie-clicker {
   width: 350px;
