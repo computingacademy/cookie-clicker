@@ -6,6 +6,10 @@ body {
   font-family: sans-serif;
 }
 
+/*
+  Layout
+*/
+
 content {
   height: 100vh;
   display: grid;
@@ -47,181 +51,9 @@ content {
     margin-right: 10px;
   }
 
-#goal {
-  overflow: auto;
-}
-
-  #goal h2 {
-    margin-top: 10px;
-  }
-  #goal p {
-    margin-bottom: 0px;
-  }
-
-#blockly-div {
-}
-
-  #blockly-div .blocklySvg {
-    background: none;
-    z-index: 6;
-  }
-
-#blockly-hints {
-  position: absolute;
-  z-index: 5;
-  pointer-events: none;
-}
-  .blockly-hint {
-    position: absolute;
-    width: 300px;
-    margin-left: 5px;
-    padding-left: 10px;
-    background: #fcea9a;
-    color: #534402;
-  }
-
-  .blockly-hint em {
-    font-weight: bold;
-    font-style: normal;
-    color: black;
-  }
-
-.pointer {
-  z-index: 70;
-  pointer-events: none;
-  width: 50px;
-  height: 50px;
-  background-image: url(../images/pointer.svg);
-  background-size: cover;
-  background-position: center;
-}
-
-#cookie-clicker {
-  height: 450px;
-  text-align: center;
-  border: 1px solid grey;
-}
-#cookie-clicker h1 {
-  height: 50px;
-}
-#cookie-clicker img {
-  margin: 20px;
-  height: 300px;
-}
-#cookie-clicker img[src=''] {
-  display: none;
-}
-
-#interaction-check {
-  height: max-content;
-  margin-left: 10px;
-  padding: 1px 10px;
-  background: #fcea9a;
-  color: #534402;
-  border-radius: 10px;
-}
-
-#achievement {
-  width: 100%;
-  padding: 4px;
-}
-
-#marks:not(:empty) {
-  -webkit-margin-before: 0px;
-  -webkit-padding-start: 0px;
-  list-style: none;
-  padding: 4px;
-  background-color: #eee;
-}
-
-  #marks .result-text h3 {
-    font-size: 18px;
-    line-height: 1.6;
-    margin: 0px;
-  }
-
-  #marks .result-text div {
-    margin-top: 10px;
-  }
-
-  #marks button {
-    float: right;
-    font-size: 10px;
-    background-color: #fb4251;
-  }
-  #marks button:hover {
-    background-color: #fc6f7a;
-  }
-
-#animated-counter {
-  height: 40px;
-  margin-top: 10px;
-  margin-right: 20px;
-  background: lightgrey;
-  border-radius: 40px;
-}
-  #animated-counter img {
-    height: 32px;
-    margin: 4px;
-  }
-  #animated-counter span {
-    float: right;
-    margin-top: 8px;
-    margin-right: 8px;
-    font-size: 20px;
-  }
-
-#buy-hint {
-  margin-right: 20px;
-}
-
-#cookie-clicker-controls {
-  text-align: center;
-  margin: 10px;
-}
-
-button {
-  font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  text-align: center;
-  display: inline-block;
-  min-width: 40px;
-  padding: 7px 8px 5px 5px;
-  border: none;
-  border-radius: 10px;
-  outline: 0 !important;
-  color: white;
-  text-decoration: none !important
-}
-
-  button .icon {
-    margin: 0px 5px;
-  }
-
-#cookie-clicker-controls {
-}
-
-  #reset {
-    background-color: #1b79bf;
-  }
-  #reset:hover {
-    background-color: #2891e0;
-  }
-  #mark {
-    background-color: #fb4251;
-  }
-  #mark:hover {
-    background-color: #fc6f7a;
-  }
-  #hints.on {
-    background-color: #fb4251;
-  }
-  #hints.on:hover {
-    background-color: #fc6f7a;
-  }
-    #hints img {
-      margin-top: -2px;
-      height: 22px;
-    }
+/*
+  Style etc
+*/
 
 nav {
   text-align: center;
@@ -257,35 +89,164 @@ nav {
     height: none;
   }
 
-#course-nav-tray {
-  background-color: #f0f0f0;
+  #course-nav-tray {
+    background-color: #f0f0f0;
+  }
+  #course-nav-tray-container {
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+  }
+  #course-nav-tray .slide  .solved:not(.passed) .slide-jump-pip {
+    background-color: #1b79bf;
+    border-color: #165f96;
+  }
+
+    .result-indicator {
+      display: inline-block;
+      float: left;
+      margin-top: 6px;
+      margin-right: 6px;
+    }
+
+    .passed-indicator {
+      color: #3dae3b;
+    }
+    .failed-indicator {
+      color: grey;
+    }
+
+#blockly-div {
 }
-#course-nav-tray-container {
-  padding-top: 5px !important;
-  padding-bottom: 5px !important;
+  #blockly-div .blocklySvg {
+    background: none;
+    z-index: 6;
+  }
+
+#blockly-hints {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
 }
-#course-nav-tray .slide  .solved:not(.passed) .slide-jump-pip {
-  background-color: #1b79bf;
-  border-color: #165f96;
+  .blockly-hint {
+    position: absolute;
+    width: 300px;
+    margin-left: 5px;
+    padding-left: 10px;
+    background: #fcea9a;
+    color: #534402;
+  }
+
+  .blockly-hint em {
+    font-weight: bold;
+    font-style: normal;
+    color: black;
+  }
+
+#cookie-clicker {
+  height: 450px;
+  text-align: center;
+  border: 1px solid grey;
+}
+  #cookie-clicker h1 {
+    height: 50px;
+  }
+  #cookie-clicker img {
+    margin: 20px;
+    height: 300px;
+  }
+  #cookie-clicker img[src=''] {
+    display: none;
+  }
+
+#cookie-clicker-controls {
+  text-align: center;
+  margin: 10px;
+}
+  #reset {
+    background-color: #1b79bf;
+  }
+  #reset:hover {
+    background-color: #2891e0;
+  }
+
+
+#interaction-check {
+  height: max-content;
+  margin-left: 10px;
+  padding: 1px 10px;
+  background: #fcea9a;
+  color: #534402;
+  border-radius: 10px;
 }
 
-.result-indicator {
+#goal {
+  overflow: auto;
+}
+  #goal h2 {
+    margin-top: 10px;
+  }
+  #goal p {
+    margin-bottom: 0px;
+  }
+
+#animated-counter {
+  height: 40px;
+  margin-top: 10px;
+  margin-right: 20px;
+  background: lightgrey;
+  border-radius: 40px;
+}
+  #animated-counter img {
+    height: 32px;
+    margin: 4px;
+  }
+  #animated-counter span {
+    float: right;
+    margin-top: 8px;
+    margin-right: 8px;
+    font-size: 20px;
+  }
+
+#buy-hint {
+  margin-right: 20px;
+}
+  #hints.on {
+    background-color: #fb4251;
+  }
+  #hints.on:hover {
+    background-color: #fc6f7a;
+  }
+    #hints img {
+      margin-top: -2px;
+      height: 22px;
+    }
+
+.pointer {
+  z-index: 70;
+  pointer-events: none;
+  width: 50px;
+  height: 50px;
+  background-image: url(../images/pointer.svg);
+  background-size: cover;
+  background-position: center;
+}
+
+button {
+  font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-align: center;
   display: inline-block;
-  float: left;
-  margin-top: 6px;
-  margin-right: 6px;
+  min-width: 40px;
+  padding: 7px 8px 5px 5px;
+  border: none;
+  border-radius: 10px;
+  outline: 0 !important;
+  color: white;
+  text-decoration: none !important
 }
 
-.passed-indicator {
-  color: #3dae3b;
-}
-.failed-indicator {
-  color: grey;
-}
-
-.notification {
-  color: #fa1528;
-}
+  button .icon {
+    margin: 0px 5px;
+  }
 
 #cookie-rewards,
 #fullscreen {
@@ -301,7 +262,6 @@ nav {
   text-align: center;
   background: rgba(0,0,0, 0.7);
 }
-
   #cookie-rewards h1,
   #cookie-rewards h2,
   #cookie-rewards h3 {
@@ -350,15 +310,14 @@ nav {
   #cookie-rewards button:hover {
     background-color: #2891e0;
   }
-
-  #cookie-rewards button img {
-    margin-top: -2px;
-    height: 14px;
-  }
-  #cookie-rewards button.highlighted img {
-    margin-top: -4px;
-    height: 28px;
-  }
+    #cookie-rewards button img {
+      margin-top: -2px;
+      height: 14px;
+    }
+    #cookie-rewards button.highlighted img {
+      margin-top: -4px;
+      height: 28px;
+    }
 
 #next-goals {
   width: 600px;
