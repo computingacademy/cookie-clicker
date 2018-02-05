@@ -56,6 +56,10 @@ let goals = [{
     key: 'PICTURE',
     notValue: 'images/crumbs.jpg',
     message: '<p>Click the dropdown arrow on the <bk class="io">set image</bk> block. Then choose your cookie!</p>',
+    offset: {
+      left: 132,
+      top: 15,
+    },
     buyHintDelay: 0,
   }],
   interaction: {

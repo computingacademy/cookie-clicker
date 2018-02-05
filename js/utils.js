@@ -258,10 +258,10 @@ function locationToCoords(blockly, location) {
     if (!!block) {
       if (location.dragBlock || location.modifyBlock) {
         return {
-          // The left side of the block
-          left: offsetX + block.bounds.topLeft.x + 10,
-          // In the middle of the block
-          top: offsetY + (block.bounds.topLeft.y + block.bounds.bottomRight.y)/2,
+          // The left side of the block (or a custom offset)
+          left: offsetX + block.bounds.topLeft.x + (location.offset ? location.offset.left : 10),
+          // In the middle of the block (or a custom offset)
+          top: offsetY + (location.offset ? block.bounds.topLeft.y + location.offset.top : (block.bounds.topLeft.y + block.bounds.bottomRight.y)/2),
         };
       } else if (location.dragIntoBlock) { 
         return {
@@ -470,6 +470,7 @@ function pointerStartLocation(hint) {
     return {
       block: hint.block,
       modifyBlock: true,
+      offset: hint.offset,
     };
   }
 }
@@ -496,6 +497,7 @@ function pointerEndLocation(hint) {
     return {
       block: hint.block,
       modifyBlock: true,
+      offset: hint.offset,
     };
   }
 }
