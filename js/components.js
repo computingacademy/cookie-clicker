@@ -199,6 +199,7 @@ let interactionCheck =  Vue.component('interaction-check', {
   template: `
 <div id="interaction-check" v-if="hintsCompleted(goal)">
   <div v-html="goal.interaction.message"></div>
+  <click-pointer v-bind:coords="cookieCoords()"></click-pointer>
  </div>`,
    props: ['goal', 'clicks'],
    methods: {
@@ -212,6 +213,15 @@ let interactionCheck =  Vue.component('interaction-check', {
       } else {
         return false;
       }
+    },
+    cookieCoords: function() {
+      // Get coordinates of the cookie-clicker cookie
+      let bbox = document.querySelector('#cookie-clicker img').getBoundingClientRect();
+      return {
+        // Middle of the cookie
+        left: bbox.left + bbox.width/2 - 25,
+        top: bbox.top + bbox.height/2,
+      };
     },
   },
 });

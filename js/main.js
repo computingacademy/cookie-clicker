@@ -14,6 +14,7 @@ let mainVue = new Vue({
     goalRewards: [],
     selectedGoal: undefined,
     nextHint: {},
+    cookieClickerCoords: undefined,
   },
   mounted: function() {
     // Load previous progress
