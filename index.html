@@ -23,10 +23,11 @@
         <goal-list v-bind:goals="goals" v-bind:selected="selectedGoal" v-on:select="goal => selectedGoal = goal"></goal-list>
       </nav>
       <cookie-clicker v-bind:code="blockly.code" v-bind:cookies="cookies" v-on:cookies="val => cookies += val" v-on:clicks="val => clicks = val"></cookie-clicker>
-      <cookie-clicker-controls v-bind:next-hint="nextHint" v-bind:cookies="cookies" v-bind:code="blockly.code" v-on:buy-hint="buyHint"></cookie-clicker-controls>
+      <cookie-clicker-controls v-bind:code="blockly.code"></cookie-clicker-controls>
       <interaction-check v-bind:goal="selectedGoal" v-bind:clicks="clicks"></interaction-check>
       <goal-description v-bind:goal="selectedGoal"></goal-description>
       <animated-counter v-bind:count="cookies"></animated-counter>
+      <buy-hint v-bind:next-hint="nextHint" v-bind:cookies="cookies" v-on:buy-hint="buyHint"></buy-hint>
       <blockly-editor v-model="blockly"></blockly-editor>
     </content>
 

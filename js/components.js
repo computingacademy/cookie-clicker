@@ -111,6 +111,27 @@ let animatedCounter = Vue.component('animated-counter', {
   },
 });
 
+let buyHint = Vue.component('buy-hint', {
+  template: `
+<div id="buy-hint">
+  <buy-hint-pointer v-if="nextHint && nextHint.buyHintDelay == 0 && !nextHint.revealed"></buy-hint-pointer>
+  <button v-if="nextHint" v-on:click="buyHint()" id="hints" v-bind:class="{on: cookies >= nextHint.cost && !nextHint.revealed}">
+    Buy hint
+    <img src="images/choc-chip.png">×{{ nextHint.cost }}
+  </button>
+  <button v-if="!nextHint">
+    Click the cookie!
+  </button>
+</div>`,
+  props: ['nextHint', 'cookies'],
+  methods: {
+    buyHint: function() {
+      // Reveal the hint
+      this.$emit('buy-hint', this.nextHint);
+    },
+  },
+});
+
 let cookieClicker = Vue.component('cookie-clicker', {
   template: `
 <div id="cookie-clicker" class="noselect">
@@ -148,24 +169,12 @@ let cookieClickerControls =  Vue.component('cookie-clicker-controls', {
     <span class="icon icon-spinner11"></span>
     Reset
   </button>
-  <buy-hint-pointer v-if="nextHint && nextHint.buyHintDelay == 0 && !nextHint.revealed"></buy-hint-pointer>
-  <button v-if="nextHint" v-on:click="buyHint()" id="hints" v-bind:class="{on: cookies >= nextHint.cost && !nextHint.revealed}">
-    Buy hint
-    <img src="images/choc-chip.png">×{{ nextHint.cost }}
-  </button>
-  <button v-if="!nextHint">
-    Click the cookie!
-  </button>
 </div>`,
-  props: ['nextHint', 'cookies', 'code'],
+  props: ['code'],
   methods: {
     reset: function() {
       // Rerun the code
       runCookieClicker(this.code);
-    },
-    buyHint: function() {
-      // Reveal the hint
-      this.$emit('buy-hint', this.nextHint);
     },
   },
 });

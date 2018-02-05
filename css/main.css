@@ -19,24 +19,29 @@ content {
   }
 
   #cookie-clicker {
-    grid-row: 2 / span 2;
+    grid-row: 2 / span 3;
     grid-column: 1 / span 1;
     margin-left: 10px;
   }
   #cookie-clicker-controls {
-    grid-row: 4 / span 1;
+    grid-row: 5 / span 1;
     grid-column: 1 / span 1;
   }
   #goal {
-    grid-row: 2 / span 1;
+    grid-row: 2 / span 2;
     grid-column: 2 / span 1;
   }
   #animated-counter {
     grid-row: 2 / span 1;
     grid-column: 3 / span 1;
   }
+  #buy-hint {
+    grid-row: 3 / span 1;
+    grid-column: 3 / span 1;
+    justify-self: right;
+  }
   #blockly-div {
-    grid-row: 3 / span 3;
+    grid-row: 4 / span 3;
     grid-column: 2 / span 2;
     margin-bottom: 10px;
     margin-right: 10px;
@@ -165,6 +170,10 @@ content {
     margin-right: 8px;
     font-size: 20px;
   }
+
+#buy-hint {
+  margin-right: 20px;
+}
 
 #cookie-clicker-controls {
   text-align: center;
