@@ -1,5 +1,5 @@
 let mainVue = new Vue({
-  el: '#main',
+  el: 'main',
   data: {
     blockly: {
       workspace: undefined,

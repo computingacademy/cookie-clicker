@@ -17,28 +17,24 @@
   <script src="js/animation.js"></script>
 </head>
 <body>
-  <div id="main">
-    <nav class="noselect">
-      <goal-list v-bind:goals="goals" v-bind:selected="selectedGoal" v-on:select="goal => selectedGoal = goal"></goal-list>
-    </nav>
+  <main>
     <content>
-      <aside>
-        <animated-counter v-bind:count="cookies"></animated-counter>
-        <cookie-clicker v-bind:code="blockly.code" v-bind:cookies="cookies" v-on:cookies="val => cookies += val" v-on:clicks="val => clicks = val"></cookie-clicker>
-        <cookie-clicker-controls v-bind:next-hint="nextHint" v-bind:cookies="cookies" v-bind:code="blockly.code" v-on:buy-hint="buyHint"></cookie-clicker-controls>
-        <interaction-check v-bind:goal="selectedGoal" v-bind:clicks="clicks"></interaction-check>
-      </aside>
-      <div id="program">
-        <goal-description v-bind:goal="selectedGoal"></goal-description>
-        <blockly-editor v-model="blockly"></blockly-editor>
-      </div>
+      <nav class="noselect">
+        <goal-list v-bind:goals="goals" v-bind:selected="selectedGoal" v-on:select="goal => selectedGoal = goal"></goal-list>
+      </nav>
+      <cookie-clicker v-bind:code="blockly.code" v-bind:cookies="cookies" v-on:cookies="val => cookies += val" v-on:clicks="val => clicks = val"></cookie-clicker>
+      <cookie-clicker-controls v-bind:next-hint="nextHint" v-bind:cookies="cookies" v-bind:code="blockly.code" v-on:buy-hint="buyHint"></cookie-clicker-controls>
+      <interaction-check v-bind:goal="selectedGoal" v-bind:clicks="clicks"></interaction-check>
+      <goal-description v-bind:goal="selectedGoal"></goal-description>
+      <animated-counter v-bind:count="cookies"></animated-counter>
+      <blockly-editor v-model="blockly"></blockly-editor>
     </content>
+
     <goal-hints v-bind:blockly="blockly" v-bind:hint="nextHint"></goal-hints>
     <animated-pointer v-if="nextHint && nextHint.revealed" v-bind:start="pointerStart(blockly, nextHint)" v-bind:end="pointerEnd(blockly, nextHint)"></animated-pointer>
     <cookie-rewards v-bind:rewards="goalRewards" v-bind:goal="selectedGoal" v-bind:goals="goals"></cookie-rewards>
-  </div>
-
-  <div id="firework-overlay"></div>
+    <div id="firework-overlay"></div>
+  </main>
 
   <xml id="toolbox" style="display: none">
     <block type="image_set"></block>

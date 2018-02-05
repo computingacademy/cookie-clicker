@@ -4,7 +4,7 @@ let goals = [{
   reward: 10,
   completed: false,
   seen: true,
-  description: '<p>To make a Cookie Clicker first we need a picture to click!<p>',
+  description: '<p>To make a Cookie Clicker first we need a picture to click!</p>',
   shortDescription: 'Set the image',
   checks: [{
     description: 'Add the set image block',
