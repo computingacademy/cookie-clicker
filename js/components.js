@@ -114,7 +114,7 @@ let animatedCounter = Vue.component('animated-counter', {
 let buyHint = Vue.component('buy-hint', {
   template: `
 <div id="buy-hint">
-  <buy-hint-pointer v-if="nextHint && nextHint.buyHintDelay == 0 && !nextHint.revealed"></buy-hint-pointer>
+  <click-pointer v-if="nextHint && nextHint.buyHintDelay == 0 && !nextHint.revealed" v-bind:coords="coords"></click-pointer>
   <button v-if="nextHint" v-on:click="buyHint()" id="hints" v-bind:class="{on: cookies >= nextHint.cost && !nextHint.revealed}">
     Buy hint
     <img src="images/choc-chip.png">×{{ nextHint.cost }}
@@ -124,6 +124,22 @@ let buyHint = Vue.component('buy-hint', {
   </button>
 </div>`,
   props: ['nextHint', 'cookies'],
+  data: function() {
+    return {
+      coords: undefined,
+    };
+  },
+  mounted: function() {
+    let vm = this;
+    // Get button coords
+    let bbox = this.$el.querySelector('button').getBoundingClientRect();
+    this.coords = {
+      // A bit to the left of the middle of the button
+      left: bbox.left + bbox.width/3,
+      // Bottom quarter of the button
+      top: bbox.bottom - bbox.height/4,
+    };
+  },
   methods: {
     buyHint: function() {
       // Reveal the hint
@@ -321,16 +337,18 @@ let animatedPointer = Vue.component('animated-pointer', {
       }
 
       // Animate the pointer from start/end
-      let vm = this;
-      this.tween = new TWEEN.Tween(this.start)
-        .to(this.end, 600)
-        .repeat(Infinity)
-        .delay(1000)
-        .onUpdate(function() {
-          vm.coords = this;
-        })
-        .start();
-      this.animate();
+      if (this.start && this.end) {
+        let vm = this;
+        this.tween = new TWEEN.Tween(this.start)
+          .to(this.end, 600)
+          .repeat(Infinity)
+          .delay(1000)
+          .onUpdate(function() {
+            vm.coords = this;
+          })
+          .start();
+        this.animate();
+      }
     },
     position: function(coords) {
       // Turn coordinates into an element style
@@ -349,56 +367,36 @@ let animatedPointer = Vue.component('animated-pointer', {
   },
 });
 
-let buyHintPointer = Vue.component('buy-hint-pointer', {
-  template: `
-<div class="pointer" v-bind:style="position(left, top)"></div>`,
+let clickPointer = Vue.component('click-pointer', {
+  template: `<animated-pointer v-bind:start="start" v-bind:end="end"></animated-pointer>`,
+  props: ['coords'],
   data: function() {
-    // Get the coordinates to animate the pointer from
-    let pos = document.querySelector('button#hints').getBoundingClientRect();
-    let coords = {
-        top: pos.top-60,
-        left: pos.left,
-      };
-
-    // Create the animation
-    this.tween = new TWEEN.Tween(coords);
-    this.animation();
-
-    // Set the initial coordinates
-    return coords;
+    return this.coordsStartEnd();
   },
   methods: {
-    animation: function() {
-      // Update the animation each frame
-      function animate () {
-        if (TWEEN.update()) {
-          requestAnimationFrame(animate);
-        }
+    coordsStartEnd: function() {
+      // Animate a clicking motion
+      if (this.coords) {
+        return {
+          start: {left: this.coords.left, top: this.coords.top + 10},
+          end: this.coords,
+        };
       }
-
-      // Get the start/end position of the pointer
-      let pos = document.querySelector('button#hints').getBoundingClientRect();
-      let coords = {left: (pos.left+pos.right)/2, top: pos.top-60};
-      let to = {top: pos.top-40};
-      // Animate the pointer from start/end
-      this.top = coords.top;
-      this.left = coords.left;
-      this.tween
-        .to(to, 400)
-        .repeat(Infinity)
-        .delay(1000)
-        .start();
-
-      animate();
-    },
-    position: function(left, top) {
-      // Turn coordinates into an element style
-      return {
-        position: 'absolute',
-        left: `${left.toFixed(0)}px`,
-        top: `${top.toFixed(0)}px`,
-        transform: 'rotate(180deg)',
-      };
+      // No coords no animation
+      else {
+        return {
+          start: undefined,
+          end: undefined,
+        };
+      }
+    }
+  },
+  watch: {
+    coords: function() {
+      // Set the start and end of the animation
+      let startEnd = this.coordsStartEnd();
+      this.start = startEnd.start;
+      this.end = startEnd.end;
     },
   },
 });
