@@ -20,21 +20,22 @@
   <main>
     <content>
       <nav class="noselect">
-        <goal-list v-bind:goals="goals" v-bind:selected="selectedGoal" v-on:select="goal => selectedGoal = goal"></goal-list>
+        <goal-list v-bind:goals="goals" v-bind:selected="selectedGoal" v-bind:blockly="blockly" v-on:select="selectGoal"></goal-list>
       </nav>
       <cookie-clicker v-bind:code="blockly.code" v-bind:cookies="cookies" v-on:cookies="val => cookies += val" v-on:clicks="val => clicks = val"></cookie-clicker>
       <cookie-clicker-controls v-bind:code="blockly.code"></cookie-clicker-controls>
-      <interaction-check v-bind:goal="selectedGoal" v-bind:clicks="clicks"></interaction-check>
+      <interaction-check v-bind:show="!nextHint" v-bind:goal="selectedGoal" v-bind:clicks="clicks"></interaction-check>
       <goal-description v-bind:goal="selectedGoal"></goal-description>
       <animated-counter v-bind:count="cookies"></animated-counter>
       <buy-hint v-bind:next-hint="nextHint" v-bind:cookies="cookies" v-on:buy-hint="buyHint"></buy-hint>
       <blockly-editor v-model="blockly"></blockly-editor>
     </content>
 
-    <goal-hints v-bind:blockly="blockly" v-bind:hint="nextHint"></goal-hints>
+    <hint-display v-bind:blockly="blockly" v-bind:hint="nextHint"></hint-display>
     <animated-pointer v-if="nextHint && nextHint.revealed" v-bind:start="pointerStart(blockly, nextHint)" v-bind:end="pointerEnd(blockly, nextHint)"></animated-pointer>
-    <cookie-rewards v-bind:rewards="goalRewards" v-bind:goal="selectedGoal" v-bind:goals="goals"></cookie-rewards>
+    <next-goal v-bind:choosing="choosingNextGoal" v-bind:goal="selectedGoal" v-bind:goals="goals" v-on:select="selectGoal"></next-goal>
     <div id="firework-overlay"></div>
+    <div class="fade-background noselect" v-if="choosingNextGoal"></div>
   </main>
 
   <xml id="toolbox" style="display: none">

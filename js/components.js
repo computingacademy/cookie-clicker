@@ -178,7 +178,7 @@ let cookieClicker = Vue.component('cookie-clicker', {
   },
 });
 
-let cookieClickerControls =  Vue.component('cookie-clicker-controls', {
+let cookieClickerControls = Vue.component('cookie-clicker-controls', {
   template: `
 <div id="cookie-clicker-controls" class="noselect">
   <button v-on:click="reset()" id="reset">
@@ -195,25 +195,14 @@ let cookieClickerControls =  Vue.component('cookie-clicker-controls', {
   },
 });
 
-let interactionCheck =  Vue.component('interaction-check', {
+let interactionCheck = Vue.component('interaction-check', {
   template: `
-<div id="interaction-check" v-if="hintsCompleted(goal)">
+<div id="interaction-check" v-if="show">
   <div v-html="goal.interaction.message"></div>
   <click-pointer v-bind:coords="cookieCoords()"></click-pointer>
  </div>`,
-   props: ['goal', 'clicks'],
+   props: ['show', 'goal', 'clicks'],
    methods: {
-   hintsCompleted: function(goal) {
-     if (goal) {
-        // Find the first hint yet to be completed
-        let firstUncompletedHint = goal.hints.findIndex(hint => hint.useful);
-        // Check that all the hints before this interaction check have
-        let completed = firstUncompletedHint < 0 || firstUncompletedHint > goal.interaction.afterHint;
-        return completed;
-      } else {
-        return false;
-      }
-    },
     cookieCoords: function() {
       // Get coordinates of the cookie-clicker cookie
       let bbox = document.querySelector('#cookie-clicker img').getBoundingClientRect();
@@ -246,7 +235,7 @@ let goalsList = Vue.component('goal-list', {
   </ol>
 </div>
 </div>`,
-  props: ['goals', 'selected'],
+  props: ['goals', 'selected', 'blockly'],
   methods: {
     select: function(goal) {
       // Update whether the goal has been seen or not
@@ -264,7 +253,7 @@ let goalsList = Vue.component('goal-list', {
       return {
         current: goal == this.selected,
         solved: goal.completed,
-        passed: goal.passing,
+        passed: checksPass(this.blockly, goal),
       };
     },
   },
@@ -279,12 +268,12 @@ let goalDescription = Vue.component('goal-description', {
   props: ['goal'],
 });
 
-let goalHints = Vue.component('goal-hints', {
+let hintDisplay = Vue.component('hint-display', {
   template: `
-  <div v-if="hint && hint.revealed" class="blockly-hint" v-bind:style="position(hint, blockly)">
+<div v-if="hint && hint.revealed" class="blockly-hint" v-bind:style="position(hint, blockly)">
     <div v-html="hint.hint" ></div>
     <div v-html="message(hint)" ></div>
-  </div>`,
+</div>`,
   props: ['hint', 'blockly'],
   methods: {
     position: function(hint, blockly) {
@@ -411,104 +400,45 @@ let clickPointer = Vue.component('click-pointer', {
   },
 });
 
-let cookieRewards = Vue.component('cookie-rewards', {
+let nextGoal = Vue.component('next-goal', {
   template: `
-<div v-if="rewards.length !== 0" id="cookie-rewards" class="noselect">
-  <h1 v-if="state == 'cookie' || state == 'rewards'">You unlocked...</h1>
-  <h1 v-if="state == 'finished'">You finished the cookie clicker!</h1>
-  <div v-if="state == 'cookie'" v-bind:style="position()" class="reward-cookie" v-on:click="unlock()"></div>
-  <ul v-if="state == 'rewards'" v-bind:style="position()">
-    <li v-for="reward in rewards">
-      <span v-if="reward.type == 'cookies'" class="cookies">
-        {{ reward.amount }} cookies
-      </span>
-      <span v-if="reward.type == 'block'" class="block">
-        The
-        <bk v-if="reward.block == 'image_set'" class="io">set image</bk>
-        <bk v-if="reward.block == 'heading_set'" class="io">set heading</bk>
-        <bk v-if="reward.block == 'on_click'" class="control">on click</bk>
-        <bk v-if="reward.block == 'variables_add'" class="var">Add to cookies</bk>
-        <bk v-if="reward.block == 'variables_get'" class="var">cookies</bk>
-        <bk v-if="reward.block == 'text_join'" class="str">Join text</bk>
-        <bk v-if="reward.block == 'text'" class="str lit">Cookies</bk>
-        <bk v-if="reward.block == 'controls_if'" class="control">if</bk>
-        <bk v-if="reward.block == 'logic_compare'" class="logic"> ≥ <bk class="math">10</bk></bk>
-        block
-      </span>
-    </li>
-  </ul>
-  <button v-if="state == 'rewards' || state == 'finished'" v-on:click="unlock()" class="highlighted">
-    <span class="icon icon-arrow-right"></span>
-    Next
-  </button>
-  <div v-if="state == 'next'">
-    <h1>Choose a goal...</h1>
+<div id="next-goal" v-if="choosing">
+  <h1>Choose your next goal</h1>
     <ol id="next-goals">
-      <li v-for="goal in goals" v-if="!goal.completed && goal.unlocked" v-on:click="unlock({goal: goal})">
+      <li v-for="goal in goals" v-if="!goal.completed && unlocked(goal)" class="noselect" v-on:click="select(goal)">
         <h2 v-html="goal.title"></h2>
         <p v-html="goal.shortDescription"></p>
+        <ul id="goal-blocks">
+          <li v-for="block in blocks(goal)" v-html="block"></li>
+        </ul>
       </li>
     </ol>
-  </div>
 </div>`,
-  props: ['rewards', 'goal', 'goals'],
-  data: function() {
-    return {
-      state: 'cookie',
-    };
-  },
+  props: ['choosing', 'goal', 'goals'],
   watch: {
     rewards: function(rewards) {
       this.state = 'cookie';
     }
   },
   methods: {
-    position: function() {
-      // Center the cookie clicker over the whole screen
-      let width = 400;
-      let height = 600;
-      let bbox = document.body.getBoundingClientRect();
-      return {
-        left: (bbox.width - width)/2 + 'px',
-        top: (bbox.height - height)/2 + 'px',
-        width: width+'px',
-        height: height+'px',
-      };
+    unlocked: function(goal) {
+      // Have all of the goal's prerequisites been completed?
+      let prereqs = goal.prerequisites.map(prereq => this.goals.find(goal => goal.id == prereq));
+      return prereqs.every(goal => goal.completed);
     },
-    unlock: function(config) {
-      if (this.state == 'cookie') {
-        this.state = 'rewards';
-        let bbox = document.querySelector('.reward-cookie').getBoundingClientRect();
-        let x = bbox.left + bbox.width/2;
-        let y = bbox.top + bbox.width/2;
-        screenCookieFirework(document.querySelector('#firework-overlay'), x, y);
-
-        let cookies = this.rewards
-          .filter(reward => reward.type == 'cookies')
-          .reduce((total, reward) => total + reward.amount, 0);
-        mainVue.cookies += cookies;
-      } else if (this.state == 'rewards') {
-        let firstNew = goals.find(goal => goal.unlocked && !goal.seen && !goal.completed);
-
-          let vm = this;
-        if (firstNew) {
-          this.state = 'next';
-          mainVue.selectedGoal = firstNew;
-        } else {
-          this.state = 'finished';
-          let fireworkOverlay = document.querySelector('#firework-overlay');
-          let repeat = setInterval(function() {
-            cookieFirework(fireworkOverlay, screen.availWidth*Math.random(), screen.availHeight*Math.random(), 0.8 + Math.random()*2);
-            if (vm.state != 'finished')
-              clearInterval(repeat);
-          }, 500);
-        }
-      } else if (this.state == 'next') {
-        mainVue.selectedGoal = config.goal;
-        mainVue.goalRewards = [];
-      } else if (this.state == 'finished') {
-        mainVue.goalRewards = [];
-      }
+    select: function(goal) {
+      // Unlock the goal
+      goal.unlocked = true;
+      this.$emit('select', goal);
+    },
+    blocks: function(goal) {
+      // Get set of blocks found in this goal
+      let blocks = goal.hints
+        .map(hint => hint.block)
+        .filter(block => !!block)
+        .filter((x, i, a) => a.indexOf(x) == i);
+      // return HTML for blocks found in this goal
+      return blocks.map(inlineBlock);
     },
   },
 });

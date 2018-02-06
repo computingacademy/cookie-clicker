@@ -51,78 +51,15 @@ function runCookieClicker(code, environment) {
   window.cookieClickerEnvironment.cookies = runCode(code);
 }
 
-let unlockedBlocks = ['image_set'];
-function updateGoals(env, silent) {
-  // Get blocks from workspace
-  let blockTree = workspaceToBlocks(env.blockly.workspace);
-  let blockList = workspaceToBlocks(env.blockly.workspace, true);
-  // Keep track of if any new goals have been completed
-  let newCompletions = [];
-
-  goals.map(function(goal) {
-    // Check hint conditions
-    goal.hints.forEach(function(hint) {
-      Vue.set(hint, 'useful', usefulHint(hint, blockTree, blockList));
-      Vue.set(hint, 'revealed', hint.revealed);
-    });
-
-    // Perform each check
-    let passes = goal.checks.map(function(check) {
-      if (env.blockly.workspace) {
-        let passed = doCheck(env, check);
-        Vue.set(check, 'passing', passed);
-        return passed;
-      } else {
-        return false;
-      }
-    });
-
-    // Has the interaction for this goal been completed?
-    goal.interacted = env.selectedGoal === goal? env.clicks >= goal.interaction.clicks : (goal.interacted || goal.completed);
-
-    // Is this goal currently passing all checks?
-    let passing = passes.every(pass => pass) && goal.interacted;
-    Vue.set(goal, 'passing', passing);
-
-    // Is this a new goal completion?
-    if (!goal.completed && passing) {
-      newCompletions.push(goal)
-    }
-    // Has this goal ever been completed?
-    goal.completed = goal.completed || passing;
-    // Update cookies with goal status
-    Cookies.set(`goals[${goal.id}].completed`, goal.completed);
-  });
-
-  // Update the selected goal if a previous goal has been newly completed
-  if (newCompletions.length !== 0) {
-    let rewards = newCompletions
-      .map(goal => goalRewards(goal))
-      .reduce((a, b) => a.concat(b));
-    if (!silent) {
-      mainVue.goalRewards = rewards
-        .filter(reward => !(reward.type === 'block' && unlockedBlocks.includes(reward.block)) && !(reward.type === 'goal' && goals.find(goal => goal.id === reward.goal)));
-    }
-  }
-
-  // Unlock goal which have completed prerequisites or have been completed
-  goals.forEach(function(goal) {
-    // Get the goal's prereqs
-    let prereqs = goals.filter(prereq => goal.prerequisites.includes(prereq.id));
-    // See if they've been completed
-    let unlocked = goal.completed || prereqs.every(prereq => prereq.completed);
-    // Update unlocked status
-    Vue.set(goal, 'unlocked', unlocked);
-  });
-
+function unlockBlocks(blockly) {
   // Unlock blocks that are needed
-  unlockedBlocks = goals
+  let unlockedBlocks = goals
     // Only use unlocked goals
     .filter(goal => goal.unlocked)
     // Get the blocks
     .map(goal => goal.hints.map(hint => hint.block).filter(block => !!block))
     // Stick them all in one list (may contain duplicates
-    .reduce((a, b) => a.concat(b));
+    .reduce((a, b) => a.concat(b), []);
 
   // Disable blocks not yet unlocked
   document.querySelectorAll('#toolbox > block').forEach(function(block) {
@@ -131,46 +68,21 @@ function updateGoals(env, silent) {
   });
 
   let toolbox = document.querySelector('#toolbox');
-  env.blockly.workspace.updateToolbox(toolbox);
+  blockly.workspace.updateToolbox(toolbox);
 }
 
-function doCheck(env, check) {
+function checksPass(blockly, goal) {
+  // Determine if all of the goal's checks pass
+  return goal.checks.every(check => doCheck(blockly, check));
+}
+
+function doCheck(blockly, check) {
   // Run the code in the test environment
-  return runCode(testCode(env.blockly.workspace), check.test, env.blockly);
-}
-
-function goalRewards(goal) {
-  let rewards = [];
-  
-  // Cookie rewards
-  rewards.push({
-    type: 'cookies',
-    amount: goal.reward,
-  });
-
-  // Goal rewards
-  let newGoals = goals
-    .filter(newGoal => newGoal.prerequisites.includes(goal.id))
-    .filter(newGoal => newGoal.prerequisites.every(prereq => goals.find(goal => goal.id == prereq).completed));
-  newGoals.forEach(function(newGoal) {
-    rewards.push({
-      type: 'goal',
-      goal: newGoal.title,
-    });
-  });
-
-  // Block rewards
-  newGoals
-    .map(goal => goal.blocks)
-    .reduce((a,b) => a.concat(b), [])
-  .forEach(function(block) {
-    rewards.push({
-      type: 'block',
-      block: block,
-    });
-  });
-
-  return rewards;
+  if (blockly && blockly.workspace) {
+    return runCode(testCode(blockly.workspace), check.test, blockly);
+  } else {
+    return undefined;
+  }
 }
 
 function workspaceToBlocks(workspace, list) {
@@ -353,6 +265,8 @@ function blockLabel(blockType) {
     return 'if';
   } else if (blockType == 'logic_compare') {
     return '≥ <bk class="math">10</bk>';
+  } else if (blockType == 'math_number') {
+    return '<bk class="math">10</bk>';
   } else {
     return blockType;
   }
@@ -509,6 +423,12 @@ function save(vm) {
   // Save blockly blocks and number of cookies
   Cookies.set('blocks', xml_text);
   Cookies.set('cookies', vm.cookies);
+  
+  // Save the goal completions
+  vm.goals.map(function(goal) {
+    Cookies.set(`goals[${goal.id}].completed`, goal.completed);
+    Cookies.set(`goals[${goal.id}].seen`, goal.seen);
+  });
 }
 
 function load(vm) {
@@ -525,10 +445,14 @@ function load(vm) {
   vm.goals.map(function(goal) {
     goal.completed = goal.completed || Cookies.get(`goals[${goal.id}].completed`) === 'true';
     goal.seen = goal.seen || Cookies.get(`goals[${goal.id}].seen`) === 'true';
+    goal.unlocked = goal.completed || goal.seen;
   });
 
   // Set the selected goal to the first incomplete goal
   vm.selectedGoal = goals.find(function(goal) {
     return goal.completed !== true;
   });
+
+  // Make sure the selected goal is unlocked!
+  vm.selectedGoal.unlocked = true;
 }

@@ -2,10 +2,11 @@ let goals = [{
   id: 'Set image',
   title: 'Set the image',
   reward: 10,
+  unlocked: true,
   completed: false,
   seen: true,
-  description: '<p>To make a Cookie Clicker first we need a picture to click!</p>',
-  shortDescription: 'Set the image',
+  description: '<p>To make a Cookie Clicker we need a picture to click!</p>',
+  shortDescription: 'Change the cookie\'s picture',
   checks: [{
     description: 'Add the set image block',
     hint: '<p>Drag the <bk class="io">set image</bk> block into the workspace.</p>',
@@ -152,7 +153,7 @@ let goals = [{
   completed: false,
   seen: false,
   description: '<p>How many cookies have we clicked this game? Set the heading to the number of cookies so we can see!</p>',
-  shortDescription: 'On click set the heading to the number of cookies',
+  shortDescription: 'On click, set the heading to the number of cookies',
   checks: [{
     description: 'Show \'No cookies\' at the start',
     hint: '<p>Make sure you don\'t use the <bk class="io">set heading</bk> block outside of the <bk class="control">on click</bk> block!</p>',
@@ -166,7 +167,8 @@ let goals = [{
     description: 'Add a cookie on click',
     hint: '<p>Make sure you are adding a cookie when you click the cookie image!</p>',
     test: function(cookieClicker, blockly, cookies) {
-      return goals.find(goal => goal.id === 'On click').passing;
+      // Check if 'Click that cookie!' was complete
+      return checksPass(blockly, goals.find(goal => goal.id === 'On click'));
     },
   }, {
     description: 'Set the heading on click',
@@ -254,8 +256,8 @@ let goals = [{
     description: 'Count the number of cookies clicked',
     hint: '<p>Set the heading to the number of cookies on click. You can do this by finishing the \'How many cookies?\' goal.</p>',
     test: function(cookieClicker, blockly, cookies) {
-      // Check if 'How many cookies' was complete
-      return goals.find(goal => goal.id === 'Set heading on click').passing;
+      // Check if 'Click that cookie!' was complete
+      return checksPass(blockly, goals.find(goal => goal.id === 'On click'));
     },
   }, {
     description: 'Join cookies and "cookies" together',
@@ -364,7 +366,7 @@ let goals = [{
     hint: '<p>Add a cookie every time the cookie image is clicked. You can do this by finishing the \'Click that cookie!\' goal.</p>',
     test: function(cookieClicker, blockly, cookies) {
       // Check if 'Click that cookie!' was complete
-      return goals.find(goal => goal.id === 'On click').passing;
+      return checksPass(blockly, goals.find(goal => goal.id === 'On click'));
     },
   }, {
     description: 'Compare cookies with a number',
@@ -486,7 +488,7 @@ let goals = [{
     },
   }],
   interaction: {
-    clicks: 5,
+    clicks: 10,
     message: '<p>Click the cookie to check if the cookie changes after 10 clicks.</p>',
   },
   prerequisites: [

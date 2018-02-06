@@ -319,25 +319,56 @@ button {
       height: 28px;
     }
 
-#next-goals {
-  width: 600px;
-  margin: auto;
+#next-goal {
+  display: grid;
+  grid-template-rows: 100px auto;
+  grid-template-columns: auto 600px auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 110;
+  width: 100vw;
+  height: 100vh;
+  padding: 20px;
 }
-  #next-goals h2 {
-    color: #333;
+  #next-goal h1 {
+    grid-column: 2 / 1 span;
+    grid-row: 1 / 1 span;
+    text-align: center;
+    color: white;
   }
 
-  #next-goals li {
-    cursor: pointer;
-    margin: 5px;
-    padding: 5px;
+  #next-goals {
+    grid-column: 2 / 1 span;
+    grid-row: 2 / 1 span;
+    list-style: none;
+    -webkit-padding-start: 0px;
+  }
+    #next-goals h2 {
+      margin-top: 0px;
+    }
+    #next-goals > li {
+      cursor: pointer;
+      margin-bottom: 20px;
+      padding: 15px;
 
-    background: #eee;
-    color: #333;
-  }
-  #next-goals li:hover {
-    background: #fff;
-  }
+      background: #eee;
+      color: #333;
+    }
+    #next-goals > li:hover {
+      background: #fff;
+    }
+
+      #goal-blocks {
+        list-style: none;
+        -webkit-padding-start: 0px;
+        padding-top: 10px;
+        border-top: 1px solid grey;
+      }
+        #goal-blocks > li {
+          display: inline;
+          margin: 5px;
+        }
 
 #firework-overlay {
   z-index: 40;
@@ -348,6 +379,16 @@ button {
   width: 100%;
   margin: 0px;
   pointer-events: none;
+}
+
+.fade-background {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  background-color: rgba(0,0,0, 0.7);
 }
 
 .noselect {
