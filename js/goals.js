@@ -12,7 +12,8 @@ let goals = [{
     hint: '<p>Drag the <bk class="io">set image</bk> block into the workspace.</p>',
     test: function(cookieClicker, blockly, cookies) {
       // Is there an image with a src?
-      return !!cookieClicker.querySelector('img:not([src=""])')
+      let cookie = cookieClicker.querySelector('.cookie');
+      return cookie.src != '';
     },
   }],
   hints: [{
@@ -40,7 +41,8 @@ let goals = [{
     hint: '<p>Click the dropdown arrow on the <bk class="io">set image</bk> block in your workspace. Then choose your cookie!</p>',
     test: function(cookieClicker, blockly, cookies) {
       // Is the image's src not crumbs?
-      return !!cookieClicker.querySelector('img:not([src=""]):not([src="images/crumbs.jpg"])');
+      let cookie = cookieClicker.querySelector('.cookie');
+      return cookie.src != '' && cookie.src != 'images/crumbs.jpg';
     },
   }],
   hints: [{
@@ -90,9 +92,9 @@ let goals = [{
     hint: '<p>Use the <bk class="var">add to <bk class="inner">cookies</bk></bk> block to change the cookie variable.</p>',
     test: function(cookieClicker, blockly, cookies) {
       // Click cookie
-      cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
+      cookieClicker.querySelector('.cookie').dispatchEvent(new MouseEvent('click'));
       // Was the cookie value changed?
-      let changed = cookieClicker.querySelector('img').cookies !== 0;
+      let changed = cookieClicker.querySelector('.cookie').cookies !== 0;
 
       return changed;
     },
@@ -103,9 +105,9 @@ let goals = [{
       // Get original heading text
       let originalText = cookieClicker.querySelector('h1').textContent;
       // Click cookie
-      cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
+      cookieClicker.querySelector('.cookie').dispatchEvent(new MouseEvent('click'));
       // Was the cookie value incremented?
-      let incremented = cookieClicker.querySelector('img').cookies > cookies;
+      let incremented = cookieClicker.querySelector('.cookie').cookies > cookies;
 
       return incremented;
     },
@@ -116,9 +118,9 @@ let goals = [{
       // Get original heading text
       let originalText = cookieClicker.querySelector('h1').textContent;
       // Click cookie
-      cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
+      cookieClicker.querySelector('.cookie').dispatchEvent(new MouseEvent('click'));
       // Was the cookie value incremented?
-      let incremented = cookieClicker.querySelector('img').cookies == cookies+1;
+      let incremented = cookieClicker.querySelector('.cookie').cookies == cookies+1;
 
       return incremented;
     },
@@ -178,7 +180,7 @@ let goals = [{
       // Get original heading text
       let originalText = cookieClicker.querySelector('h1').textContent;
       // Click cookie
-      cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
+      cookieClicker.querySelector('.cookie').dispatchEvent(new MouseEvent('click'));
       // Was the heading set?
       let headingSet = cookieClicker.querySelector('h1').textContent !== originalText;
 
@@ -192,13 +194,13 @@ let goals = [{
       // Get original heading text
       let originalText = cookieClicker.querySelector('h1').textContent;
       // Click cookie
-      cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
+      cookieClicker.querySelector('.cookie').dispatchEvent(new MouseEvent('click'));
       // Was the heading set?
       let headingSet = cookieClicker.querySelector('h1').textContent !== originalText;
       // Was the cookie value incremented?
-      let incremented = cookieClicker.querySelector('img').cookies == cookies+1;
+      let incremented = cookieClicker.querySelector('.cookie').cookies == cookies+1;
       // Was the heading updated as the number of cookies changed?
-      let headingUpdated = parseInt(cookieClicker.querySelector('h1').textContent.replace(/[^\d]*/g, '')) == cookieClicker.querySelector('img').cookies;
+      let headingUpdated = parseInt(cookieClicker.querySelector('h1').textContent.replace(/[^\d]*/g, '')) == cookieClicker.querySelector('.cookie').cookies;
 
       return headingSet && incremented && headingUpdated;
     },
@@ -296,11 +298,11 @@ let goals = [{
       let originalText = cookieClicker.querySelector('h1').textContent;
       let noCookies = originalText == 'No cookies';
       // Click cookie
-      cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
+      cookieClicker.querySelector('.cookie').dispatchEvent(new MouseEvent('click'));
       // Does the heading have the correct number?
-      let headingNumber = parseInt(cookieClicker.querySelector('h1').textContent.replace(/[^\d]*/g, '')) == cookieClicker.querySelector('img').cookies;
+      let headingNumber = parseInt(cookieClicker.querySelector('h1').textContent.replace(/[^\d]*/g, '')) == cookieClicker.querySelector('.cookie').cookies;
       // Does the heading have some text?
-      let headingText = cookieClicker.querySelector('h1').textContent !== cookieClicker.querySelector('img').cookies+'';
+      let headingText = cookieClicker.querySelector('h1').textContent !== cookieClicker.querySelector('.cookie').cookies+'';
 
       return noCookies && headingNumber && headingText;
     },
@@ -392,16 +394,16 @@ let goals = [{
     + '<p>Make sure that you don\'t change the picture to crumbs!</p>',
     test: function(cookieClicker, blockly, cookies) {
       // Get original picture
-      let originalPicture = cookieClicker.querySelector('img').src;
+      let originalPicture = cookieClicker.querySelector('.cookie').src;
       // Click cookie
       for (let i=0; i<1000; i++) {
-        cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
+        cookieClicker.querySelector('.cookie').dispatchEvent(new MouseEvent('click'));
       }
       // Get new picture
-      let newPicture = cookieClicker.querySelector('img').src;
+      let newPicture = cookieClicker.querySelector('.cookie').src;
 
       // Did the picture change?
-      return newPicture !== originalPicture && !!cookieClicker.querySelector('img:not([src=""]):not([src="images/crumbs.jpg"])');
+      return newPicture !== originalPicture && !!cookieClicker.querySelector('.cookie:not([src=""]):not([src="images/crumbs.jpg"])');
     },
   }, {
     description: 'Upgrade the cookie only once it has been clicked 10 times',
@@ -412,17 +414,17 @@ let goals = [{
       // Keep track of whether the cookie changes before 10 clicks
       let earlyChange = false;
       // Get original picture
-      let originalPicture = cookieClicker.querySelector('img').src;
+      let originalPicture = cookieClicker.querySelector('.cookie').src;
       // Click cookie
       for (let i=0; i<10; i++) {
         // Has it changed?
-        let newPicture = cookieClicker.querySelector('img').src;
+        let newPicture = cookieClicker.querySelector('.cookie').src;
         earlyChange = earlyChange || newPicture !== originalPicture;
         // Click!
-        cookieClicker.querySelector('img').dispatchEvent(new MouseEvent('click'));
+        cookieClicker.querySelector('.cookie').dispatchEvent(new MouseEvent('click'));
       }
       // Get new picture
-      let newPicture = cookieClicker.querySelector('img').src;
+      let newPicture = cookieClicker.querySelector('.cookie').src;
 
       // Did the picture change at 10 clicks and not any clicks before?
       return !earlyChange && newPicture !== originalPicture;

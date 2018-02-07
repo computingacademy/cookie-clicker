@@ -61,8 +61,18 @@ let mainVue = new Vue({
           // Save progress
           save(this);
 
-          // And choose another goal
-          this.choosingNextGoal = true;
+          // If there are any goals left to complete
+          if (this.goals.some(goal => !goal.completed)) {
+            // And choose another goal
+            this.choosingNextGoal = true;
+          }
+          // Otherwise, party!
+          else {
+            let fireworkOverlay = document.querySelector('#firework-overlay');
+            let repeat = setInterval(function() {
+              cookieFirework(fireworkOverlay, screen.availWidth*Math.random(), screen.availHeight*Math.random(), 0.8 + Math.random()*2);
+            }, 500);
+          }
         }
       }
     },
