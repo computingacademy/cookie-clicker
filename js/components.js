@@ -114,7 +114,7 @@ let animatedCounter = Vue.component('animated-counter', {
 let buyHint = Vue.component('buy-hint', {
   template: `
 <div id="buy-hint">
-  <click-pointer v-if="nextHint && nextHint.buyHintDelay == 0 && !nextHint.revealed" v-bind:coords="coords"></click-pointer>
+  <click-pointer v-if="nextHint && attention && !nextHint.direct" v-bind:coords="coords"></click-pointer>
   <button v-if="nextHint && !nextHint.revealed" v-on:click="buyHint()" id="hints" v-bind:class="{on: cookies >= nextHint.cost}">
     Buy hint
     <img src="images/choc-chip.png">×{{ nextHint.cost }}
@@ -134,6 +134,7 @@ let buyHint = Vue.component('buy-hint', {
   data: function() {
     return {
       coords: undefined,
+      attention: false,
     };
   },
   mounted: function() {
@@ -152,6 +153,19 @@ let buyHint = Vue.component('buy-hint', {
       // Reveal the hint
       this.$emit('buy-hint', this.nextHint);
     },
+  },
+  watch: {
+    nextHint: function() {
+      // Stop drawing attention to the buy hint button
+      this.attention = false;
+
+      // Draw attention to the button after a while
+      let attentionDelay = this.nextHint.buyHintDelay !== undefined ? this.nextHint.buyHintDelay : 35*1000;
+      let vm = this;
+      setTimeout(function() {
+        vm.attention = true;
+      }, attentionDelay);
+    }
   },
 });
 
