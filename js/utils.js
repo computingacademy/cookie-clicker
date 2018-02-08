@@ -98,11 +98,12 @@ function workspaceToBlocks(workspace, list) {
 }
 
 // Turn workspace XML into block JSON
-function xmlToBlocks(workspace, xml, list) {
+function xmlToBlocks(workspace, xml, list, parent) {
   let blockSvg = workspace.getBlockById(xml.id);
   let blocks = [];
   let block = {
     id: xml.id,
+    parent: parent,
     type: xml.getAttribute('type'),
     bounds: blockSvg? blockSvg.getBoundingRectangle() : {topLeft: {x: 0, y: 0}, bottomRight: {x: 0, y: 0}},
   };
@@ -129,11 +130,11 @@ function xmlToBlocks(workspace, xml, list) {
           value = input.textContent;
         } else if (input.nodeName === 'STATEMENT') {
           value = [...subBlocks]
-            .map(subBlock => xmlToBlocks(workspace, subBlock, list))
+            .map(subBlock => xmlToBlocks(workspace, subBlock, list, block.id))
             .reduce((a,b) => a.concat(b), []);
         } else if (input.nodeName === 'VALUE') {
           value = [...subBlocks]
-            .map(subBlock => xmlToBlocks(workspace, subBlock, list))
+            .map(subBlock => xmlToBlocks(workspace, subBlock, list, block.id))
             .reduce((a,b) => a.concat(b), [])[0];
         }
 
@@ -147,7 +148,7 @@ function xmlToBlocks(workspace, xml, list) {
 
   if (!!nexts) {
     let nextBlocks = [...nexts]
-      .map(nextBlock => xmlToBlocks(workspace, nextBlock, list))
+      .map(nextBlock => xmlToBlocks(workspace, nextBlock, list, parent))
       .reduce((a,b) => a.concat(b), []);
 
     return blocks.concat(nextBlocks);
@@ -181,7 +182,7 @@ function locationToCoords(blockly, location) {
           // A bit in from the left side of the block
           left: offsetX + block.bounds.topLeft.x + 40,
           // A bit up from the bottom of the block
-          top: offsetY + block.bounds.bottomRight.y - 40,
+          top: offsetY + block.bounds.bottomRight.y - 10,
         };
       } else {
         return {
@@ -204,7 +205,8 @@ function locationToCoords(blockly, location) {
 
     // Get the last block
     let blocks = location.toolbox ? blockly.toolbox : blockly.blocks;
-    let lastBlock = blocks[blocks.length - 1];
+    let topLevelBlocks = blocks.filter(block => !block.parent);
+    let lastBlock = topLevelBlocks[topLevelBlocks.length - 1];
 
     if (!!lastBlock) {
       return {
