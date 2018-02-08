@@ -25,11 +25,11 @@ function testCode(workspace) {
     + 'image.className = "cookie";\n'
     + 'image.src = "images/crumbs.jpg";\n'
     + 'image.cookies = 0;\n'
-    + 'image.addEventListener("click", function() { image.cookies++; });\n'
     + 'cookieClicker.appendChild(heading);\n' 
     + 'cookieClicker.appendChild(image);\n' 
     + 'let cookies = 0;\n'
     + Blockly.JavaScript.workspaceToCode(workspace).replace(/var cookies;\n/, '')
+    + 'image.addEventListener("click", function() { image.cookies = cookies; });\n'
     + 'let result = test(cookieClicker, blockly, cookies);\n'
     + 'result;\n';
   return code;
