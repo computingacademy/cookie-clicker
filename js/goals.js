@@ -482,7 +482,7 @@ let goals = [{
     },
   }, {
     cost: 5,
-    hint: '<p>Now we know <em>if</em> there are greater than or equal to 10 cookies.</p><p>We need the image of the cookie to change <em>if</em> there are greater than or equal to 10 cookies.</p><p>You can put a block <em>inside</em> of an <bk class="control>if</bk> to make that block happen when the <bk class="control">if</bk> is true.</p>',
+    hint: '<p>Now we know <em>if</em> there are greater than or equal to 10 cookies.</p><p>We need the image of the cookie to change <em>if</em> there are greater than or equal to 10 cookies.</p><p>You can put a block <em>inside</em> of an <bk class="control">if</bk> to make that block happen when the <bk class="control">if</bk> is true.</p>',
     type: 'drag block',
     block: 'image_set',
     into: {
