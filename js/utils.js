@@ -218,7 +218,7 @@ function locationToCoords(blockly, location) {
     } else {
       return {
         // On the left side of the workspace 
-        left: offsetX + 50,
+        left: offsetX + (location.dragBlock ? 0 : 50),
         // At the top of the workspace
         top: offsetY + 50,
       };
@@ -406,6 +406,7 @@ function pointerEndLocation(hint) {
     else {
       return {
         place: 'workspace',
+        dragBlock: true,
       };
     }
   }
