@@ -23,6 +23,9 @@ let mainVue = new Vue({
 
     // Turn on hints
     this.hintson = true;
+
+    // Update the blocks
+    unlockBlocks(this.blockly);
   },
   watch: {
     'blockly.blocks': function() {
