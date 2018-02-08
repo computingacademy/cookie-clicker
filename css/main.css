@@ -347,6 +347,13 @@ button {
     #next-goals h2 {
       margin-top: 0px;
     }
+    #next-goals .reward {
+      float: right;
+    }
+      #next-goals .reward img {
+        height: 40px;
+        margin-top: -4px;
+      }
     #next-goals > li {
       cursor: pointer;
       margin-bottom: 20px;

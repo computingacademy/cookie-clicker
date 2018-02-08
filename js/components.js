@@ -429,7 +429,12 @@ let nextGoal = Vue.component('next-goal', {
   <h1>Choose your next goal</h1>
     <ol id="next-goals">
       <li v-for="goal in goals" v-if="!goal.completed && unlocked(goal)" class="noselect" v-on:click="select(goal)">
-        <h2 v-html="goal.title"></h2>
+        <h2>
+          {{ goal.title }}
+          <span class="reward">
+            <img src="images/choc-chip.png"> × {{ goal.reward }}
+          </span>
+        </h2>
         <p v-html="goal.shortDescription"></p>
         <ul id="goal-blocks">
           <li v-for="block in blocks(goal)" v-html="block"></li>
