@@ -173,7 +173,7 @@ let buyHint = Vue.component('buy-hint', {
 
 let cookieClicker = Vue.component('cookie-clicker', {
   template: `
-<div id="cookie-clicker" class="noselect">
+<div id="cookie-clicker" class="noselect" v-on:click="click">
   <h1>No cookies</h1>
   <img src>
 </div>`,
@@ -197,6 +197,11 @@ let cookieClicker = Vue.component('cookie-clicker', {
     clicks: function(clicks) {
       // Update the model
       this.$emit('clicks', clicks);
+    },
+  },
+  methods: {
+    click: function(event) {
+      this.$emit('click', event);
     },
   },
 });

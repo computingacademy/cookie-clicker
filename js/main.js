@@ -58,16 +58,16 @@ let mainVue = new Vue({
           // Get a reward
           this.cookies += this.selectedGoal.reward;
 
-          // Reset cookie clicker
-          runCode(this.blockly.code);
-
           // Save progress
           save(this);
 
           // If there are any goals left to complete
           if (this.goals.some(goal => !goal.completed)) {
-            // And choose another goal
-            this.choosingNextGoal = true;
+            // Choose another goal
+            let vm = this;
+            setTimeout(function() {
+              vm.choosingNextGoal = true;
+            }, 1500);
           }
           // Otherwise, party!
           else {
@@ -127,5 +127,12 @@ let mainVue = new Vue({
       // Update the blocks
       unlockBlocks(this.blockly);
     },
+    fireworksClick: function(event) {
+      if (this.clicks == this.selectedGoal.interaction.clicks && this.selectedGoal.completed) {
+        // Celebrate
+        let fireworkOverlay = document.querySelector('#firework-overlay');
+        cookieFirework(fireworkOverlay, event.clientX, event.clientY);
+      }
+    }
   },
 });

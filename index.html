@@ -22,7 +22,7 @@
       <nav class="noselect">
         <goal-list v-bind:goals="goals" v-bind:selected="selectedGoal" v-bind:blockly="blockly" v-on:select="selectGoal"></goal-list>
       </nav>
-      <cookie-clicker v-bind:code="blockly.code" v-bind:cookies="cookies" v-on:cookies="val => cookies += val" v-on:clicks="val => clicks = val"></cookie-clicker>
+      <cookie-clicker v-bind:code="blockly.code" v-bind:cookies="cookies" v-on:cookies="val => cookies += val" v-on:clicks="val => clicks = val" v-on:click="fireworksClick"></cookie-clicker>
       <cookie-clicker-controls v-bind:code="blockly.code"></cookie-clicker-controls>
       <interaction-check v-bind:show="!nextHint" v-bind:goal="selectedGoal" v-bind:clicks="clicks"></interaction-check>
       <goal-description v-bind:goal="selectedGoal"></goal-description>
