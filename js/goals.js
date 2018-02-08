@@ -18,6 +18,7 @@ let goals = [{
   }],
   hints: [{
     revealed: true,
+    direct: true,
     cost: 5,
     hint: '<p>We need to <em>set the image</em> so we can see it!</p>',
     type: 'drag block',

@@ -83,11 +83,21 @@ let mainVue = new Vue({
   },
   methods: {
     buyHint: function(hint) {
-      // If there are enough cookies
-      if (!hint.revealed && this.cookies >= hint.cost) {
-        // Use the cookies to reveal the hint
-        this.cookies -= hint.cost;
-        Vue.set(hint, 'revealed', true);
+      // First time, reveal the hint
+      if (!hint.revealed) {
+        if (this.cookies >= hint.cost) {
+          Vue.set(hint, 'revealed', true);
+          // Use the cookies to reveal the hint
+          this.cookies -= hint.cost;
+        }
+      }
+      // Then give direct instructions
+      else {
+        if (this.cookies >= hint.cost * 10) {
+          Vue.set(hint, 'direct', true);
+          // Use the cookies to reveal the hint
+          this.cookies -= hint.cost * 10;
+        }
       }
     },
     getNextHint: function(hints) {

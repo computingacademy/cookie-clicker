@@ -115,9 +115,16 @@ let buyHint = Vue.component('buy-hint', {
   template: `
 <div id="buy-hint">
   <click-pointer v-if="nextHint && nextHint.buyHintDelay == 0 && !nextHint.revealed" v-bind:coords="coords"></click-pointer>
-  <button v-if="nextHint" v-on:click="buyHint()" id="hints" v-bind:class="{on: cookies >= nextHint.cost && !nextHint.revealed}">
+  <button v-if="nextHint && !nextHint.revealed" v-on:click="buyHint()" id="hints" v-bind:class="{on: cookies >= nextHint.cost}">
     Buy hint
     <img src="images/choc-chip.png">×{{ nextHint.cost }}
+  </button>
+  <button v-if="nextHint && nextHint.revealed && !nextHint.direct" v-on:click="buyHint()" id="hints" v-bind:class="{on: cookies >= nextHint.cost *10}">
+    Another hint!
+    <img src="images/choc-chip.png">×{{ nextHint.cost * 10 }}
+  </button>
+  <button v-if="nextHint && nextHint.revealed && nextHint.direct" id="hints">
+    Follow the hint
   </button>
   <button v-if="!nextHint">
     Click the cookie!
@@ -272,7 +279,7 @@ let hintDisplay = Vue.component('hint-display', {
   template: `
 <div v-if="hint && hint.revealed" class="blockly-hint" v-bind:style="position(hint, blockly)">
     <div v-html="hint.hint" ></div>
-    <div v-html="message(hint)" ></div>
+    <div v-if="hint.direct" v-html="message(hint)" ></div>
 </div>`,
   props: ['hint', 'blockly'],
   methods: {
