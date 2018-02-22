@@ -458,5 +458,7 @@ function load(vm) {
   });
 
   // Make sure the selected goal is unlocked!
-  vm.selectedGoal.unlocked = true;
+  if (vm.selectedGoal) {
+    vm.selectedGoal.unlocked = true;
+  }
 }

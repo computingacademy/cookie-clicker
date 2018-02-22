@@ -289,9 +289,13 @@ let goalsList = Vue.component('goal-list', {
 
 let goalDescription = Vue.component('goal-description', {
   template: `
-<div id="goal" v-if="goal">
-  <h2>{{ goal.title }}</h2>
-  <div id="description" v-html="goal.description"></div>
+<div id="goal">
+  <h2 v-if="goal">{{ goal.title }}</h2>
+  <div id="description" v-if="goal" v-html="goal.description"></div>
+  <h2 v-if="!goal">Cookie Clicker Experiments</h2>
+  <div id="description" v-if="!goal">
+    You've completed all the goals! Can you make your cookie clicker even better?
+  </div>
 </div>`,
   props: ['goal'],
 });
