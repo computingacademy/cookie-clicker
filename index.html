@@ -17,19 +17,27 @@
   <script src="js/animation.js"></script>
 </head>
 <body>
-  <main>
-    <content>
-      <nav class="noselect">
-        <goal-list v-bind:goals="goals" v-bind:selected="selectedGoal" v-bind:blockly="blockly" v-on:select="selectGoal"></goal-list>
-      </nav>
-      <cookie-clicker v-bind:code="blockly.code" v-bind:cookies="cookies" v-on:cookies="val => cookies += val" v-on:clicks="val => clicks = val" v-on:click="fireworksClick"></cookie-clicker>
-      <cookie-clicker-controls v-bind:code="blockly.code"></cookie-clicker-controls>
-      <interaction-check v-bind:show="!nextHint" v-bind:goal="selectedGoal" v-bind:clicks="clicks"></interaction-check>
-      <goal-description v-bind:goal="selectedGoal"></goal-description>
-      <animated-counter v-bind:count="cookies"></animated-counter>
-      <buy-hint v-bind:next-hint="nextHint" v-bind:cookies="cookies" v-on:buy-hint="buyHint"></buy-hint>
-      <blockly-editor v-model="blockly"></blockly-editor>
-    </content>
+  <div class="main">
+    <nav class="noselect">
+      <goal-list v-bind:goals="goals" v-bind:selected="selectedGoal" v-bind:blockly="blockly" v-on:select="selectGoal"></goal-list>
+    </nav>
+    <main>
+      <aside>
+        <cookie-clicker v-bind:code="blockly.code" v-bind:cookies="cookies" v-on:cookies="function(val) { return cookies += val; }" v-on:clicks="function(val) { return clicks = val; }" v-on:click="fireworksClick"></cookie-clicker>
+        <cookie-clicker-controls v-bind:code="blockly.code"></cookie-clicker-controls>
+        <interaction-check v-bind:show="!nextHint" v-bind:goal="selectedGoal" v-bind:clicks="clicks"></interaction-check>
+      </aside>
+      <content>
+        <section>
+          <goal-description v-bind:goal="selectedGoal"></goal-description>
+          <div id="cookie-hud">
+            <animated-counter v-bind:count="cookies"></animated-counter>
+            <buy-hint v-bind:next-hint="nextHint" v-bind:cookies="cookies" v-on:buy-hint="buyHint"></buy-hint>
+          </div>
+        </section>
+        <blockly-editor v-model="blockly"></blockly-editor>
+      </content>
+    </main>
 
     <hint-display v-bind:blockly="blockly" v-bind:hint="nextHint"></hint-display>
     <animated-pointer v-if="nextHint && nextHint.direct" v-bind:start="pointerStart(blockly, nextHint)" v-bind:end="pointerEnd(blockly, nextHint)"></animated-pointer>
@@ -37,7 +45,7 @@
     <completion-celebration v-if="party" v-on:click="party = false"></completion-celebration>
     <div id="firework-overlay"></div>
     <div class="fade-background noselect" v-if="choosingNextGoal"></div>
-  </main>
+  </div>
 
   <xml id="toolbox" style="display: none">
     <block type="image_set"></block>

@@ -251,14 +251,14 @@ let goalsList = Vue.component('goal-list', {
     <li
         class="slide"
         v-on:click="select(goal)">
-      <a href="#"
+      <span href="#"
           class="js-slide-link problem" v-bind:class="classes(goal)">
         <h3 class="slide-title">
           {{ goal.title }}
         </h3>
         <span class="tooltip-area hide-open" data-toggle="tooltip" data-placement="right" data-container="body" title="" v-bind:data-original-title="goal.title"></span>
         <span class="slide-jump-pip"></span>
-      </a>
+      </span>
     </li>
   </ol>
 </div>
