@@ -72,6 +72,7 @@ let mainVue = new Vue({
           }
           // Otherwise, party!
           else {
+            this.selectedGoal = undefined;
             this.party = true;
           }
         }
