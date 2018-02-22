@@ -377,13 +377,25 @@ button {
           margin: 5px;
         }
 
+#completion-message {
+  z-index: 120;
+  position: absolute;
+  top: 20px;
+  width: 100%;
+  text-align: center;
+}
+  #completion-message * {
+    color: white;
+  }
+
 #firework-overlay {
-  z-index: 40;
+  z-index: 110;
   position: absolute;
   top: 0px;
   left: 0px;
   height: 100%;
   width: 100%;
+  overflow: hidden;
   margin: 0px;
   pointer-events: none;
 }

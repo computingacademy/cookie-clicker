@@ -476,4 +476,27 @@ let nextGoal = Vue.component('next-goal', {
   },
 });
 
+let completionCelebration = Vue.component('completionCelebration', {
+  template: `
+<div>
+    <div class="fade-background noselect" v-on:click="click"></div>
+    <div id="firework-overlay"></div>
+    <div id="completion-message">
+      <h1>You made a cookie clicker!</h1>
+      <h2>Click anywhere to continue experimenting with your cookie clicker</h2>
+    </div>
+</div>`,
+  mounted: function() {
+    let fireworkOverlay = this.$el.querySelector('#firework-overlay');
+    let repeat = setInterval(function() {
+      cookieFirework(fireworkOverlay, screen.availWidth*Math.random(), screen.availHeight*Math.random(), 0.8 + Math.random()*2);
+    }, 1000);
+  },
+  methods: {
+    click: function() {
+      this.$emit('click');
+    },
+  }
+});
+
 Vue.config.ignoredElements = ['bk'];

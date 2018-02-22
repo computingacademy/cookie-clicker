@@ -16,6 +16,7 @@ let mainVue = new Vue({
     choosingNextGoal: false,
     nextHint: {},
     cookieClickerCoords: undefined,
+    party: false,
   },
   mounted: function() {
     // Load previous progress
@@ -71,10 +72,7 @@ let mainVue = new Vue({
           }
           // Otherwise, party!
           else {
-            let fireworkOverlay = document.querySelector('#firework-overlay');
-            let repeat = setInterval(function() {
-              cookieFirework(fireworkOverlay, screen.availWidth*Math.random(), screen.availHeight*Math.random(), 0.8 + Math.random()*2);
-            }, 500);
+            this.party = true;
           }
         }
       }
