@@ -36,13 +36,17 @@ let blocklyEditor = Vue.component('blockly-editor', {
   },
   methods: {
     value: function() {
+      // Get offset
+      let offset = this.$el.getBoundingClientRect();
+      offset.x = offset.left;
+      offset.y = offset.top;
       // Get the blockly model
       return {
         workspace: this.workspace,
         code: code(this.workspace),
         blocks: workspaceToBlocks(this.workspace, true),
         toolbox: workspaceToBlocks(this.workspace.getFlyout_().getWorkspace(), true),
-        offset: this.$el.getBoundingClientRect(),
+        offset: offset,
       };
     },
   },
