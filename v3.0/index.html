@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Code a Cookie Clicker</title>
+  <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=es6,Array.prototype.includes"></script>
+  <script>NodeList.prototype.forEach = Array.prototype.forEach;</script>
+  <script src="https://unpkg.com/vue"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tween.js@16.3.4"></script>
+  <script src="blockly/blockly_compressed.js"></script>
+  <script src="blockly/blocks_compressed.js"></script>
+  <script src="blockly/javascript_compressed.js"></script>
+  <script src="blockly/msg/js/en.js"></script>
+  <script src="js/lib/cookie.js"></script>
+  <link rel="stylesheet" href="css/grok.css">
+  <link rel="stylesheet" href="css/icomoon.css">
+  <link rel="stylesheet" href="css/animation.css">
+  <link rel="stylesheet" href="css/main.css">
+  <script src="js/animation.js"></script>
+</head>
+<body>
+  <div class="main">
+    <nav class="noselect">
+      <goal-list v-bind:goals="goals" v-bind:selected="selectedGoal" v-bind:blockly="blockly" v-on:select="selectGoal"></goal-list>
+    </nav>
+    <main>
+      <aside>
+        <cookie-clicker v-bind:code="blockly.code" v-bind:cookies="cookies" v-on:cookies="function(val) { return cookies += val; }" v-on:clicks="function(val) { return clicks = val; }" v-on:click="fireworksClick"></cookie-clicker>
+        <cookie-clicker-controls v-bind:code="blockly.code"></cookie-clicker-controls>
+        <interaction-check v-bind:show="!nextHint" v-bind:goal="selectedGoal" v-bind:clicks="clicks"></interaction-check>
+      </aside>
+      <content>
+        <section>
+          <goal-description v-bind:goal="selectedGoal"></goal-description>
+          <div id="cookie-hud">
+            <animated-counter v-bind:count="cookies"></animated-counter>
+            <buy-hint v-bind:next-hint="nextHint" v-bind:cookies="cookies" v-on:buy-hint="buyHint"></buy-hint>
+          </div>
+        </section>
+        <blockly-editor v-model="blockly"></blockly-editor>
+      </content>
+    </main>
+
+    <hint-display v-bind:blockly="blockly" v-bind:hint="nextHint"></hint-display>
+    <animated-pointer v-if="nextHint && nextHint.direct" v-bind:start="pointerStart(blockly, nextHint)" v-bind:end="pointerEnd(blockly, nextHint)"></animated-pointer>
+    <next-goal v-bind:choosing="choosingNextGoal" v-bind:goal="selectedGoal" v-bind:goals="goals" v-on:select="selectGoal"></next-goal>
+    <completion-celebration v-if="party" v-on:click="party = false"></completion-celebration>
+    <div id="firework-overlay"></div>
+    <div class="fade-background noselect" v-if="choosingNextGoal"></div>
+  </div>
+
+  <xml id="toolbox" style="display: none">
+    <block type="image_set"></block>
+    <block type="on_click"></block>
+    <block type="variables_add">
+      <field name="VARIABLE">cookies</field>
+      <field name="NUMBER">1</field>
+    </block>
+    <block type="heading_set"></block>
+    <block type="variables_get">
+      <field name="VAR">cookies</field>
+    </block>
+    <block type="text_join"></block>
+    <block type="text">
+      <field name="TEXT"> Cookies</field>
+    </block>
+    <block type="controls_if"></block>
+    <block type="logic_compare">
+        <field name="OP">GTE</field>
+        <value name="B">
+            <block type="math_number">
+              <field name="NUM">10</field>
+            </block>
+        </value>
+    </block>
+  </xml>
+
+  <script src="js/custom_blocks.js"></script>
+  <script src="js/goals.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
