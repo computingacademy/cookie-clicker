@@ -1,3 +1,3 @@
 #!/bin/bash
-npm install --save-dev babel-cli babel-preset-env 
-./node_modules/.bin/babel js -d js 
+npm install --save-dev babel-cli babel-preset-env babel-preset-es2015
+./node_modules/.bin/babel $1/js -d $1/js
