@@ -436,11 +436,14 @@ function save(vm) {
 }
 
 function load(vm) {
-  // Get blockly XML
+  // Get blockly blocks
   var xml_text = Cookies.get('blocks');
-  var xml = Blockly.Xml.textToDom(xml_text);
-  // Insert blocks into workspace
-  Blockly.Xml.domToWorkspace(xml, vm.blockly.workspace);
+  if (xml_text) {
+    // Get blockly XML
+    var xml = Blockly.Xml.textToDom(xml_text);
+    // Insert blocks into workspace
+    Blockly.Xml.domToWorkspace(xml, vm.blockly.workspace);
+  }
 
   // Set the number of cookies
   vm.cookies = parseInt(Cookies.get('cookies')) || 0;
