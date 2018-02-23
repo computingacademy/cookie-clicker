@@ -23,7 +23,8 @@ main {
   aside {
     display: flex;
     flex-direction: column;
-    width: 400px;
+    flex: 1;
+    min-width: 200px;
   }
   #cookie-clicker {
     margin: 10px;
@@ -34,7 +35,8 @@ main {
   content {
     display: flex;
     flex-direction: column;
-    width: calc(100% - 400px);
+    flex: 3;
+    max-width: calc(100% - 200px);
   }
     section {
       display: flex;
