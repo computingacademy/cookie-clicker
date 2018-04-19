@@ -24,7 +24,7 @@ main {
     display: flex;
     flex-direction: column;
     flex: 1;
-    min-width: 200px;
+    min-width: 360px;
   }
   #cookie-clicker {
     margin: 10px;
