@@ -27,7 +27,7 @@ Blockly.Blocks['image_set'] = {
     });
 
     this.appendDummyInput()
-        .appendField('Set image to')
+        .appendField('set image to')
         .appendField(new Blockly.FieldDropdown(options), 'PICTURE');
   },
 };
@@ -45,7 +45,7 @@ Blockly.Blocks['heading_set'] = {
     this.setNextStatement(true);
     this.appendValueInput('VALUE')
         .setCheck('String')
-        .appendField('Set heading to');
+        .appendField('set heading to');
   },
 };
 
@@ -63,7 +63,7 @@ Blockly.Blocks['on_click'] = {
 	this.setNextStatement(true);
 
     this.appendDummyInput()
-        .appendField('On click');
+        .appendField('on click');
 
 	this.appendStatementInput('DO')
 		.appendField('do');
@@ -84,7 +84,7 @@ Blockly.Blocks['variables_add'] = {
 	this.setNextStatement(true);
 
     this.appendDummyInput()
-        .appendField('Add')
+        .appendField('add')
         .appendField(new Blockly.FieldNumber('1'), 'NUMBER')
         .appendField("to")
         .appendField(new Blockly.FieldVariable('cookies'), 'VARIABLE');
@@ -98,7 +98,7 @@ Blockly.JavaScript['variables_add'] = function(block) {
   return code;
 };
 
-Blockly.Msg.TEXT_JOIN_TITLE_CREATEWITH = 'Join text'
+Blockly.Msg.TEXT_JOIN_TITLE_CREATEWITH = 'join text'
 
 // Set colours of existing blocks
 function setColour(block, color) {
