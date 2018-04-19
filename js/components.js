@@ -9,7 +9,8 @@ let blocklyEditor = Vue.component('blockly-editor', {
     // Load blockly
     this.workspace = Blockly.inject(this.$el,
       { media: 'blockly/media/',
-        toolbox: document.getElementById('toolbox')
+        toolbox: document.getElementById('toolbox'),
+        trashcan: true,
       });
 
     // Update the model when events happen
