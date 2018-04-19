@@ -23,7 +23,7 @@ function testCode(workspace) {
     + 'heading.textContent = "No cookies";\n'
     + 'let image = document.createElement("img-fake");\n'
     + 'image.className = "cookie";\n'
-    + 'image.src = "images/crumbs.jpg";\n'
+    + 'image.src = "images/plate.png";\n'
     + 'image.cookies = 0;\n'
     + 'cookieClicker.appendChild(heading);\n' 
     + 'cookieClicker.appendChild(image);\n' 

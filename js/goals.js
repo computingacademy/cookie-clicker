@@ -25,7 +25,7 @@ let goals = [{
   }],
   interaction: {
     clicks: 1,
-    message: '<p>You did it!</p><p>Click the crumbs!</p>',
+    message: '<p>You did it!</p><p>Click the plate!</p>',
   },
   prerequisites: [],
 }, {
@@ -40,9 +40,9 @@ let goals = [{
     description: 'Set the image to a cookie',
     hint: '<p>Click the dropdown arrow on the <bk class="io">set image</bk> block in your workspace. Then choose your cookie!</p>',
     test: function(cookieClicker, blockly, cookies) {
-      // Is the image's src not crumbs?
+      // Is the image's src not the plate?
       let cookie = cookieClicker.querySelector('.cookie');
-      return cookie.src != '' && cookie.src != 'images/crumbs.jpg';
+      return cookie.src != '' && cookie.src != 'images/plate.png';
     },
   }],
   hints: [{
@@ -57,7 +57,7 @@ let goals = [{
     type: 'set block value',
     block: 'image_set',
     key: 'PICTURE',
-    notValue: 'images/crumbs.jpg',
+    notValue: 'images/plate.png',
     message: '<p>Click the dropdown arrow on the <bk class="io">set image</bk> block. Then choose your cookie!</p>',
     offset: {
       left: 132,
@@ -387,7 +387,7 @@ let goals = [{
       let newPicture = cookieClicker.querySelector('.cookie').src;
 
       // Did the picture change?
-      return newPicture !== originalPicture && !!cookieClicker.querySelector('.cookie:not([src=""]):not([src="images/crumbs.jpg"])');
+      return newPicture !== originalPicture && !!cookieClicker.querySelector('.cookie:not([src=""]):not([src="images/plate.png"])');
     },
   }, {
     description: 'Upgrade the cookie only once it has been clicked 10 times',

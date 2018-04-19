@@ -5,11 +5,27 @@ Blockly.Blocks['image_set'] = {
     this.setNextStatement(true);
 
     var options = [
-      ['none', 'images/crumbs.jpg'],
-      [{'src': 'images/choc-chip.png', 'width': 25, 'height': 25, 'alt': 'Choc Chip Cookie'}, 'images/choc-chip.png'],
-      [{'src': 'images/christmas.png', 'width': 25, 'height': 25, 'alt': 'Christmas Cookie'}, 'images/christmas.png'],
-      [{'src': 'images/fortune.png', 'width': 25, 'height': 25, 'alt': 'Fortune Cookie'}, 'images/fortune.png'],
-    ]
+      {url: 'plate.png', name: 'none'},
+      {url: 'anzac.png', name: 'Anzac biscuit'},
+      {url: 'biscotti.png', name: 'biscotti'},
+      {url: 'butter-cookie-choc.png', name: 'butter choc cookie'},
+      {url: 'butter-cookie.png', name: 'butter vookie'},
+      {url: 'chinese-almond.png', name: 'chinese almond cookie'},
+      {url: 'choc-chip.png', name: 'choc chip cookie'},
+      {url: 'choc-digestive.png', name: 'choc digestive'},
+      {url: 'choc-pretzel.png', name: 'choc pretzel'},
+      {url: 'fortune.png', name: 'fortune cookie'},
+      {url: 'gingerbread.png', name: 'gingerbread cookie'},
+      {url: 'macaron.png', name: 'macaron'},
+      {url: 'raspberry-ice.png', name: 'rasperry ice biscuit'},
+      {url: 'scotch-finger.png', name: 'Scotch finger'},
+      {url: 'strawberry-sugar.png', name: 'strawberry sugar biscuit'},
+      {url: 'stroopwafel.png', name: 'stroopwafel'},
+      {url: 'taiyaki.png', name: 'taiyaki'},
+    ].map(function(img) {
+      return [{'src': 'images/'+img.url, 'width': 25, 'height': 25, 'alt': img.name}, 'images/'+img.url];
+    });
+
     this.appendDummyInput()
         .appendField('Set image to')
         .appendField(new Blockly.FieldDropdown(options), 'PICTURE');

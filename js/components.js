@@ -55,7 +55,7 @@ let blocklyEditor = Vue.component('blockly-editor', {
 let animatedCounter = Vue.component('animated-counter', {
   template: `
 <div id="animated-counter" class="noselect">
-  <img src="images/choc-chip.png" v-bind:style="jump()">
+  <img src="images/mini-cookie-full.png" v-bind:style="jump()">
   <span>{{ animatedCount }}</span>
 </div>`,
   props: ['count'],
@@ -121,11 +121,11 @@ let buyHint = Vue.component('buy-hint', {
   <click-pointer v-if="nextHint && attention && !nextHint.direct" v-bind:coords="coords"></click-pointer>
   <button v-if="nextHint && !nextHint.revealed" v-on:click="buyHint()" id="hints" v-bind:class="{on: cookies >= nextHint.cost}">
     Buy hint
-    <img src="images/choc-chip.png">×{{ nextHint.cost }}
+    <img src="images/mini-cookie-full.png">×{{ nextHint.cost }}
   </button>
   <button v-if="nextHint && nextHint.revealed && !nextHint.direct" v-on:click="buyHint()" id="hints" v-bind:class="{on: cookies >= nextHint.cost *10}">
     Another hint!
-    <img src="images/choc-chip.png">×{{ nextHint.cost * 10 }}
+    <img src="images/mini-cookie-full.png">×{{ nextHint.cost * 10 }}
   </button>
   <button v-if="nextHint && nextHint.revealed && nextHint.direct" id="hints">
     Follow the hint
@@ -445,7 +445,7 @@ let nextGoal = Vue.component('next-goal', {
         <h2>
           {{ goal.title }}
           <span class="reward">
-            <img src="images/choc-chip.png"> × {{ goal.reward }}
+            <img src="images/mini-cookie-full.png"> × {{ goal.reward }}
           </span>
         </h2>
         <p v-html="goal.shortDescription"></p>

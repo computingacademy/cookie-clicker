@@ -40,7 +40,7 @@ function fireworks(config) {
 function cookieFirework(parentElement, x, y, scale) {
   let cookie = document.createElement('img');
   let height = 25;
-  cookie.src = 'images/choc-chip.png';
+  cookie.src = 'images/mini-cookie-full.png';
   cookie.style.height = `${height}px`;
 
   fireworks({parentElement: parentElement, element: cookie, number: 20, delay: 0, x: x, y: y, height: height, scale: scale});

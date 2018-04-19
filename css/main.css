@@ -290,7 +290,7 @@ button {
   #cookie-rewards .reward-cookie {
     position: absolute;
     cursor: pointer;
-    background-image: url('../images/choc-chip.png');
+    background-image: url('../images/mini-cookie-full.png');
     background-size: contain;
     background-repeat: no-repeat;
   }
@@ -314,7 +314,7 @@ button {
   }
 
   #cookie-rewards .cookies {
-    background-image: url('../images/choc-chip.png');
+    background-image: url('../images/mini-cookie-full.png');
     background-size: contain;
     background-repeat: no-repeat;
     padding-left: 60px;
