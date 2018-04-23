@@ -162,15 +162,16 @@ nav {
   }
 
 #cookie-clicker {
-  height: 450px;
+  height: 420px;
   text-align: center;
   border: 1px solid grey;
 }
   #cookie-clicker h1 {
     height: 50px;
+    margin-bottom: 0px;
   }
   #cookie-clicker img {
-    margin: 20px;
+    margin: 0px 20px;
     height: 300px;
   }
   #cookie-clicker img[src=''] {
@@ -179,7 +180,7 @@ nav {
 
 #cookie-clicker-controls {
   text-align: center;
-  margin: 10px;
+  margin: -55px 10px 20px 10px;
 }
   #reset {
     background-color: #1b79bf;
@@ -191,7 +192,7 @@ nav {
 
 #interaction-check {
   height: max-content;
-  margin-left: 10px;
+  margin: 0px 10px;
   padding: 1px 10px;
   background: #fcea9a;
   color: #534402;
