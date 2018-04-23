@@ -52,13 +52,16 @@
   <xml id="toolbox" style="display: none">
     <block type="image_set"></block>
     <block type="on_click"></block>
-    <block type="variables_add">
-      <field name="VARIABLE">cookies</field>
-      <field name="NUMBER">1</field>
+    <block type="variables_add_one">
+      <value name="VAR">
+        <block type="variables_label">
+          <field name="LABEL">cookies</field>
+        </block>
+      </value>
     </block>
     <block type="heading_set"></block>
-    <block type="variables_get">
-      <field name="VAR">cookies</field>
+    <block type="variables_label">
+      <field name="LABEL">cookies</field>
     </block>
     <block type="text_join"></block>
     <block type="text">

@@ -10,6 +10,7 @@ function code(workspace) {
     + 'image.parentNode.replaceChild(clone, image);\n'
     + 'image = clone;\n'
     + 'let cookies = 0;\n'
+    + 'let variable = 0;\n'
     + Blockly.JavaScript.workspaceToCode(workspace).replace(/var cookies;\n/, '')
     + 'cookies;\n';
   return code;
@@ -254,9 +255,9 @@ function blockLabel(blockType) {
     return 'set image';
   } else if (blockType == 'on_click') {
     return 'on click';
-  } else if (blockType == 'variables_add') {
-    return 'add to <bk class="inner">cookies</bk>';
-  } else if (blockType == 'variables_get') {
+  } else if (blockType == 'variables_add_one') {
+    return 'add 1 to <bk class="inner">cookies</bk>';
+  } else if (blockType == 'variables_label') {
     return '<bk class="inner">cookies</bk>';
   } else if (blockType == 'heading_set') {
     return 'set heading';

@@ -44,7 +44,7 @@ Blockly.Blocks['heading_set'] = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.appendValueInput('VALUE')
-        .setCheck('String')
+        .setCheck(['String', 'Label'])
         .appendField('set heading to');
   },
 };
@@ -77,24 +77,37 @@ Blockly.JavaScript['on_click'] = function(block) {
   return code;
 };
 
-Blockly.Blocks['variables_add'] = {
+Blockly.Blocks['variables_label'] = {
+  init: function() {
+    this.setColour('#cccccc');
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldLabel('cookies'), 'LABEL');
+    this.setOutput(true);
+    this.setHelpUrl(Blockly.Msg.VARIABLES_GET_HELPURL);
+    this.setTooltip(Blockly.Msg.VARIABLES_GET_TOOLTIP);
+  }
+}
+
+Blockly.JavaScript['variables_label'] = function(block) {
+  var variableLabel = block.getFieldValue('LABEL');
+  var variableName = Blockly.JavaScript.variableDB_.getName(variableLabel);
+  return [variableName, '\n'];
+};
+
+Blockly.Blocks['variables_add_one'] = {
   init: function() {
     this.setColour('#909090');
-	this.setPreviousStatement(true);
-	this.setNextStatement(true);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
 
-    this.appendDummyInput()
-        .appendField('add')
-        .appendField(new Blockly.FieldNumber('1'), 'NUMBER')
-        .appendField("to")
-        .appendField(new Blockly.FieldVariable('cookies'), 'VARIABLE');
+    this.appendValueInput('VAR')
+        .appendField('add 1 to');
   },
 };
 
-Blockly.JavaScript['variables_add'] = function(block) {
-  var variable = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('VARIABLE'), Blockly.Variables.NAME_TYPE);
-  var number = block.getFieldValue('NUMBER');
-  var code = variable + ' += ' + number + ';\n';
+Blockly.JavaScript['variables_add_one'] = function(block) {
+  var variableCode = Blockly.JavaScript.valueToCode(block, 'VAR', Blockly.JavaScript.ORDER_NONE) || 'variable';
+  var code = variableCode + ' += 1;\n';
   return code;
 };
 

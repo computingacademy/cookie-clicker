@@ -130,7 +130,7 @@ let goals = [{
     cost: 5,
     hint: '<p>Every time we click we need to add a cookie.</p><p>You can drag a block <em>into</em> <bk class="control">on click</bk> to make that block happen when the cookie is clicked.</p>',
     type: 'drag block',
-    block: 'variables_add',
+    block: 'variables_add_one',
     into: {
       block: 'on_click',
       key: 'DO',
@@ -207,7 +207,7 @@ let goals = [{
     cost: 5,
     hint: '<p>Make sure you add a cookie on every click!<p>',
     type: 'drag block',
-    block: 'variables_add',
+    block: 'variables_add_one',
     into: {
       block: 'on_click',
       key: 'DO',
@@ -220,13 +220,13 @@ let goals = [{
     into: {
       block: 'on_click',
       key: 'DO',
-      after: 'variables_add',
+      after: 'variables_add_one',
     },
   }, {
     cost: 5,
     hint: '<p>Set the heading to the number of <bk class="var"><bk class="inner">cookies</bk></bk>.<p>',
     type: 'drag block',
-    block: 'variables_get',
+    block: 'variables_label',
     into: {
       block: 'heading_set',
       key: 'VALUE',
@@ -261,7 +261,7 @@ let goals = [{
         let joinText = block.type == 'text_join';
         if (joinText) {
           // Check for cookies variable
-          let cookiesVar = block.inputList.some(input => input.connection.targetConnection && input.connection.targetConnection.sourceBlock_.type == 'variables_get');
+          let cookiesVar = block.inputList.some(input => input.connection.targetConnection && input.connection.targetConnection.sourceBlock_.type == 'variables_label');
           // Check for cookies string
           let cookiesString = block.inputList.some(input => input.connection.targetConnection && input.connection.targetConnection.sourceBlock_.type == 'text');
 
@@ -309,7 +309,7 @@ let goals = [{
     into: {
       block: 'on_click',
       key: 'DO',
-      after: 'variables_add',
+      after: 'variables_add_one',
     },
   }, {
     cost: 5,
@@ -324,7 +324,7 @@ let goals = [{
     cost: 5,
     hint: '<p>We need to have the number of <bk class="var"><bk class="inner">cookies</bk></bk> in our joined text.</p>',
     type: 'drag block',
-    block: 'variables_get',
+    block: 'variables_label',
     into: {
       block: 'text_join',
     },
@@ -366,7 +366,7 @@ let goals = [{
         let logicCompare = block.type == 'logic_compare';
         if (logicCompare) {
           // Check for cookies variable
-          let cookiesVar = block.inputList.some(input => input.connection.targetConnection && input.connection.targetConnection.sourceBlock_.type == 'variables_get');
+          let cookiesVar = block.inputList.some(input => input.connection.targetConnection && input.connection.targetConnection.sourceBlock_.type == 'variables_label');
           // Check for a number
           let cookiesNumber = block.inputList.some(input => input.connection.targetConnection && input.connection.targetConnection.sourceBlock_.type == 'math_number');
 
@@ -438,7 +438,7 @@ let goals = [{
     cost: 5,
     hint: '<p>What value do we need to make sure is more than 10?</p>',
     type: 'drag block',
-    block: 'variables_get',
+    block: 'variables_label',
     into: {
       block: 'logic_compare',
       key: 'A',
