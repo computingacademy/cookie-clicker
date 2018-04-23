@@ -219,12 +219,22 @@ nav {
   #animated-counter img {
     height: 32px;
     margin: 4px;
+    vertical-align: initial;
   }
   #animated-counter span {
     float: right;
     margin-top: 8px;
     margin-right: 8px;
     font-size: 20px;
+  }
+  #animated-counter small {
+    display: inline-block;
+    width: 40px;
+    margin-top: 8px;
+    margin-right: 8px;
+    font-size: 12px;
+    line-height: 1.1;
+    vertical-align: top;
   }
 
 #buy-hint {

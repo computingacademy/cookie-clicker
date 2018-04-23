@@ -57,6 +57,7 @@ let animatedCounter = Vue.component('animated-counter', {
   template: `
 <div id="animated-counter" class="noselect">
   <img src="images/mini-cookie-full.png" v-bind:style="jump()">
+  <small>total cookies</small>
   <span>{{ animatedCount }}</span>
 </div>`,
   props: ['count'],
