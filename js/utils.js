@@ -63,14 +63,18 @@ function unlockBlocks(blockly) {
     // Stick them all in one list (may contain duplicates
     .reduce((a, b) => a.concat(b), []);
 
-  // Disable blocks not yet unlocked
-  document.querySelectorAll('#toolbox > block').forEach(function(block) {
+
+  // Create a new toolbox for new block set
+  let newToolbox = document.querySelector('#toolbox').cloneNode(true);
+
+  // Remove blocks not yet unlocked
+  newToolbox.querySelectorAll('xml > block').forEach(function(block) {
     let type = block.getAttribute('type');
-    block.setAttribute('disabled', !unlockedBlocks.includes(type));
+    if (!unlockedBlocks.includes(type))
+      block.remove();
   });
 
-  let toolbox = document.querySelector('#toolbox');
-  blockly.workspace.updateToolbox(toolbox);
+  blockly.workspace.updateToolbox(newToolbox);
 }
 
 function checksPass(blockly, goal) {
